@@ -1,0 +1,104 @@
+%==============================================
+\subsection{Simulation-in-the-Loop Search}
+\label{subsec:simloop}
+
+The final step integrates physical feasibility directly into the planning
+process through a simulation-in-the-loop search scheme. Unlike pure
+graph-based reasoning, which abstracts away dynamics, this method validates
+candidate pushing actions by embedding a fast parallelized physics engine
+inside the search loop. In this way, both the sequence of obstacle pushes
+and their dynamic feasibility are determined consistently, leading to robust
+execution in realistic settings. The procedure consists of three phases:
+(i) node selection based on a priority queue;
+(ii) expansion through candidate pushing actions validated in simulation;
+(iii) termination upon reaching a feasible clearance-$W$ path.
+
+%==============================
+\subsubsection{Node Representation and Cost}
+\label{subsubsec:simloop-node}
+Each search node represents the current configuration of movable obstacles
+together with the path status between start and goal. Formally, let
+$\nu=(\boldsymbol{\Omega}(t),\,\mathcal{P}_W(t))$, where
+$\boldsymbol{\Omega}(t)$ is the current set of obstacle states and
+$\mathcal{P}_W(t)$ denotes the existence of a clearance-$W$ path in the
+WCCG. The cost of a node is defined as
+\begin{equation}\label{eq:simloop-cost}
+  \mathrm{C}(\nu)\triangleq T(\nu)+\alpha
+  \sum_{g\in\mathcal{G}^{\texttt{crit}}(t)} \mathsf{C}(g,t),
+\end{equation}
+where $T(\nu)$ is the elapsed task duration,
+$\mathcal{G}^{\texttt{crit}}(t)$ is the set of critical gaps, and
+$\mathsf{C}(g,t)$ is the clearing cost defined in~\eqref{eq:gap-cost}.
+This balances planning time against clearing effort.
+
+%==============================
+\subsubsection{Simulation-Guided Expansion}
+\label{subsubsec:simloop-expansion}
+When expanding a node, the planner hypothesizes pushing one of the blocking
+obstacles adjacent to a critical gap. Let $\xi=(\mathbf{c},\mathbf{f})$
+denote a candidate pushing mode, with contact point $\mathbf{c}\in\partial\Omega_m$
+and force $\mathbf{f}\in\mathbb{R}^2$ applied by a subgroup of robots. The
+candidate action is validated through a short-horizon simulation
+\begin{equation}\label{eq:simloop-dynamics}
+  \Omega_m(t+\Delta t) \leftarrow
+  \texttt{SimDyn}\big(\Omega_m(t),\xi,\Delta t\big),
+\end{equation}
+where $\texttt{SimDyn}(\cdot)$ integrates the coupled robot-object dynamics
+with contact forces and friction. If the simulated trajectory avoids
+collisions and improves the clearance of at least one critical gap, the
+resulting state $\boldsymbol{\Omega}(t+\Delta t)$ is inserted into the queue
+as a new node.
+
+%==============================
+\begin{algorithm}[t]
+  \caption{Simulation-in-the-Loop Search (SiLS).}
+  \label{alg:SiLS}
+  \SetAlgoLined
+  \KwIn{Initial obstacle states $\boldsymbol{\Omega}(0)$, start $\mathbf{s}^{\texttt{S}}$, goal $\mathbf{s}^{\texttt{G}}$.}
+  \KwOut{Feasible clearance-$W$ plan $\nu^\star$.}
+  Initialize priority queue $Q=\{\nu_0\}$ with $\nu_0=(\boldsymbol{\Omega}(0),\emptyset)$;\\
+  \While{$Q\neq\varnothing$}{
+    \tcc{\textbf{Selection}}
+    Pop $\nu^\star=\textbf{argmin}_{\nu\in Q}\{\mathrm{C}(\nu)+\mathrm{H}(\nu)\}$;\\
+    Check path existence in $\mathcal{G}^W(t)$; if feasible, return $\nu^\star$;\\
+    \tcc{\textbf{Expansion}}
+    Identify $\mathcal{G}^{\texttt{crit}}(t)$ from WCCG;\\
+    \ForEach{$g\in\mathcal{G}^{\texttt{crit}}(t)$}{
+      Generate candidate pushing modes $\xi\in\Xi(g)$;\\
+      Simulate next state $\boldsymbol{\Omega}(t+\Delta t)=\texttt{SimDyn}(\Omega_m,\xi,\Delta t)$;\\
+      \If{state is collision-free and improves $w(g,t)$}{
+        Insert new node $\nu^+$ into $Q$;\\
+      }
+    }
+  }
+  Return best $\nu^\star$ if time limit reached;
+\end{algorithm}
+%==============================
+
+%==============================
+\subsubsection{Correctness and Completeness}
+\label{subsubsec:simloop-theory}
+The simulation-in-the-loop search inherits both correctness and probabilistic
+completeness under mild assumptions. First, correctness follows since each
+expansion is validated by a dynamics simulator that enforces physical
+constraints, guaranteeing that any returned plan is dynamically feasible.
+
+\begin{lemma}[Correctness]\label{lemma:correctness}
+Any plan $\nu^\star$ returned by Algorithm~\ref{alg:SiLS} is feasible for the
+physical system, as every action has been validated through forward
+simulation with collision checking.
+\end{lemma}
+
+Completeness is ensured by the hybrid search structure: as long as the set
+of pushing modes $\Xi$ is sufficiently rich and the simulation horizon
+$\Delta t$ is bounded below, all feasible solutions are eventually explored.
+
+\begin{theorem}[Probabilistic Completeness]\label{thm:completeness-simloop}
+  If a clearance-$W$ path exists, Algorithm~\ref{alg:SiLS} finds a feasible
+  plan $\nu^\star$ with probability approaching $1$ as the number of node
+  expansions tends to infinity.
+\end{theorem}
+
+The proofs follow by extending standard arguments from randomized search
+algorithms with embedded feasibility oracles, noting that the simulator
+acts as a physical feasibility oracle in this case.

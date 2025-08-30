@@ -1,0 +1,19 @@
+\begin{abstract}
+In unstructured environments, the passage of large external vehicles is frequently
+blocked by movable obstacles, which motivates the deployment of mobile robot teams
+to proactively clear traversable corridors. Existing approaches to Navigation Among
+Movable Obstacles (NAMO) primarily plan sequences of obstacle manipulations but
+typically neglect physical feasibility, overlooking essential factors such as robot
+dimensions, mass, applied forces, and the coupled dynamics of pushing. This
+limitation often results in strategies that cannot be executed reliably in practice.
+A physics-informed framework for collaborative multi-robot pushing is introduced,
+enabling the active construction of physically feasible paths. The framework jointly
+searches the sequence of obstacles to be displaced, the transit motions of robots
+between obstacles, and the contact points and forces required for effective
+execution. Core components include a W-Clearance Connectivity Graph (WCCG) for
+reasoning about vehicle passage under width constraints, a gap-ranking strategy for
+prioritizing obstacle-clearing actions, and a simulation-in-the-loop search to
+validate push feasibility. Extensive simulations and hardware experiments
+demonstrate robust success, scalability, and efficiency compared to baseline NAMO
+methods.
+\end{abstract}

@@ -1,0 +1,76 @@
+%==============================================
+\subsection{W-Clearance Connectivity Graph (WCCG)}
+\label{subsec:wccg}
+
+To reason about the existence of a traversable path of minimum width~$W$,
+a W-Clearance Connectivity Graph (WCCG) is constructed. The key idea is to
+represent the free space~$\widehat{\mathcal{W}}(t)$ as a graph whose edges
+encode feasible passages with clearance at least~$W$, and whose nodes
+correspond to connected free regions. This allows efficient connectivity
+queries between start~$\mathbf{s}^{\texttt{S}}$ and goal~$\mathbf{s}^{\texttt{G}}$.
+
+%==============================
+\subsubsection{Free-Space Decomposition}
+\label{subsubsec:wccg-decomposition}
+The first step is to describe the free space available for navigation when
+movable and static obstacles are present. Since obstacles may be arbitrarily
+positioned, it is necessary to explicitly exclude their occupied areas to
+obtain the traversable region. At time~$t$, the set of movable obstacles is
+denoted by $\boldsymbol{\Omega}(t)\triangleq \{\Omega_1(t),\ldots,\Omega_M(t)\}$,
+and the instantaneous free space is defined as
+\begin{equation}\label{eq:free-space}
+  \widehat{\mathcal{W}}(t) \triangleq
+  \mathcal{W}\backslash
+  \big(\mathcal{O}^{\texttt{fix}}\cup \{\Omega_m(t)\}_{m\in\mathcal{M}}\big),
+\end{equation}
+where $\mathcal{O}^{\texttt{fix}}$ are static obstacles and
+$\Omega_m(t)$ are movable obstacles.
+
+However, this free space does not yet guarantee that a large vehicle of width~$W$
+can traverse through it. To capture this requirement, the free space is eroded
+by a disk of radius~$W/2$, so that any valid path maintains clearance of at
+least~$W$. The resulting clearance-valid free space is
+\begin{equation}\label{eq:clearance-space}
+  \widehat{\mathcal{W}}^{W}(t)\triangleq
+  \{p\in\widehat{\mathcal{W}}(t)\,\mid\,
+  \texttt{dist}(p,\partial\widehat{\mathcal{W}}(t))\geq W/2\},
+\end{equation}
+where $\texttt{dist}(p,\partial\widehat{\mathcal{W}}(t))$ is the Euclidean
+distance from point~$p$ to the nearest boundary of $\widehat{\mathcal{W}}(t)$.
+
+%==============================
+\subsubsection{Graph Construction and Connectivity}
+\label{subsubsec:wccg-construction}
+Once the clearance-valid free space is obtained, it is represented in
+graph form to facilitate connectivity analysis. Each connected region of
+$\widehat{\mathcal{W}}^{W}(t)$ is treated as a node, and narrow gaps between
+regions are modeled as edges if they are wide enough for traversal. The
+WCCG is thus defined as
+\begin{equation}\label{eq:wccg-def}
+  \mathcal{G}^{W}(t)\triangleq \big(\mathcal{V}^{W}(t),\mathcal{E}^{W}(t)\big),
+\end{equation}
+where $\mathcal{V}^{W}(t)$ is the set of nodes representing connected
+components of $\widehat{\mathcal{W}}^{W}(t)$, and $\mathcal{E}^{W}(t)$ is
+the set of edges corresponding to separating gaps. Each gap is denoted
+by $g$ with geometric width $w(g,t)\in\mathbb{R}_{+}$, and an edge exists
+between two nodes if $w(g,t)\geq W$.
+
+Using this graph, the existence of a path from the start to the goal can be
+reduced to a standard connectivity check. Denote by~$v^{\texttt{S}}, v^{\texttt{G}}\in\mathcal{V}^{W}(t)$
+the nodes containing $\mathbf{s}^{\texttt{S}}$ and $\mathbf{s}^{\texttt{G}}$, respectively.
+Then a feasible path exists if and only if
+\begin{equation}\label{eq:wccg-path}
+  \exists \;\mathcal{P}_{W}\subseteq\mathcal{G}^{W}(t)
+  \quad \text{s.t.}\quad v^{\texttt{S}}\leadsto v^{\texttt{G}},
+\end{equation}
+where $\mathcal{P}_{W}$ denotes a connected subgraph of $\mathcal{G}^{W}(t)$
+linking start and goal nodes. When no such path exists, the blocking frontier
+gaps are collected in the critical gap set
+\begin{equation}\label{eq:critical-gaps}
+  \mathcal{G}^{\texttt{crit}}(t)\triangleq
+  \{g\in\mathcal{G}(t)\,\mid\,w(g,t)<W,\;
+  g\;\text{lies on all paths between}\;v^{\texttt{S}},v^{\texttt{G}}\},
+\end{equation}
+where $\mathcal{G}^{\texttt{crit}}(t)$ contains exactly the narrow gaps that
+must be widened by pushing nearby obstacles, and thus provides the natural
+targets for subsequent ranking and obstacle-clearing steps.
