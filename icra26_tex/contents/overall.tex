@@ -1,0 +1,72 @@
+%==============================
+\subsection{Overall Analyses}\label{subsec:overall}
+
+
+%==============================================
+\subsection{Online Execution and Adaptation}\label{subsec:execute}
+
+Once the hybrid pushing plan $\nu^\star$ is generated, the robot fleet executes the task
+in real-time by following the guiding path $\overline{\mathbf{S}} = \{\mathbf{s}_0, \dots,
+\mathbf{s}_L\}$. Each robot tracks the assigned trajectory segments, pushing the target
+along the planned path while adjusting its motion based on the current target state
+$\mathbf{s}_m(t)$ and interaction mode $\xi_n(t)$. The robots apply the desired forces
+at the contact points $\mathbf{c}_n(t)$ using the control law:
+\[
+  \widehat{\mathbf{v}}_n = K_{\texttt{vel}} \left(\widehat{\mathbf{c}}_n - \mathbf{c}_n\right), \quad
+  \widehat{\omega}_n = K_{\texttt{rot}} \left(\widehat{\psi}_n - \psi_n\right),
+\]
+to guide the object from the start to the goal while ensuring contact force consistency.
+Transitioning between obstacles is handled according to the hybrid plan. Specifically,
+as each robot pushes the object, it follows a **collision-free path** to the next set of
+contact points on the next obstacle, ensuring that all movement respects the planned
+interaction modes, and the sequence of obstacles is maintained. This transition is dynamically
+adjusted as the robots continue pushing the target toward the goal.
+
+In case of failures, such as when the object deviates from its expected position,
+the algorithm triggers adaptation. If the object fails to reach the desired position,
+the system checks the tracking error:
+\[
+  \mathrm{dist}(\mathbf{s}_m(t'), \varrho_\ell) \geq \delta_{\texttt{f}}, \quad
+  \|\mathbf{s}_m(t') - \mathbf{s}_m(t'')\| < r_{\texttt{stuck}},
+\]
+and re-computes the entire hybrid plan based on the current system state. This includes
+recalculating the sequence of movable obstacles to push, the contact points, and the
+pushing forces to be applied. The updated plan is then executed with the control law in
+\eqref{eq:control} to guide the robots toward the goal despite disruptions, ensuring
+the task is completed even under unforeseen circumstances.
+
+
+
+%==============================
+\subsubsection{Complexity Analysis}\label{subsubsec:complexity}
+
+The time complexity of the proposed method is dominated by three main components: the W-Clearance
+Connectivity Graph (WCCG), gap-ranking strategy, and simulation-in-the-loop hybrid search. Constructing
+the WCCG has a complexity of $\mathcal{O}(M^2 \log M)$, where $M$ is the number of movable obstacles,
+due to the graph search and clearance checks. The gap-ranking strategy, which involves evaluating each
+critical gap and ranking them based on their clearance and the obstacles’ mass, has a complexity of
+$\mathcal{O}(G \log G + G M)$, where $G$ is the number of critical gaps and $M$ is the number of obstacles.
+The most computationally intensive part is the simulation-in-the-loop hybrid search, which checks the feasibility
+of each mode by simulating robot dynamics. The complexity for each simulation step is $\mathcal{O}(N^{3.5})$, where
+$N$ is the number of robots, and the overall complexity of the hybrid search is $\mathcal{O}(N^{3.5} \cdot M \cdot L)$,
+where $L$ is the number of keyframes in the path. Hence, the overall complexity is primarily determined by the hybrid
+search algorithm.
+
+
+
+
+%==============================
+\subsubsection{Generalization}\label{subsec:general}
+
+The proposed framework can be generalized in several directions. (I) \emph{Heterogeneous robots}:
+When robots have varying capabilities, such as different maximum forces, the hybrid plan $\nu^\star$
+should be adjusted by assigning more powerful robots to obstacles that require higher forces,
+with smaller robots handling less demanding tasks. This adjustment is reflected in the interaction modes
+$\boldsymbol{\xi} = (\mathbf{c}_1, \mathbf{f}_1, R_1), \dots, (\mathbf{c}_N, \mathbf{f}_N, R_N)$,
+where $\mathbf{f}_n$ represents the force for each robot. (II) \emph{Simultaneous clearing}:
+The framework can be extended to allow multiple obstacles to be pushed simultaneously,
+improving the efficiency of path clearing. This requires modifying the WCCG, $\mathcal{G}^W(t)$,
+to support parallel tasks and ensuring collision-free paths for multiple robots. (III) \emph{Dynamic
+obstacle movement}: The method can handle dynamic obstacles by incorporating real-time sensor data
+and updating the WCCG, allowing the hybrid search algorithm in Section~\ref{subsec:simloop} to adapt the plan
+on-the-fly to avoid collisions and clear the path efficiently, even with moving obstacles.

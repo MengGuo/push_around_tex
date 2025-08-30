@@ -1,0 +1,73 @@
+%==============================
+\section{Problem Description}\label{sec:problem}
+
+%==============================
+\subsection{Model of Workspace and Robots}\label{subsec:ws}
+
+Consider a 2D workspace~$\mathcal{W}\subset \mathbb{R}^2$ cluttered with a set of
+immovable obstacles~$\mathcal{O}^{\texttt{fix}}$ and a set of~$M>0$ movable obstacles
+$\boldsymbol{\Omega}\triangleq\{\Omega_1,\ldots,\Omega_M\}\subset\mathcal{W}$.
+Each movable obstacle~$\Omega_m$ is modeled as a rigid polygon of arbitrary shape,
+with mass~$\mathsf{M}_m$, inertia~$\mathsf{I}_m$, and frictional parameters~\cite{}.
+Its state at time~$t$ is $\mathbf{s}_m(t)\triangleq(\mathbf{x}_m(t),\psi_m(t))$,
+and the occupied area is denoted by~$\Omega_m(t)$.
+
+A team of~$N$ robots~$\mathcal{R}\triangleq\{R_1,\ldots,R_N\}$ operates in the workspace.
+Each robot~$R_n$ has state $\mathbf{s}_n(t)\triangleq(\mathbf{x}_n(t),\psi_n(t))$
+with position and orientation, and occupies region~$R_n(t)\subset\mathcal{W}$.
+Robots are equipped with low-level velocity tracking and can apply contact forces
+when interacting with obstacles. The free space at time~$t$ is thus
+\[
+\widehat{\mathcal{W}}(t) \triangleq
+\mathcal{W}\backslash \big(\mathcal{O}^{\texttt{fix}}
+  \cup \{\Omega_m(t)\}_{m\in\mathcal{M}}
+  \cup \{R_n(t)\}_{n\in\mathcal{N}}\big).
+\]
+
+%==============================
+\subsection{Collaborative Pushing Modes}\label{ss:interaction_mode}
+
+Robots interact with movable obstacles through \emph{pushing modes}.
+For an obstacle~$\Omega_m$, a pushing mode is defined as
+$\boldsymbol{\xi}_m\triangleq(\xi_m,\mathbf{F}_m,\mathcal{N}_m)$, where
+(I)~$\mathcal{N}_m\subseteq\mathcal{N}$ is the subgroup of robots assigned
+to push~$\Omega_m$;
+(II)~$\xi_m$ specifies the set of contact points
+$\mathbf{c}_n\in\partial\Omega_m$ for each robot;
+and (III)~$\mathbf{F}_m$ denotes the set of contact forces applied at these points.
+The complete set of possible pushing modes is denoted by~$\Xi_m$.
+Different pushing modes induce different obstacle motions, depending on
+contact geometry, forces, and frictional parameters~\cite{}.
+
+%==============================
+\subsection{Problem Statement}\label{subsec:objective}
+
+The goal is to compute a hybrid plan that reconfigures the movable obstacles
+so that a collision-free path of width at least~$W>0$ exists between a given
+start~$\mathbf{s}^{\texttt{S}}$ and goal~$\mathbf{s}^{\texttt{G}}$.
+The plan specifies the sequence of pushing modes, robot assignments, and
+corresponding trajectories. Formally:
+
+\vspace{-0.05in}
+\begin{equation}\label{eq:problem}
+\begin{split}
+\underset{\substack{T,\;\{\mathbf{s}_n(t),\,\forall n\},\\
+      \{\boldsymbol{\xi}_m(t),\,\forall m\}}}{\textbf{min}} \quad &
+  T + \alpha \sum_{t\in\mathcal{T}}
+  \sum_{m\in\mathcal{M}}
+  \mathrm{J}_m\big(\boldsymbol{\xi}_m(t),\mathbf{S}_{\mathcal{N}}(t),\mathbf{s}_m(t)\big) \\
+\textbf{s.t.}\quad &
+\exists\;\mathcal{P}_W:\;\mathbf{s}^{\texttt{S}}\leadsto\mathbf{s}^{\texttt{G}}
+\;\text{ with clearance }\geq W, \\
+& \mathcal{N}_{m_1}(t)\cap\mathcal{N}_{m_2}(t)=\emptyset,\;\forall m_1\neq m_2,\;\forall t,\\
+& R_n(t)\cap R_{n'}(t)=\emptyset,\;\Omega_m(t)\cap\Omega_{m'}(t)=\emptyset,\;\forall t,\\
+& R_n(t)\subset\widehat{\mathcal{W}},\;\Omega_m(t)\subset\widehat{\mathcal{W}},\;\forall n,m,\;\forall t.
+\end{split}
+\end{equation}
+
+Here, $T>0$ is the task duration, $\mathcal{T}\triangleq\{0,1,\cdots,T\}$ the
+timeline, and $\alpha>0$ balances duration against effort. The cost
+$\mathrm{J}_m(\cdot)$ evaluates the feasibility, stability, and control cost of
+choosing a particular pushing mode. The clearance constraint ensures that the
+final arrangement of obstacles permits a continuous path~$\mathcal{P}_W$ with
+width at least~$W$ from start to goal.

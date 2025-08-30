@@ -1,0 +1,61 @@
+%==============================================
+\subsection{Gap Ranking Strategy}
+\label{subsec:gap}
+
+When no clearance-$W$ path exists, the critical gaps identified from the
+WCCG must be prioritized for obstacle-clearing actions. Since multiple gaps
+may block connectivity, it is necessary to rank them according to the
+estimated cost of clearing, so that robots can focus on the most promising
+ones. The gap-ranking strategy assigns a heuristic score to each gap by
+considering both the physical effort required to widen it and the expected
+benefit of restoring connectivity.
+
+%==============================
+\subsubsection{Gap Clearing Cost}
+\label{subsubsec:gap-cost}
+The first element of the ranking strategy is to estimate the physical
+difficulty of widening a gap. Intuitively, narrow gaps require more
+clearance, and heavy obstacles are harder to move. Thus, the cost of
+clearing should depend on both the clearance deficiency and the blocking
+objects. For a gap~$g\in\mathcal{G}^{\texttt{crit}}(t)$ with width
+$w(g,t)<W$, the additional clearance required is defined as
+$\Delta w(g,t)\triangleq W-w(g,t)$. Let
+$\mathcal{O}(g,t)\subseteq\boldsymbol{\Omega}(t)$ denote the subset of
+movable obstacles adjacent to $g$. The clearing cost is then formulated as
+\begin{equation}\label{eq:gap-cost}
+  \mathsf{C}(g,t)\triangleq \beta_1 \Delta w(g,t)
+  + \beta_2 \sum_{\Omega_m\in\mathcal{O}(g,t)} \mathsf{M}_m,
+\end{equation}
+where $\beta_1,\beta_2>0$ are weighting parameters, and $\mathsf{M}_m$ is
+the mass of obstacle $\Omega_m$. The first term measures the geometric
+effort required to widen the gap, while the second reflects the physical
+effort of moving adjacent obstacles.
+
+%==============================
+\subsubsection{Gap Ranking Rule}
+\label{subsubsec:gap-ranking-rule}
+The second element of the strategy is to evaluate how much clearing a
+specific gap improves connectivity between the start and the goal. If a
+gap is cleared, the effective shortest path through the WCCG may become
+shorter or even newly feasible. Denote the current shortest-path length
+between $v^{\texttt{S}}$ and $v^{\texttt{G}}$ by $d^{\texttt{cur}}(t)$
+(possibly infinite if no path exists). Suppose gap~$g$ is hypothetically
+cleared, yielding a modified graph $\mathcal{G}^{W}_{+g}(t)$ with updated
+shortest-path length $d^{+g}(t)$. The connectivity benefit of clearing
+gap~$g$ is then defined as
+\begin{equation}\label{eq:gap-benefit}
+  \mathsf{H}(g,t)\triangleq
+  d^{\texttt{cur}}(t) - d^{+g}(t),
+\end{equation}
+where $\mathsf{H}(g,t)>0$ indicates a reduction in shortest-path length
+after clearing $g$.
+
+Finally, the ranking score combines benefit and cost into a single measure:
+\begin{equation}\label{eq:gap-score}
+  \mathsf{R}(g,t)\triangleq
+  \frac{\mathsf{H}(g,t)}{\mathsf{C}(g,t)+\varepsilon},
+\end{equation}
+where $\varepsilon>0$ is a small constant for numerical stability. Gaps
+with larger $\mathsf{R}(g,t)$ yield greater connectivity improvement per
+unit of clearing effort, and are therefore prioritized for obstacle-clearing
+actions in the next step.

@@ -1,0 +1,22 @@
+% %% ========================================
+\section{Proposed Solution}\label{sec:solution}
+
+This section presents a unified framework for collaborative multi-robot pushing.
+The approach consists of three main steps. First, a W-Clearance Connectivity Graph
+(Sec.~\ref{subsec:wccg}) is constructed to test the existence of a path of width~$W$
+and identify frontier gaps when blocked. Second, a gap-ranking strategy
+(Sec.~\ref{subsec:gap}) estimates the cost of clearing candidate gaps and
+guides robot coordination. Third, a simulation-in-the-loop search
+(Sec.~\ref{subsec:simloop}) expands a configuration-space tree while validating
+pushing actions through parallel physical simulation. The overall execution flow
+and generalizations are summarized in Sec.~\ref{subsec:overall}.
+
+% %% ========================================
+\input{contents/wccg.tex}
+% %% ========================================
+\input{contents/gap.tex}
+% %% ========================================
+\input{contents/simloop.tex}
+% %%========================================
+\input{contents/overall.tex}
+% %%========================================
