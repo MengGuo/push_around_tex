@@ -1,71 +1,101 @@
-%==============================================
-%==============================
+
 \begin{algorithm}[t]
 \small
-\caption{SiLS with Deferred Expansion (compact)}
+\caption{SiLS with Deferred Expansion (clean version)}
 \label{alg:SiLS}
 \DontPrintSemicolon
 \SetKwInOut{Input}{In}\SetKwInOut{Output}{Out}
-\Input{$\mathbf{s}^{\texttt{S}}$, $\mathbf{s}^{\texttt{G}}$, $W$, initial \texttt{Snap}, batch size $B$}
+\SetKwFunction{Build}{BuildWCCG}
+\SetKwFunction{Frontier}{BugPlannerFrontier}
+\SetKwFunction{Rank}{PresearchRank}
+\SetKwFunction{Predict}{SimPredict}
+\SetKwFunction{Next}{NextBatch}
+
+\Input{$\mathbf{s}^{\texttt{S}}$, $\mathbf{s}^{\texttt{G}}$, $W$, initial snapshot, batch size $B$}
 \Output{Executable push plan or \texttt{fail}}
-Initialize node $\nu_0=(\texttt{Snap}_0,\emptyset,g{=}0)$, set $\mathcal{C}(\nu_0)\leftarrow\varnothing$, $j(\nu_0)\leftarrow 0$;\\
-$\texttt{PQ}\leftarrow\{(\nu_0,f{=}\widehat{\mathsf{Cost}}_{\text{to-go}})\}$\;
+
+\BlankLine
+\textbf{State of a node:} $\nu=(\texttt{snap}, \texttt{plan}, g, \mathcal{C}, j)$,
+with candidates $\mathcal{C}$ (ranked) and cursor $j$.\;
+
+\BlankLine
+\textbf{Init:} $\nu_0\!\leftarrow\!(\texttt{snap}_0,\emptyset,0,\varnothing,0)$;\;
+$\texttt{PQ}\!\leftarrow\!\{(\nu_0, f=\widehat{\mathsf{Cost}}_{\text{to-go}}(\texttt{snap}_0))\}$\;
+
 \While{\texttt{PQ} not empty}{
-  Pop $\nu$ with minimal $f$; \\
-  \If{$\mathcal{C}(\nu)=\varnothing$}{
-    Build WCCG from \texttt{Snap}; \If{connected}{\Return \texttt{Plan}} 
-    $(\mathcal{L},\texttt{conn}) \leftarrow \texttt{BugPlannerFrontier}(\mathbf{s}^{\texttt{S}},\mathbf{s}^{\texttt{G}})$; \\
-    Rank gaps on $\mathcal{L}$ by presearch; build $\mathcal{C}(\nu)$ as a ranked list of push tasks; set $j(\nu)\leftarrow 0$;
+  Pop $(\nu,f)$ with minimal $f$; \tcp*{$\nu=(\texttt{snap},\texttt{plan},g,\mathcal{C},j)$}
+  \If{$\mathcal{C}=\varnothing$}{
+    $(\texttt{connected}) \leftarrow \Build(\texttt{snap})$;\;
+    \If{\texttt{connected}}{\Return \texttt{plan}}
+    $\mathcal{L}\leftarrow \Frontier(\mathbf{s}^{\texttt{S}},\mathbf{s}^{\texttt{G}})$;\;
+    $\mathcal{C}\leftarrow \Rank(\mathcal{L})$;\; $j\leftarrow 0$\;
   }
-  Take next batch $\mathcal{B}\leftarrow\mathcal{C}(\nu)[\,j(\nu):j(\nu){+}B\,]$; $j(\nu)\leftarrow j(\nu){+}|\mathcal{B}|$; \\
-  \ForEach{$\tau\in\mathcal{B}$ in parallel}{
-    $(\texttt{ok}, \texttt{Snap}', t_\text{push}) \leftarrow \texttt{SimPredict}(\tau)$; \\
+  $\mathcal{B}\leftarrow \Next(\mathcal{C}, j, B)$;\; $j\leftarrow j+|\mathcal{B}|$\;
+
+  \ForEach{$\tau\in\mathcal{B}$ \textbf{in parallel}}{
+    $(\texttt{ok}, \texttt{snap}', t_\text{push}) \leftarrow \Predict(\tau)$\;
     \If{\texttt{ok}}{
-      $\Delta g \leftarrow \mathsf{C}_{\mathrm{trans}} + t_\text{push}$;\quad
-      $g' \leftarrow g+\Delta g$;\quad
-      $h' \leftarrow \widehat{\mathsf{Cost}}_{\text{to-go}}(\texttt{Snap}')$;\\
-      Push child $\nu'=(\texttt{Snap}',\texttt{Plan}\!\cup\!\{\tau\},g')$ with $f'=g'+h'$ into \texttt{PQ};
+      $g' \leftarrow g + \mathsf{C}_{\mathrm{trans}} + t_\text{push}$;\;
+      $h' \leftarrow \widehat{\mathsf{Cost}}_{\text{to-go}}(\texttt{snap}')$;\;
+      Push $\big((\texttt{snap}',\,\texttt{plan}\!\cup\!\{\tau\},\,g',\,\varnothing,\,0),\, f'=g'+h'\big)$ into \texttt{PQ}\;
     }
   }
-  \If{$j(\nu)<|\mathcal{C}(\nu)|$}{reinsert $\nu$ into \texttt{PQ} with priority $f$}
+  \If{$j<|\mathcal{C}|$}{reinsert current $\nu$ into \texttt{PQ} with the same $f$}
 }
-\Return \texttt{fail} \; (all nodes exhausted)
+\Return \texttt{fail}\;
 \end{algorithm}
+
+
+%----------------------------------------------
+% Helper semantics (informal):
+%   BuildCandidates(S; s^S, s^G, W): build WCCG at S; if connected return (true, ·);
+%     else return (false, ranked push-task list from frontier-gap presearch).
+%   Predict(τ): quick-pass → (optional) short-horizon physics; returns (ok, S', t_push).
+%   Heuristic(S): WCCG-based cost-to-go from snapshot S.
 
 \subsection{Simulation-in-the-Loop Search}
 \label{subsec:simloop}
+We embed a parallel physics predictor into search. Each expansion proposes ranked push tasks, filters them by a geometry \emph{quick-pass} and a short-horizon simulation with \emph{early-stop}, and refreshes the $W$-connectivity heuristic via frontier presearch—closing the gap between graph reasoning and executable actions. We refer to this two-stage filter as \emph{the pipeline} below.
 
-We integrate dynamics feasibility into planning by embedding a fast, parallel physics predictor inside the search loop. Each expansion proposes concrete push actions, validates them in simulation, and re-estimates clearance-$W$ connectivity via the WCCG presearch. This closes the gap between graph reasoning and executable plans.
-
-%==============================
-\subsubsection{Node and Priority (with Deferred Expansion)}
-\label{subsubsec:simloop-node}
-A node stores the current world snapshot and partial plan, \(
-\nu=(\texttt{Snap},\texttt{Plan},g)
-\), plus a lazily constructed, ranked candidate list for that snapshot:
+\subsubsection{Nodes \& Priority (Deferred Expansion)}
+A node $\nu=(\texttt{snapshot},\texttt{plan},g)$ keeps a lazily built, ranked candidate list $\mathcal{C}(\nu)$ and a cursor $j(\nu)$ to the next untried batch. We use a best-first score
 \[
-\mathcal{C}(\nu)=\{\,\text{gap}\to\text{tasks}\,\},\quad
-j(\nu)\in\{0,\dots,|\mathcal{C}|-1\}
+f(\nu)=g(\nu)+\widehat{\mathsf{Cost}}_{\text{to-go}}(\texttt{snapshot}),
 \]
-where \(j(\nu)\) is a cursor pointing to the next untried batch. We use
-\begin{equation}\label{eq:simloop-priority}
-  f(\nu)=g(\nu)+\widehat{\mathsf{Cost}}_{\text{to-go}}(\texttt{Snap}),
-\end{equation}
-with \(\widehat{\mathsf{Cost}}_{\text{to-go}}\) from the WCCG frontier presearch (Sec.~\ref{subsec:gap}). The incremental execution cost of one push is
-\[
-\Delta g=\mathsf{C}_{\mathrm{trans}}(\text{robots}\!\to\!\text{target})+\texttt{pushing\_time}.
-\]
+where $g$ accumulates robot transit plus predicted push time, and $\widehat{\mathsf{Cost}}_{\text{to-go}}$ comes from the frontier presearch (Sec.~\ref{subsec:gap}).
 
-%==============================
-\subsubsection{Simulation-Guided Expansion (Progressive)}
-\label{subsubsec:simloop-expansion}
-When a node is popped, we \emph{defer} full branching: (i) if \(\mathcal{C}\) is uninitialized, build WCCG, extract the frontier loop, rank gaps by presearch, and generate a small set of push tasks per top gap (ModeTable prior $\rightarrow$ directions; fallback “away\,+\,jitter”); (ii) simulate only the next \(B\) untried tasks starting at cursor \(j\) (in parallel, with quick-pass and early-stop); (iii) push any successful children; (iv) if untried candidates remain, \emph{reinsert the parent node} with \(j\leftarrow j+B\). Thus the PQ never empties unless \emph{all} nodes have exhausted their candidates.
+\subsubsection{Progressive Expansion}
+When a node \(\nu\) is popped, we expand it \emph{progressively}.
 
+\textbf{Initialize on demand.}
+If \(\mathcal{C}(\nu)\) is empty, we (a) build the WCCG and extract one frontier loop via BugPlanner, (b) rank its bridge–bridge gaps by the frontier presearch, and (c) instantiate a few push tasks per top gap (ModeTable prior; fallback \emph{away\,+\,jitter}). Set \(j(\nu)=0\).
 
-%==============================
-\paragraph{Efficiency notes.}
-(1) \textbf{Frontier caching.} BugPlanner caches loop signatures and transitions $(\mathcal{L},g)\!\mapsto\!\mathcal{L}'$, and uses vectorized ray--edge hits with AABB culling.  
-(2) \textbf{Parallel pool.} Prediction environments are pre-forked (spawn) and reused; each round broadcasts only the snapshot and reachable contacts; we use \texttt{imap\_unordered}.  
-(3) \textbf{Quick-pass \& early-stop.} A geometry-only screen can skip physics if the reference rollout clears the gap safely; otherwise the physics loop stops as soon as widening succeeds or progress stalls.  
-(4) \textbf{Directional prior.} The ModeTable concentrates sampling on low-loss, well-aligned pushes while preserving exploration via a temperature-controlled softmax.  
-(5) \textbf{Deferred expansion.} By batching only the next \(B\) tasks and reinserting partially expanded nodes, the PQ remains nonempty until every node’s candidates are exhausted; this avoids premature termination when sampling is sparse.
+\textbf{Evaluate a small slice.}
+Take the next \(B\) tasks
+\(
+\mathcal{B}=\mathcal{C}(\nu)[\,j(\nu):\,j(\nu){+}B\,],
+\)
+advance \(j(\nu)\!\leftarrow\!j(\nu){+}|\mathcal{B}|\),
+and evaluate \(\mathcal{B}\) in parallel through \emph{the pipeline}.
+Each successful task \(\tau\) yields a child \(\nu'\) with updated snapshot, cost \(g'\), and priority \(f'=g'+\widehat{\mathsf{Cost}}_{\text{to-go}}\).
+
+\textbf{Reinsert if unfinished.}
+If \(j(\nu)<|\mathcal{C}(\nu)|\), reinsert \(\nu\) into the PQ with the \emph{same} priority \(f(\nu)\) to preserve best-first ordering across partially expanded nodes and avoid PQ starvation.
+
+\subsubsection{Collaborative Pushing in Parallel Prediction}
+\label{subsubsec:mode-cache}
+Each candidate task \(\tau\) specifies a target gap and a short-horizon body twist \(\mathbf{v}=(v_x,v_y,\omega)\).
+We synthesize per-robot contact modes \(\boldsymbol{\xi}\) aligned with \(\mathbf{v}\), validate \((\boldsymbol{\xi},\mathbf{v})\) via \emph{the pipeline}, and reuse verified modes within the subtree.
+
+\textbf{Reachable contact region from WCCG/BugPlanner.}
+We reuse the same machinery with \(W\) set to the robot’s circumscribed diameter, yielding the \emph{reachable band} on the target boundary (convex pieces) for non–point robots.
+We uniformly sample contact points on this band and attach local frames \((\mathbf{n},\tau)\) (see Fig.~\ref{fig:reach-contacts}).
+
+\textbf{Greedy mode search on sampled contacts.}
+Given the desired body-frame velocity (arc tracker), we greedily assemble a contact assignment across robots using the objective of~\cite{tang2024collaborative} (balanced normal support, torque leverage, slip margin), restricted to the sampled candidates. This returns a small set of locally optimal modes \(\{\boldsymbol{\xi}\}\) for the requested velocity bin.
+
+\textbf{Online reuse.}
+Verified \((\boldsymbol{\xi},\mathbf{v})\) pairs and summary stats (tracking error, success rate, push time) are cached for the current expansion and descendants; a lightweight ModeTable acts as a persistent cache across scenes, exploiting the near-invariance of feasible modes for arc-like motions on a given shape. Only a few hundred entries per shape typically cover most velocity directions.
+
+\subsubsection{Efficiency Notes}
+Frontier loops are cached (loop signatures; $(\mathcal{L},g)\!\mapsto\!\mathcal{L}'$ memoization), ray casts are vectorized with AABB culling, predictor workers are pre-forked and reused, and deferred expansion keeps the PQ nonempty until all candidates are tried.

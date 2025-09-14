@@ -4,7 +4,7 @@
 We evaluate the proposed simulation-in-the-loop NAMO planner (SiLS)
 in cluttered environments with both movable and immovable obstacles.
 All components (W-CCG presearch, frontier extraction, and ModeTable prior)
-are integrated as described in Sec.~\ref{sec:system}.
+are integrated as described in Sec.~\ref{sec:solution}.
 The implementation is in \texttt{Python~3} and simulations are run in
 \texttt{PyBullet}~\cite{coumans2019} on a laptop with an Intel
 Core i7\textendash1280P CPU. Videos and logs are provided in the
@@ -26,7 +26,7 @@ A trial succeeds when a $W$-clear path from start to goal exists and the
 target reaches its goal disc.
 }
 
-\paragraph{Workspace and scenarios.}
+\textbf{Workspace and scenarios.}
 We use a \emph{nominal scenario} with an $8{\times}5$\,m bounded
 workspace, two internal bars (bottlenecks), and a mixed pool of movable
 shapes (curved and polygonal, including rings, ellipses, X/T/L/diamond,
@@ -35,7 +35,7 @@ left; the target goal lies on the right side. Movables are randomly
 placed with a minimum separation. We test \(10\text{--}15\) objects
 over multiple seeds.
 
-\paragraph{Geometry and caching.}
+\textbf{Geometry and caching.}
 Collision checks use polygon/curve-edge models with convex
 decomposition when needed. Ray--edge queries for frontiers are
 vectorized with AABB culling. Frontier loops are cached by signatures and
@@ -61,16 +61,20 @@ unexpanded nodes in the queue and revisits them later.
 We compare against three representative families, all using the same
 $W$-clearance criterion and contact models:
 
-\begin{itemize}\itemsep2pt
-  \item \textbf{DFS-WCCG:} Depth-first search over W-CCG adjacency with
-  discrete axis-aligned pushes (object $\times$ \{$\leftarrow,\rightarrow,\uparrow,\downarrow$\}).
-  \item \textbf{SL-Push:} Straight-line (or waypointed) route; blockers are
-  cleared by (i) off-line minimal normal displacements or
-  (ii) sim-in-the-loop normal pushes from near to far.
-  \item \textbf{Rec-NAMO:} Recursive routing/pushing on a cost-weighted
+\textbf{DFS-WCCG:} Simulation-in-the-loop depth-first search 
+that shares our physics predictor and $W$–CCG for goal checking.
+Each node is a snapshot; actions are four fixed axis-aligned pushes 
+${!\leftarrow,\rightarrow,\uparrow,\downarrow!}$ 
+applied to any movable object (branching $\le 4n$ for $n$ objects).
+
+\textbf{SL-Push:} Straight-line (or waypointed) route; blockers are
+cleared by (i) off-line minimal normal displacements or
+(ii) sim-in-the-loop normal pushes from near to far.
+
+\textbf{Rec-NAMO:} Recursive routing/pushing on a cost-weighted
   visibility graph: Dijkstra for routing, push-decomposition for local
   clearing; failures prune edges and replan.
-\end{itemize}
+
 
 \subsubsection{\change{Metrics}}
 \label{subsec:metrics}

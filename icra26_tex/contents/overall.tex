@@ -9,7 +9,7 @@ execution proceeds \emph{sequentially} with an online hybrid controller that
 alternates between \textbf{transition} (robots move to contact) and \textbf{pushing}
 (robots regulate while the object moves).
 
-\paragraph{Controller overview.}
+\textbf{Controller overview.}
 Each task $\tau_k$ specifies a target obstacle and a world-frame twist
 $\widehat{\mathbf{u}}=(\widehat{v}_x,\widehat{v}_y,\widehat{\omega})$ for a short
 horizon. We synthesize a reference object trajectory by integrating
@@ -28,7 +28,7 @@ transition paths are imminently head-on. During pushing, small contact-frame off
 are adapted online to absorb object yaw drift, keeping contact consistent without
 re-planning.
 
-\paragraph{Task switching and re-planning.}
+\textbf{Task switching and re-planning.}
 Execution monitors (i) transition feasibility/timeouts and (ii) pushing progress via
 a short-horizon early-stop test that triggers when the commanded widening succeeds
 or progress stalls. On task completion, the executor advances to $\tau_{k+1}$. If a
@@ -37,7 +37,7 @@ current snapshot. Previously explored but unexecuted nodes are \emph{preserved} 
 reinserted by priority, avoiding priority-queue exhaustion and continuing from the
 most promising frontier.
 
-\paragraph{Global goal check.}
+\textbf{Global goal check.}
 At a coarse cadence, the system rebuilds the $W$-clearance graph on the live
 snapshot and terminates the episode as soon as a $W$-clear path exists from start
 to goal; this prevents unnecessary additional pushes once connectivity is achieved.
