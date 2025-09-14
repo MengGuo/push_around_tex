@@ -74,3 +74,39 @@ framework that couples multi-robot collaborative pushing with simulation-in-the-
 planning to construct physically feasible paths in cluttered environments; (II)
 it demonstrates significant improvements in feasibility, efficiency,
 and scalability compared to existing NAMO and collaborative pushing approaches.
+
+% 导言区确保：
+% \usepackage{tikz}
+% \usetikzlibrary{arrows.meta,positioning,fit}
+
+\begin{figure*}[t] % 单栏
+\centering
+\begin{tikzpicture}[
+  scale=0.88, every node/.style={transform shape},
+  font=\footnotesize,
+  node distance=4mm and 6mm,
+  >=Latex,
+  box/.style={draw, rounded corners=1.5pt, thick, align=center, inner sep=3pt, fill=white},
+  side/.style={box, fill=gray!10},
+  line/.style={->, very thick},
+  dsh/.style={->, thick, dash pattern=on 3pt off 2pt}
+]
+\node[box, minimum width=2.6cm] (in)  {Scene \& Inputs};
+\node[box, right=8mm of in, minimum width=2.9cm] (wccg) {WCCG\\ + BugPlanner};
+\node[box, right=8mm of wccg, minimum width=2.9cm] (pre) {Frontier\\ Presearch};
+\node[box, right=8mm of pre, minimum width=3.4cm, minimum height=1.2cm] (sils) {SiLS (Deferred Expansion)};
+\node[box, right=8mm of sils, minimum width=2.6cm] (out) {Executable Plan};
+
+% side caches贴在SiLS上方/下方，超短
+\node[side, above=2mm of sils, xshift=-6mm] (mt) {ModeTable};
+\node[side, below=2mm of sils, xshift=-6mm] (cache) {Online Cache};
+
+\draw[line] (in) -- (wccg);
+\draw[line] (wccg) -- (pre);
+\draw[line] (pre) -- (sils);
+\draw[line] (sils) -- (out);
+\draw[dsh] (mt.west) -| ($(sils.north west)!0.5!(sils.north)$);
+\draw[dsh] (cache.west) -| ($(sils.south west)!0.5!(sils.south)$);
+\end{tikzpicture}
+\caption{Overall framework in a compact, single-column layout.}
+\end{figure*}
