@@ -1,73 +1,69 @@
-%==============================
 \section{Problem Description}\label{sec:problem}
 
 %==============================
 \subsection{Model of Workspace and Robots}\label{subsec:ws}
-
-Consider a 2D workspace~$\mathcal{W}\subset \mathbb{R}^2$ cluttered with a set of
-immovable obstacles~$\mathcal{O}^{\texttt{fix}}$ and a set of~$M>0$ movable obstacles
-$\boldsymbol{\Omega}\triangleq\{\Omega_1,\ldots,\Omega_M\}\subset\mathcal{W}$.
-Each movable obstacle~$\Omega_m$ is modeled as a rigid polygon of arbitrary shape,
-with mass~$\mathsf{M}_m$, inertia~$\mathsf{I}_m$, and frictional parameters~\cite{}.
-Its state at time~$t$ is $\mathbf{s}_m(t)\triangleq(\mathbf{x}_m(t),\psi_m(t))$,
-and the occupied area is denoted by~$\Omega_m(t)$.
-
-A team of~$N$ robots~$\mathcal{R}\triangleq\{R_1,\ldots,R_N\}$ operates in the workspace.
-Each robot~$R_n$ has state $\mathbf{s}_n(t)\triangleq(\mathbf{x}_n(t),\psi_n(t))$
-with position and orientation, and occupies region~$R_n(t)\subset\mathcal{W}$.
-Robots are equipped with low-level velocity tracking and can apply contact forces
-when interacting with obstacles. The free space at time~$t$ is thus
+We consider a 2D workspace $\mathcal{W}\subset\mathbb{R}^2$ cluttered with
+immovable obstacles $\mathcal{O}^{\texttt{fix}}$ and a set of $M$ movable rigid
+polygons $\boldsymbol{\Omega}\triangleq\{\Omega_1,\ldots,\Omega_M\}\subset\mathcal{W}$.
+Each $\Omega_m$ has mass $\mathsf{M}_m$, inertia $\mathsf{I}_m$, frictional
+parameters (identified or estimated), state
+$\mathbf{s}_m(t)\triangleq(\mathbf{x}_m(t),\psi_m(t))$, and occupied region
+$\Omega_m(t)$.
+A small, fixed team of robots $\mathcal{R}_{\mathrm{grp}}\subseteq\mathcal{R}$
+(with $|\mathcal{R}_{\mathrm{grp}}|\in\{2,3\}$ in our experiments) operates as a
+single cooperative unit; each robot $R$ has state
+$\mathbf{s}_R(t)\triangleq(\mathbf{x}_R(t),\psi_R(t))$ and footprint $R(t)$.
+The instantaneous free space is
 \[
-\widehat{\mathcal{W}}(t) \triangleq
-\mathcal{W}\backslash \big(\mathcal{O}^{\texttt{fix}}
-  \cup \{\Omega_m(t)\}_{m\in\mathcal{M}}
-  \cup \{R_n(t)\}_{n\in\mathcal{N}}\big).
+\widehat{\mathcal{W}}(t)\triangleq\mathcal{W}\setminus\Big(
+\mathcal{O}^{\texttt{fix}}\cup\{\Omega_m(t)\}_{m=1}^{M}\cup\{R(t)\}_{R\in\mathcal{R}_{\mathrm{grp}}}
+\Big).
 \]
+The “large payload” (or agent to be routed) is modeled as a disc of radius $W/2$;
+a curve is $W$–feasible if its clearance is at least $W$ everywhere.
 
 %==============================
 \subsection{Collaborative Pushing Modes}\label{ss:interaction_mode}
-
-Robots interact with movable obstacles through \emph{pushing modes}.
-For an obstacle~$\Omega_m$, a pushing mode is defined as
-$\boldsymbol{\xi}_m\triangleq(\xi_m,\mathbf{F}_m,\mathcal{N}_m)$, where
-(I)~$\mathcal{N}_m\subseteq\mathcal{N}$ is the subgroup of robots assigned
-to push~$\Omega_m$;
-(II)~$\xi_m$ specifies the set of contact points
-$\mathbf{c}_n\in\partial\Omega_m$ for each robot;
-and (III)~$\mathbf{F}_m$ denotes the set of contact forces applied at these points.
-The complete set of possible pushing modes is denoted by~$\Xi_m$.
-Different pushing modes induce different obstacle motions, depending on
-contact geometry, forces, and frictional parameters~\cite{}.
+Robots interact with a movable obstacle $\Omega_m$ through \emph{pushing modes}.
+Since $\mathcal{R}_{\mathrm{grp}}$ acts as a single unit, a mode for $\Omega_m$
+is specified as
+$\boldsymbol{\xi}_m\triangleq(\mathcal{C}_m,\mathbf{u}_m)$,
+where $\mathcal{C}_m\subset\partial\Omega_m$ are the contact locations realized
+by the group and $\mathbf{u}_m$ encodes the nominal push action
+(e.g., body–frame velocity or an equivalent wrench profile).
+Let $\Xi_m$ denote the admissible mode set determined by contact geometry and
+frictional limits. Different modes induce different motions of $\Omega_m$
+through the physics engine.
 
 %==============================
 \subsection{Problem Statement}\label{subsec:objective}
-
-The goal is to compute a hybrid plan that reconfigures the movable obstacles
-so that a collision-free path of width at least~$W>0$ exists between a given
-start~$\mathbf{s}^{\texttt{S}}$ and goal~$\mathbf{s}^{\texttt{G}}$.
-The plan specifies the sequence of pushing modes, robot assignments, and
-corresponding trajectories. Formally:
-
-\vspace{-0.05in}
+Given start $\mathbf{s}^{\texttt{S}}$ and goal $\mathbf{s}^{\texttt{G}}$,
+the objective is to compute a \emph{hybrid schedule}
+$\pi=\{(m_k,\boldsymbol{\xi}_k,\Delta t_k)\}_{k=1}^{K}$ that reconfigures
+$\{\Omega_m\}$ by sequential pushes of the robot team so that a $W$–feasible
+path exists from $\mathbf{s}^{\texttt{S}}$ to $\mathbf{s}^{\texttt{G}}$.
+Let $T\triangleq\sum_{k=1}^{K}\Delta t_k$ be the task duration, and
+$J(m_k,\boldsymbol{\xi}_k;\mathbf{S}(\tau_k))$ the physics-based effort/feasibility
+cost of executing mode $\boldsymbol{\xi}_k\in\Xi_{m_k}$ starting at system state
+$\mathbf{S}(\tau_k)$.
+We seek a compact single-column form:
+\vspace{-2pt}
 \begin{equation}\label{eq:problem}
-\begin{split}
-\underset{\substack{T,\;\{\mathbf{s}_n(t),\,\forall n\},\\
-      \{\boldsymbol{\xi}_m(t),\,\forall m\}}}{\textbf{min}} \quad &
-  T + \alpha \sum_{t\in\mathcal{T}}
-  \sum_{m\in\mathcal{M}}
-  \mathrm{J}_m\big(\boldsymbol{\xi}_m(t),\mathbf{S}_{\mathcal{N}}(t),\mathbf{s}_m(t)\big) \\
-\textbf{s.t.}\quad &
-\exists\;\mathcal{P}_W:\;\mathbf{s}^{\texttt{S}}\leadsto\mathbf{s}^{\texttt{G}}
-\;\text{ with clearance }\geq W, \\
-& \mathcal{N}_{m_1}(t)\cap\mathcal{N}_{m_2}(t)=\emptyset,\;\forall m_1\neq m_2,\;\forall t,\\
-& R_n(t)\cap R_{n'}(t)=\emptyset,\;\Omega_m(t)\cap\Omega_{m'}(t)=\emptyset,\;\forall t,\\
-& R_n(t)\subset\widehat{\mathcal{W}},\;\Omega_m(t)\subset\widehat{\mathcal{W}},\;\forall n,m,\;\forall t.
-\end{split}
+\begin{aligned}
+&\min_{\{(m_k,\boldsymbol{\xi}_k,\Delta t_k)\}_{k=1}^{K}}
+\quad  T\;+\;\alpha\sum_{k=1}^{K} J\!\left(m_k,\boldsymbol{\xi}_k;\mathbf{S}(\tau_k)\right) \\
+& \text{s.t.}\quad
+\boldsymbol{\xi}_k\in\Xi_{m_k},\ \Delta t_k>0,\ \tau_{k+1}=\tau_k+\Delta t_k, \\
+& \ \quad\quad \mathbf{S}(t^+)=\Phi\big(\mathbf{S}(t),\,m_k,\,\boldsymbol{\xi}_k\big),\ t\in[\tau_k,\tau_{k+1}), \\
+& \ \quad\quad R(t)\cap R'(t)=\emptyset,\ \Omega_i(t)\cap\Omega_j(t)=\emptyset,\ \forall t, \\
+& \ \quad\quad R(t)\cap\Omega_m(t)=\emptyset,\ R(t),\Omega_m(t)\subset\widehat{\mathcal{W}}(t),\ \forall t, \\
+& \ \quad\quad \exists\,\mathcal{P}_W\subset\widehat{\mathcal{W}}(T):\ S\leadsto G,\ \text{clr}(\mathcal{P}_W)\ge W.
+\end{aligned}
 \end{equation}
+\vspace{-4pt}
 
-Here, $T>0$ is the task duration, $\mathcal{T}\triangleq\{0,1,\cdots,T\}$ the
-timeline, and $\alpha>0$ balances duration against effort. The cost
-$\mathrm{J}_m(\cdot)$ evaluates the feasibility, stability, and control cost of
-choosing a particular pushing mode. The clearance constraint ensures that the
-final arrangement of obstacles permits a continuous path~$\mathcal{P}_W$ with
-width at least~$W$ from start to goal.
+Here, $\Phi$ is the (simulator-consistent) state transition under the selected
+pushing mode; $\alpha>0$ balances duration and effort. The schedule $\pi$
+implicitly encodes \emph{which obstacle is pushed, how, and for how long};
+no per-robot assignment variables are introduced, consistent with our use of a
+fixed small team executing one push at a time.

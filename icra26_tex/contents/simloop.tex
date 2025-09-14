@@ -1,104 +1,71 @@
 %==============================================
+%==============================
+\begin{algorithm}[t]
+\small
+\caption{SiLS with Deferred Expansion (compact)}
+\label{alg:SiLS}
+\DontPrintSemicolon
+\SetKwInOut{Input}{In}\SetKwInOut{Output}{Out}
+\Input{$\mathbf{s}^{\texttt{S}}$, $\mathbf{s}^{\texttt{G}}$, $W$, initial \texttt{Snap}, batch size $B$}
+\Output{Executable push plan or \texttt{fail}}
+Initialize node $\nu_0=(\texttt{Snap}_0,\emptyset,g{=}0)$, set $\mathcal{C}(\nu_0)\leftarrow\varnothing$, $j(\nu_0)\leftarrow 0$;\\
+$\texttt{PQ}\leftarrow\{(\nu_0,f{=}\widehat{\mathsf{Cost}}_{\text{to-go}})\}$\;
+\While{\texttt{PQ} not empty}{
+  Pop $\nu$ with minimal $f$; \\
+  \If{$\mathcal{C}(\nu)=\varnothing$}{
+    Build WCCG from \texttt{Snap}; \If{connected}{\Return \texttt{Plan}} 
+    $(\mathcal{L},\texttt{conn}) \leftarrow \texttt{BugPlannerFrontier}(\mathbf{s}^{\texttt{S}},\mathbf{s}^{\texttt{G}})$; \\
+    Rank gaps on $\mathcal{L}$ by presearch; build $\mathcal{C}(\nu)$ as a ranked list of push tasks; set $j(\nu)\leftarrow 0$;
+  }
+  Take next batch $\mathcal{B}\leftarrow\mathcal{C}(\nu)[\,j(\nu):j(\nu){+}B\,]$; $j(\nu)\leftarrow j(\nu){+}|\mathcal{B}|$; \\
+  \ForEach{$\tau\in\mathcal{B}$ in parallel}{
+    $(\texttt{ok}, \texttt{Snap}', t_\text{push}) \leftarrow \texttt{SimPredict}(\tau)$; \\
+    \If{\texttt{ok}}{
+      $\Delta g \leftarrow \mathsf{C}_{\mathrm{trans}} + t_\text{push}$;\quad
+      $g' \leftarrow g+\Delta g$;\quad
+      $h' \leftarrow \widehat{\mathsf{Cost}}_{\text{to-go}}(\texttt{Snap}')$;\\
+      Push child $\nu'=(\texttt{Snap}',\texttt{Plan}\!\cup\!\{\tau\},g')$ with $f'=g'+h'$ into \texttt{PQ};
+    }
+  }
+  \If{$j(\nu)<|\mathcal{C}(\nu)|$}{reinsert $\nu$ into \texttt{PQ} with priority $f$}
+}
+\Return \texttt{fail} \; (all nodes exhausted)
+\end{algorithm}
+
 \subsection{Simulation-in-the-Loop Search}
 \label{subsec:simloop}
 
-The final step integrates physical feasibility directly into the planning
-process through a simulation-in-the-loop search scheme. Unlike pure
-graph-based reasoning, which abstracts away dynamics, this method validates
-candidate pushing actions by embedding a fast parallelized physics engine
-inside the search loop. In this way, both the sequence of obstacle pushes
-and their dynamic feasibility are determined consistently, leading to robust
-execution in realistic settings. The procedure consists of three phases:
-(i) node selection based on a priority queue;
-(ii) expansion through candidate pushing actions validated in simulation;
-(iii) termination upon reaching a feasible clearance-$W$ path.
+We integrate dynamics feasibility into planning by embedding a fast, parallel physics predictor inside the search loop. Each expansion proposes concrete push actions, validates them in simulation, and re-estimates clearance-$W$ connectivity via the WCCG presearch. This closes the gap between graph reasoning and executable plans.
 
 %==============================
-\subsubsection{Node Representation and Cost}
+\subsubsection{Node and Priority (with Deferred Expansion)}
 \label{subsubsec:simloop-node}
-Each search node represents the current configuration of movable obstacles
-together with the path status between start and goal. Formally, let
-$\nu=(\boldsymbol{\Omega}(t),\,\mathcal{P}_W(t))$, where
-$\boldsymbol{\Omega}(t)$ is the current set of obstacle states and
-$\mathcal{P}_W(t)$ denotes the existence of a clearance-$W$ path in the
-WCCG. The cost of a node is defined as
-\begin{equation}\label{eq:simloop-cost}
-  \mathrm{C}(\nu)\triangleq T(\nu)+\alpha
-  \sum_{g\in\mathcal{G}^{\texttt{crit}}(t)} \mathsf{C}(g,t),
+A node stores the current world snapshot and partial plan, \(
+\nu=(\texttt{Snap},\texttt{Plan},g)
+\), plus a lazily constructed, ranked candidate list for that snapshot:
+\[
+\mathcal{C}(\nu)=\{\,\text{gap}\to\text{tasks}\,\},\quad
+j(\nu)\in\{0,\dots,|\mathcal{C}|-1\}
+\]
+where \(j(\nu)\) is a cursor pointing to the next untried batch. We use
+\begin{equation}\label{eq:simloop-priority}
+  f(\nu)=g(\nu)+\widehat{\mathsf{Cost}}_{\text{to-go}}(\texttt{Snap}),
 \end{equation}
-where $T(\nu)$ is the elapsed task duration,
-$\mathcal{G}^{\texttt{crit}}(t)$ is the set of critical gaps, and
-$\mathsf{C}(g,t)$ is the clearing cost defined in~\eqref{eq:gap-cost}.
-This balances planning time against clearing effort.
+with \(\widehat{\mathsf{Cost}}_{\text{to-go}}\) from the WCCG frontier presearch (Sec.~\ref{subsec:gap}). The incremental execution cost of one push is
+\[
+\Delta g=\mathsf{C}_{\mathrm{trans}}(\text{robots}\!\to\!\text{target})+\texttt{pushing\_time}.
+\]
 
 %==============================
-\subsubsection{Simulation-Guided Expansion}
+\subsubsection{Simulation-Guided Expansion (Progressive)}
 \label{subsubsec:simloop-expansion}
-When expanding a node, the planner hypothesizes pushing one of the blocking
-obstacles adjacent to a critical gap. Let $\xi=(\mathbf{c},\mathbf{f})$
-denote a candidate pushing mode, with contact point $\mathbf{c}\in\partial\Omega_m$
-and force $\mathbf{f}\in\mathbb{R}^2$ applied by a subgroup of robots. The
-candidate action is validated through a short-horizon simulation
-\begin{equation}\label{eq:simloop-dynamics}
-  \Omega_m(t+\Delta t) \leftarrow
-  \texttt{SimDyn}\big(\Omega_m(t),\xi,\Delta t\big),
-\end{equation}
-where $\texttt{SimDyn}(\cdot)$ integrates the coupled robot-object dynamics
-with contact forces and friction. If the simulated trajectory avoids
-collisions and improves the clearance of at least one critical gap, the
-resulting state $\boldsymbol{\Omega}(t+\Delta t)$ is inserted into the queue
-as a new node.
+When a node is popped, we \emph{defer} full branching: (i) if \(\mathcal{C}\) is uninitialized, build WCCG, extract the frontier loop, rank gaps by presearch, and generate a small set of push tasks per top gap (ModeTable prior $\rightarrow$ directions; fallback “away\,+\,jitter”); (ii) simulate only the next \(B\) untried tasks starting at cursor \(j\) (in parallel, with quick-pass and early-stop); (iii) push any successful children; (iv) if untried candidates remain, \emph{reinsert the parent node} with \(j\leftarrow j+B\). Thus the PQ never empties unless \emph{all} nodes have exhausted their candidates.
+
 
 %==============================
-\begin{algorithm}[t]
-  \caption{Simulation-in-the-Loop Search (SiLS).}
-  \label{alg:SiLS}
-  \SetAlgoLined
-  \KwIn{Initial obstacle states $\boldsymbol{\Omega}(0)$, start $\mathbf{s}^{\texttt{S}}$, goal $\mathbf{s}^{\texttt{G}}$.}
-  \KwOut{Feasible clearance-$W$ plan $\nu^\star$.}
-  Initialize priority queue $Q=\{\nu_0\}$ with $\nu_0=(\boldsymbol{\Omega}(0),\emptyset)$;\\
-  \While{$Q\neq\varnothing$}{
-    \tcc{\textbf{Selection}}
-    Pop $\nu^\star=\textbf{argmin}_{\nu\in Q}\{\mathrm{C}(\nu)+\mathrm{H}(\nu)\}$;\\
-    Check path existence in $\mathcal{G}^W(t)$; if feasible, return $\nu^\star$;\\
-    \tcc{\textbf{Expansion}}
-    Identify $\mathcal{G}^{\texttt{crit}}(t)$ from WCCG;\\
-    \ForEach{$g\in\mathcal{G}^{\texttt{crit}}(t)$}{
-      Generate candidate pushing modes $\xi\in\Xi(g)$;\\
-      Simulate next state $\boldsymbol{\Omega}(t+\Delta t)=\texttt{SimDyn}(\Omega_m,\xi,\Delta t)$;\\
-      \If{state is collision-free and improves $w(g,t)$}{
-        Insert new node $\nu^+$ into $Q$;\\
-      }
-    }
-  }
-  Return best $\nu^\star$ if time limit reached;
-\end{algorithm}
-%==============================
-
-%==============================
-\subsubsection{Correctness and Completeness}
-\label{subsubsec:simloop-theory}
-The simulation-in-the-loop search inherits both correctness and probabilistic
-completeness under mild assumptions. First, correctness follows since each
-expansion is validated by a dynamics simulator that enforces physical
-constraints, guaranteeing that any returned plan is dynamically feasible.
-
-\begin{lemma}[Correctness]\label{lemma:correctness}
-Any plan $\nu^\star$ returned by Algorithm~\ref{alg:SiLS} is feasible for the
-physical system, as every action has been validated through forward
-simulation with collision checking.
-\end{lemma}
-
-Completeness is ensured by the hybrid search structure: as long as the set
-of pushing modes $\Xi$ is sufficiently rich and the simulation horizon
-$\Delta t$ is bounded below, all feasible solutions are eventually explored.
-
-\begin{theorem}[Probabilistic Completeness]\label{thm:completeness-simloop}
-  If a clearance-$W$ path exists, Algorithm~\ref{alg:SiLS} finds a feasible
-  plan $\nu^\star$ with probability approaching $1$ as the number of node
-  expansions tends to infinity.
-\end{theorem}
-
-The proofs follow by extending standard arguments from randomized search
-algorithms with embedded feasibility oracles, noting that the simulator
-acts as a physical feasibility oracle in this case.
+\paragraph{Efficiency notes.}
+(1) \textbf{Frontier caching.} BugPlanner caches loop signatures and transitions $(\mathcal{L},g)\!\mapsto\!\mathcal{L}'$, and uses vectorized ray--edge hits with AABB culling.  
+(2) \textbf{Parallel pool.} Prediction environments are pre-forked (spawn) and reused; each round broadcasts only the snapshot and reachable contacts; we use \texttt{imap\_unordered}.  
+(3) \textbf{Quick-pass \& early-stop.} A geometry-only screen can skip physics if the reference rollout clears the gap safely; otherwise the physics loop stops as soon as widening succeeds or progress stalls.  
+(4) \textbf{Directional prior.} The ModeTable concentrates sampling on low-loss, well-aligned pushes while preserving exploration via a temperature-controlled softmax.  
+(5) \textbf{Deferred expansion.} By batching only the next \(B\) tasks and reinserting partially expanded nodes, the PQ remains nonempty until every node’s candidates are exhausted; this avoids premature termination when sampling is sparse.

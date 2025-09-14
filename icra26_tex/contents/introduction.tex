@@ -1,4 +1,3 @@
-%==============================
 \section{Introduction}\label{sec:intro}
 In many real-world scenarios, the path of a large vehicle or transport unit is obstructed by
 movable obstacles such as pallets, boxes, or equipment, which motivates the use of a fleet of
@@ -6,8 +5,8 @@ mobile robots to actively clear traversable corridors and enable safe passage. T
 is especially critical in unstructured or cluttered workspaces, including warehouses, disaster
 sites, and crowded urban environments, where traditional path planning approaches assume
 static obstacles and therefore fail to provide feasible solutions when direct paths are
-blocked~\cite{}. Research on Navigation Among Movable Obstacles (NAMO) has proposed strategies
-for pushing, pulling, or rotating objects to create new routes~\cite{}, but these methods often
+blocked~\cite{liu2023path}. Research on Navigation Among Movable Obstacles (NAMO) has proposed strategies
+for pushing, pulling, or rotating objects to create new routes~\cite{stilman2005navigation}, but these methods often
 abstract away physical feasibility, ignoring key factors such as robot dimensions, obstacle
 size and mass, contact geometry, applied forces, and the coupled dynamics of pushing. As a
 result, the generated plans may be theoretically valid but physically unrealizable in practice.
@@ -17,54 +16,40 @@ making some obstacle boundaries inaccessible; and pushing actions introduce stro
 coupling, where a single push may trigger chained motions of multiple obstacles, further
 complicating prediction and planning.
 
-%==============================
-\begin{figure}[t!]
-  \centering
-  \includegraphics[width=0.95\hsize]{figures/overall.png}
-  \vspace{-0.1in}
-  \caption{}
-  \label{fig:overall}
-  \vspace{-0.2in}
-\end{figure}
-% ==============================
-
-%==============================
 \subsection{Related Work}\label{subsec:intro-related}
-
 Navigation Among Movable Obstacles (NAMO) has been studied as a core
 extension of motion planning in cluttered environments. Early approaches
 planned sequences of obstacle displacements through pushing, pulling, or
-rotating actions~\cite{}. Heuristic search methods improved scalability
-by prioritizing which obstacles to move~\cite{}, and graph- or
-sampling-based algorithms enabled planning in larger workspaces~\cite{}.
-Multi-agent variants have also been explored~\cite{}. Despite these
+rotating actions~\cite{stilman2005navigation}. Heuristic search methods improved scalability
+by prioritizing which obstacles to move~\cite{stilman2007manipulation}, and graph- or
+sampling-based algorithms enabled planning in larger workspaces~\cite{yao2024local}.
+Multi-agent variants have also been explored~\cite{tang2024collaborative}. Despite these
 advances, most NAMO approaches neglect physical feasibility, typically
 treating robots as point agents with unlimited power and ignoring
 dimensions, object mass, contact geometry, and force constraints. As a
-result, many generated plans remain physically unrealizable~\cite{}.
+result, many generated plans remain physically unrealizable~\cite{ren2025search}.
 
 Collaborative pushing has also been investigated in the context of
 multi-robot manipulation. Prior work has addressed synchronization of
-forces~\cite{}, stable contact maintenance~\cite{}, and cooperative
-transport of objects in structured settings~\cite{}. These approaches
+forces~\cite{ni2023progressive}, stable contact maintenance~\cite{liu2025physics}, and cooperative
+transport of objects in structured settings~\cite{ni2024physics}. These approaches
 demonstrate effective coordination but generally focus on a single object
 type and assume strict collision avoidance with surrounding obstacles.
 Such assumptions exclude the possibility of exploiting inter-object
 interactions, and the challenges of coupled dynamics and chain reactions
-remain largely unaddressed~\cite{}.
+remain largely unaddressed~\cite{feng2025learning}.
 
 Physics-informed planning has recently emerged to incorporate realistic
 dynamics into motion planning. Some methods employ physics engines to
-validate candidate manipulations~\cite{} or simulate contact dynamics
-during planning~\cite{}. While these works highlight the benefits of
+validate candidate manipulations~\cite{lin2019efficient} or simulate contact dynamics
+during planning~\cite{rouxel2024multi}. While these works highlight the benefits of
 embedding physics, they are mostly limited to single-object manipulation
 or grasp planning. In addition, many approaches decouple abstract
-planning from low-level physics checks~\cite{}, which reduces efficiency,
+planning from low-level physics checks~\cite{ni2023progressive}, which reduces efficiency,
 and simulation-in-the-loop techniques face scalability challenges in
-multi-robot, cluttered scenarios~\cite{}. A unified framework that
+multi-robot, cluttered scenarios~\cite{feng2025learning}. A unified framework that
 couples collaborative planning with physics-based feasibility for robust
 path clearing has yet to be established.
-
 %==============================
 \subsection{Our Method}\label{subsec:intro-our}
 

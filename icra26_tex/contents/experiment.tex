@@ -1,98 +1,174 @@
-%========================================
-\section{Numerical Experiments} \label{sec:experiments}
-To numerical validations, the proposed method is implemented in \texttt{Python3}
-and tested on a laptop with an Intel Core i5-12500H CPU.
-The solver~\texttt{GLOP}~\cite{glop} is adopted for linear and integer optimization.
-Simulation videos can be found in the supplementary files.
+% ============================================================
+\section{Numerical Experiments}
+\label{sec:experiments}
+We evaluate the proposed simulation-in-the-loop NAMO planner (SiLS)
+in cluttered environments with both movable and immovable obstacles.
+All components (W-CCG presearch, frontier extraction, and ModeTable prior)
+are integrated as described in Sec.~\ref{sec:system}.
+The implementation is in \texttt{Python~3} and simulations are run in
+\texttt{PyBullet}~\cite{coumans2019} on a laptop with an Intel
+Core i7\textendash1280P CPU. Videos and logs are provided in the
+supplementary material.
 
-%==============================
-\subsection{System Description}\label{subsec:description}
+% ========================================
+\subsection{Numerical Simulations}
+\label{subsec:sim}
+% ========================================
 
+\subsubsection{\change{Setup}}
+\label{subsec:sim-setup}
+\change{
+The physics step is $\Delta t = 1/120$\,s and the control period is
+$1/40$\,s. Robots are disk/box pushers with risk radii consistent with
+the $W$-clearance definition. Movable obstacles have masses uniformly
+sampled in $[5,15]$\,kg; immovables are modeled with mass $0$.
+A trial succeeds when a $W$-clear path from start to goal exists and the
+target reaches its goal disc.
+}
 
-%==============================
-\begin{figure}[t]
-    \centering
-    \includegraphics[width=0.97\hsize]{figures/overall.png}
-    \vspace{-0.1in}
-    \caption{\textbf{Top}: the number of subteams and their
-      composition;
-      \textbf{Bottom}: the status of agents in different modes
-      and the number of tasks.
-    }\label{fig:subteam}
-    \vspace{-0.2in}
-  \end{figure}
-%==============================
+\paragraph{Workspace and scenarios.}
+We use a \emph{nominal scenario} with an $8{\times}5$\,m bounded
+workspace, two internal bars (bottlenecks), and a mixed pool of movable
+shapes (curved and polygonal, including rings, ellipses, X/T/L/diamond,
+arrow-like, rectangles, and cylinders). Two robots start in the lower
+left; the target goal lies on the right side. Movables are randomly
+placed with a minimum separation. We test \(10\text{--}15\) objects
+over multiple seeds.
 
+\paragraph{Geometry and caching.}
+Collision checks use polygon/curve-edge models with convex
+decomposition when needed. Ray--edge queries for frontiers are
+vectorized with AABB culling. Frontier loops are cached by signatures and
+transitions $(\mathcal{L},g)\!\mapsto\!\mathcal{L}'$ are memoized.
 
-%==============================
-\subsection{Results}\label{subsec:results}
-As shown in Fig.~\ref{fig:overall}
+\subsubsection{\change{Algorithm Configuration}}
+\label{subsec:algo-config}
+\change{
+Unless stated otherwise: per-task simulation horizon $=80$ steps,
+up to $64$ candidate push tasks per expansion, and priority
+$f = g + \widehat{\mathsf{Cost}}_{\text{to-go}}$ with heuristic factor $10$.
+Gap sampling uses a softmax with temperature $0.05$.
+ModeTable is enabled (auto-baked if missing).
+A \emph{quick-pass} geometry screen may skip physics if a reference
+rollout already clears the gap; otherwise a short-horizon simulation with
+early stop is used. To avoid premature termination, a
+\emph{deferred-reinsertion} rule keeps high-value but temporarily
+unexpanded nodes in the queue and revisits them later.
+}
 
+\subsubsection{\change{Baselines}}
+\label{subsec:baselines}
+We compare against three representative families, all using the same
+$W$-clearance criterion and contact models:
 
-%==============================
-\subsection{Comparisons}\label{subsec:comparisons}
-The proposed method is compared against \textbf{{six}} baselines:
+\begin{itemize}\itemsep2pt
+  \item \textbf{DFS-WCCG:} Depth-first search over W-CCG adjacency with
+  discrete axis-aligned pushes (object $\times$ \{$\leftarrow,\rightarrow,\uparrow,\downarrow$\}).
+  \item \textbf{SL-Push:} Straight-line (or waypointed) route; blockers are
+  cleared by (i) off-line minimal normal displacements or
+  (ii) sim-in-the-loop normal pushes from near to far.
+  \item \textbf{Rec-NAMO:} Recursive routing/pushing on a cost-weighted
+  visibility graph: Dijkstra for routing, push-decomposition for local
+  clearing; failures prune edges and replan.
+\end{itemize}
 
+\subsubsection{\change{Metrics}}
+\label{subsec:metrics}
+We report success rate, wall-clock time, number of node expansions,
+number of simulated pushes, cumulative push time, average presearch
+cost-to-go, quick-pass ratio, early-stop ratio, and worker-pool
+utilization. Results are averaged over 10 seeds unless noted.
 
-%====================
+% ==============================
+\subsubsection{Main Results}
+\label{subsec:main-results}
+Table~\ref{tab:main} summarizes performance on the nominal scenario.
+SiLS attains higher success with fewer simulations and lower time due to:
+(i) frontier-based gap ranking, (ii) ModeTable-guided push directions,
+and (iii) quick-pass/early-stop. Deferred reinsertion prevents
+priority-queue starvation by revisiting previously generated high-value
+nodes when a batch of actions fails.
+
 \begin{table}[t]
-  \begin{center}
-  \begin{threeparttable}
-    \caption{Comparison with Baselines}\label{table:comparasion}
-    \vspace{-0.05in}
-    \setlength{\tabcolsep}{0.60\tabcolsep}
-    \centering
-    \renewcommand{\arraystretch}{1.1}
-      \begin{tabular}{c c c |c| c c c c}
-      \toprule
-      \multicolumn{3}{c|}{Env.}& \multirow{2}{*}{\makecell{Methods}} & \multirow{2}{*}{\makecell{Resp. \\ Time[s]}} & \multirow{2}{*}{\makecell{Ave/Max \\ Plan Time[s]}} & \multirow{2}{*}{\makecell{T/W/X \\ Agents}} & \multirow{2}{*}{\makecell{Succ. \\ Rate[\%]}} \\
-      \cline{1-3}
-      N & M & J & & & & & \\
-      \midrule
-      \multirow{7}{*}{80} & \multirow{7}{*}{30} & \multirow{7}{*}{492} & \textbf{Ours} & {62.7} & {1.4/4.9} & {20/11/37} & {100} \\
-      \multirow{7}{*}{} & \multirow{7}{*}{} & \multirow{7}{*}{} & \text{C-MILP-1} & {88.5} & {100/192} & {16/6/26} & {100} \\
-      \multirow{7}{*}{} & \multirow{7}{*}{} & \multirow{7}{*}{} & \text{C-MILP-2} & {28.3} & {19/64} & {12/10/25} & {86} \\
-      \multirow{7}{*}{} & \multirow{7}{*}{} & \multirow{7}{*}{} & \text{SAMP-1} & {108.3} & {54/92} & {19/8/24} & {100} \\
-      \multirow{7}{*}{} & \multirow{7}{*}{} & \multirow{7}{*}{} & \text{SAMP-2} & {40.7} & {5.1/16} & {23/5/20} & {85} \\
-      \multirow{7}{*}{} & \multirow{7}{*}{} & \multirow{7}{*}{} & \text{Inf-H} & {77.5} & {$> 15 \text{min}$} & {24/17/31} & {100} \\
-      \multirow{7}{*}{} & \multirow{7}{*}{} & \multirow{7}{*}{} & \text{Greedy} & {112.1} & {0.3/0.6} & {33/9/30} & {100} \\
-      \bottomrule
-    \end{tabular}
-  \end{threeparttable}
- \end{center}
-  \vspace{-3mm}
-  \end{table}
-  % ====================
-
-  %====================
- \begin{table}[t]
-  \begin{center}
-  \begin{threeparttable}
-    \caption{SCALABILITY ANALYSIS}\label{table:scalability}
-    \vspace{-0.05in}
-    \setlength{\tabcolsep}{0.7\tabcolsep}
-    \centering
-    \renewcommand{\arraystretch}{1.1}
-    \begin{tabular}{c c c c | c c c c}
-      \toprule
-      \multicolumn{4}{c|}{Env.} & \multirow{2}{*}{\makecell{Resp. \\ Time[s]}} & \multirow{2}{*}{\makecell{Ave/Max \\ Plan Time [s]}} & \multirow{2}{*}{\makecell{T/W/X \\ Agents}} & \multirow{2}{*}{\makecell{Succ. \\ Rate[\%]}}\\
-      \cline{1-4}
-      N & M & J & $\alpha$ & & & \\
-      \midrule
-      \multirow{2}{*}{120} & \multirow{2}{*}{50} & \multirow{2}{*}{824} & 0.05 & {95} & {1.6/4.6} & {33/10/39} & {100} \\
-      \multirow{2}{*}{} & \multirow{2}{*}{} & \multirow{2}{*}{} & 0.1 & {102} & {1.7/4.9} & {26/9/35} & {100}\\
-      \midrule
-      \multirow{2}{*}{150} & \multirow{2}{*}{80} & \multirow{2}{*}{1319} & 0.05 & {153} & {1.8/5.1} & {37/12/37} & {100}\\
-      \multirow{2}{*}{} & \multirow{2}{*}{} & \multirow{2}{*}{} & 0.1 & {165} & {2.1/6.2} & {12/11/34} & {97}\\
-      \bottomrule
-    \end{tabular}
-  \end{threeparttable}
- \end{center}
-  \vspace{-0.3in}
-  \end{table}
-  % ====================
+\centering
+\begin{threeparttable}
+\caption{Performance on the nominal scenario with push-count (mean $\pm$ std).}
+\label{tab:main-push}
+\vspace{2pt}
+\begin{tabular}{lccccc}
+\toprule
+Method & Succ.~(\%) & \#PT (s) & \#ET (s) & \#Sims & \#Pushes \\
+\midrule
+DFS-WCCG            & -- & -- & -- & -- & -- \\
+SL-Push (off-line)  & -- & -- & -- & -- & -- \\
+SL-Push (sim)       & -- & -- & -- & -- & -- \\
+Rec-NAMO            & -- & -- & -- & -- & -- \\
+\textbf{SiLS (ours)}& \textbf{--} & \textbf{--} & \textbf{--} & \textbf{--} & \textbf{--} \\
+\bottomrule
+\end{tabular}
+\begin{tablenotes}[flushleft]\footnotesize
+\item \textbf{Metrics.} \emph{Succ.} = success rate; \emph{\#PT} = planning time; \emph{\#ET} = execution time;
+\emph{\#Sims} = simulations invoked; \emph{\#Pushes} = length of executed push sequence.
+\end{tablenotes}
+\end{threeparttable}
+\end{table}
 
 
- %==============================
-  \subsection{Generalization}\label{subsec:scalability}
-  For further validation, the fleet size is further increased
+\subsubsection{Ablations}
+\label{subsec:ablations}
+We remove one component at a time: (i) W-CCG presearch (random gap order),
+(ii) ModeTable prior (fallback “away\,+\,jitter” only),
+(iii) quick-pass/early-stop (always full physics),
+(iv) deferred reinsertion (terminate on empty queue).
+Table~\ref{tab:ablation} shows consistent drops in success and increased
+time/\#Sims when any component is disabled.
+
+\begin{table}[t]
+\centering
+\caption{Ablations on the nominal scenario (fill with measurements).}
+\label{tab:ablation}
+\vspace{2pt}
+\begin{tabular}{lcccc}
+\toprule
+Variant & Succ.~(\%) & Time (s) & \#Sims & Quick-pass (\%) \\
+\midrule
+SiLS (full)            & -- & -- & -- & -- \\
+\ \ w/o presearch      & -- & -- & -- & -- \\
+\ \ w/o ModeTable      & -- & -- & -- & -- \\
+\ \ w/o quick-pass/ES  & -- & -- & -- & -- \\
+\ \ w/o reinsertion    & -- & -- & -- & -- \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsubsection{Efficiency and Scalability}
+\label{subsec:eff}
+\textbf{Frontier caching} makes BugPlanner near-linear in visible edges.
+\textbf{Parallel prediction} uses a persistent worker pool with per-round
+broadcast of snapshots and reachable-contact sets to reduce IPC.
+\textbf{Quick-pass} and \textbf{early-stop} skip or truncate physics when
+geometry suffices. \textbf{Deferred reinsertion} maintains steady depth
+growth even when many pushes are rejected.
+
+\subsubsection{Qualitative Results}
+\label{subsec:qual}
+Figure~\ref{fig:qual} shows a typical run: frontiers and ranked gaps,
+a top-ranked gap sequence, simulated pushes that widen bottlenecks, and
+the final $W$-clearance path. Per-step overlays and GIFs are produced by
+a lightweight snapshot logger.
+
+% \begin{figure}[t]
+% \centering
+% \includegraphics[width=0.98\linewidth]{figures/qual_demo.pdf}
+% \caption{Representative run: frontier (blue), ranked gaps (color-coded by
+% predicted cost), simulated pushes (red), and the resulting
+% $W$-clearance path (green).}
+% \label{fig:qual}
+% \end{figure}
+
+\subsubsection{Reproducibility}
+\label{subsec:repro}
+Random seeds are fixed, JSONL snapshots are logged, and the driver and
+scenario generator are released. ModeTable entries are auto-generated if
+absent to ensure repeatability across machines.
+

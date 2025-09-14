@@ -1,61 +1,100 @@
-%==============================================
 \subsection{Gap Ranking Strategy}
 \label{subsec:gap}
 
-When no clearance-$W$ path exists, the critical gaps identified from the
-WCCG must be prioritized for obstacle-clearing actions. Since multiple gaps
-may block connectivity, it is necessary to rank them according to the
-estimated cost of clearing, so that robots can focus on the most promising
-ones. The gap-ranking strategy assigns a heuristic score to each gap by
-considering both the physical effort required to widen it and the expected
-benefit of restoring connectivity.
+When no clearance-$W$ path exists, we rank blocking gaps on the reachable
+\emph{frontier} to decide where to clear first. Our ranking is \emph{search-
+based}: it estimates the end-to-end \emph{cost-to-connect} from the current
+state to the goal if we first cross a candidate gap and then continue crossing
+additional frontiers until a $W$-feasible path emerges.
 
 %==============================
-\subsubsection{Gap Clearing Cost}
+\subsubsection{Frontier and Candidates}
+\label{subsubsec:gap-frontier}
+Given start $\mathbf{s}^{\texttt{S}}$ and goal $\mathbf{s}^{\texttt{G}}$, we run
+a bug-style planner on the WCCG to either (i) certify direct connectivity or
+(ii) return a counter-clockwise frontier loop $\mathcal{L}$ separating
+$\mathbf{s}^{\texttt{S}}$ and $\mathbf{s}^{\texttt{G}}$ (cf. Sec.~\ref{subsubsec:bugplanner-connectivity}).
+Let $\mathcal{G}(\mathcal{L})=\{g_1,\ldots,g_K\}$ be the set of (visible)
+bridge–bridge gaps lying on $\mathcal{L}$. These $K$ gaps are the first-hop
+candidates.
+
+\subsubsection{Step Cost Model}
 \label{subsubsec:gap-cost}
-The first element of the ranking strategy is to estimate the physical
-difficulty of widening a gap. Intuitively, narrow gaps require more
-clearance, and heavy obstacles are harder to move. Thus, the cost of
-clearing should depend on both the clearance deficiency and the blocking
-objects. For a gap~$g\in\mathcal{G}^{\texttt{crit}}(t)$ with width
-$w(g,t)<W$, the additional clearance required is defined as
-$\Delta w(g,t)\triangleq W-w(g,t)$. Let
-$\mathcal{O}(g,t)\subseteq\boldsymbol{\Omega}(t)$ denote the subset of
-movable obstacles adjacent to $g$. The clearing cost is then formulated as
-\begin{equation}\label{eq:gap-cost}
-  \mathsf{C}(g,t)\triangleq \beta_1 \Delta w(g,t)
-  + \beta_2 \sum_{\Omega_m\in\mathcal{O}(g,t)} \mathsf{M}_m,
+For a gap $g\in\mathcal{G}(\mathcal{L})$ we define a \emph{step} cost that
+captures approach effort and the required widening (scaled by mass):
+\begin{equation}\label{eq:step-cost}
+J(g\mid\mathcal{L},\mathbf{s})
+= \lambda_{\mathrm{trans}}\,\mathsf{C}_{\mathrm{trans}}(\mathbf{s},\mathcal{L},g)
++ \lambda_{\mathrm{push}}\,\mathsf{C}_{\mathrm{push}}(g).
 \end{equation}
-where $\beta_1,\beta_2>0$ are weighting parameters, and $\mathsf{M}_m$ is
-the mass of obstacle $\Omega_m$. The first term measures the geometric
-effort required to widen the gap, while the second reflects the physical
-effort of moving adjacent obstacles.
+Here (i) $\mathsf{C}_{\mathrm{trans}}$ is the straight-line distance from the
+current robot center $\mathbf{s}$ to an outside insertion point of $g$ on
+$\mathcal{L}$; (ii) the widening cost is
+\begin{equation}\label{eq:push-cost}
+\mathsf{C}_{\mathrm{push}}(g)
+= \kappa(g)\,\big[\max\{0,\,W-w(g)\}+\delta\big],
+\end{equation}
+where $w(g)$ is the current gap width, $\delta>0$ is a small safety margin, and
+$\kappa(g)=\phi\!\big(\min\{M_u,M_v\}\big)\ge 1,$ scales the geometric requirement by a mass-dependent factor using
+the lighter adjacent obstacle masses $M_u,M_v$. The nonnegative weights
+$\lambda_{\mathrm{trans}}$ and $\lambda_{\mathrm{push}}$ trade off the two terms.
+To guide search we use a consistent one-step heuristic
+\begin{equation}\label{eq:gap-heuristic}
+  h(g) \;=\; \eta \,\big\|\mathbf{o}(g)-\mathbf{s}^{\texttt{G}}\big\|_2,
+\end{equation}
+where $\mathbf{o}(g)$ is the outside point associated with $g$ and
+$\eta>0$ is a scaling factor.
 
 %==============================
-\subsubsection{Gap Ranking Rule}
+\subsubsection{Presearch and Ranking Score}
 \label{subsubsec:gap-ranking-rule}
-The second element of the strategy is to evaluate how much clearing a
-specific gap improves connectivity between the start and the goal. If a
-gap is cleared, the effective shortest path through the WCCG may become
-shorter or even newly feasible. Denote the current shortest-path length
-between $v^{\texttt{S}}$ and $v^{\texttt{G}}$ by $d^{\texttt{cur}}(t)$
-(possibly infinite if no path exists). Suppose gap~$g$ is hypothetically
-cleared, yielding a modified graph $\mathcal{G}^{W}_{+g}(t)$ with updated
-shortest-path length $d^{+g}(t)$. The connectivity benefit of clearing
-gap~$g$ is then defined as
-\begin{equation}\label{eq:gap-benefit}
-  \mathsf{H}(g,t)\triangleq
-  d^{\texttt{cur}}(t) - d^{+g}(t),
+Starting from the initial frontier $\mathcal{L}$, each first-hop candidate
+$g\in\mathcal{G}(\mathcal{L})$ is evaluated by a greedy beam/A$^\ast$-like
+\emph{presearch} that repeatedly: (i) crosses $g$, (ii) computes the next
+frontier $\mathcal{L}'$ with the bug planner, and (iii) enqueues the
+top-$B$ gaps on $\mathcal{L}'$ by the priority
+\(
+f \,=\, g\text{-cost} + J(\cdot) + h(\cdot).
+\)
+The presearch terminates either when the goal becomes directly visible
+(connected) or when the depth/queue budget is exceeded. For a first-hop $g$,
+the predicted end-to-end cost is
+\begin{equation}\label{eq:total-cost}
+\widehat{\mathsf{Cost}}(g)
+= J\big(g \mid \mathcal{L}, \mathbf{s}^{\texttt{S}}\big)
++ \sum\nolimits_{g'\in\Pi^*(g)} J\big(g' \mid \cdot\big).
 \end{equation}
-where $\mathsf{H}(g,t)>0$ indicates a reduction in shortest-path length
-after clearing $g$.
+where $\Pi^*(g)$ is the subsequent gap sequence chosen by the presearch from
+the new frontier after crossing $g$. We then rank candidates in ascending order
+of $\widehat{\mathsf{Cost}}(g)$.
+% \begin{equation}\label{eq:rank-score}
+%   \mathsf{Rank}(g_1)\le\mathsf{Rank}(g_2) \;\;\Longleftrightarrow\;\;
+%   \widehat{\mathsf{Cost}}(g_1) \le \widehat{\mathsf{Cost}}(g_2).
+% \end{equation}
+Intuitively, the top-ranked gap offers the best predicted connectivity
+improvement per unit effort, accounting for both the first crossing and the
+downstream crossings it enables.
 
-Finally, the ranking score combines benefit and cost into a single measure:
-\begin{equation}\label{eq:gap-score}
-  \mathsf{R}(g,t)\triangleq
-  \frac{\mathsf{H}(g,t)}{\mathsf{C}(g,t)+\varepsilon},
-\end{equation}
-where $\varepsilon>0$ is a small constant for numerical stability. Gaps
-with larger $\mathsf{R}(g,t)$ yield greater connectivity improvement per
-unit of clearing effort, and are therefore prioritized for obstacle-clearing
-actions in the next step.
+%==============================
+\subsubsection{Notes on Efficiency}
+\label{subsubsec:eff-notes}
+We cache frontier loops by a loop signature and memoize transitions
+$(\text{loop},g)\!\mapsto\!\text{loop}'$ to avoid recomputation. Nearest
+edge hits for ray shooting are computed in a vectorized manner with AABB
+culling, yielding near-linear time per shoot in the number of visible edges.
+\begin{algorithm}[t]
+\caption{Gap Ranking via Frontier Presearch}
+\label{alg:gap-ranking}
+\DontPrintSemicolon
+\KwIn{$\mathbf{s}^{\texttt{S}}$, $\mathbf{s}^{\texttt{G}}$, WCCG, $\lambda_{\mathrm{trans}}$, $\lambda_{\mathrm{push}}$}
+\KwOut{Frontier gaps ranked by predicted cost}
+$(\mathcal{L}, \texttt{connected}) \leftarrow \mathrm{BugPlannerFrontier}(\mathbf{s}^{\texttt{S}},\mathbf{s}^{\texttt{G}})$\;
+\If{\texttt{connected}}{\Return $\emptyset$}
+$\mathcal{C} \leftarrow$ bridge--bridge gaps on $\mathcal{L}$\;
+\ForEach{$g \in \mathcal{C}$}{
+  $J_1 \leftarrow \lambda_{\mathrm{trans}}\mathsf{C}_{\mathrm{trans}} + \lambda_{\mathrm{push}}\kappa(g)[\max(0, W-w(g))+\delta]$\;
+  $(\texttt{succ}, J_{\mathrm{tail}}, \Pi) \leftarrow \mathrm{PresearchAfter}(g,\mathbf{s}^{\texttt{S}},\mathbf{s}^{\texttt{G}})$\;
+  $\widehat{\mathrm{Cost}}(g) \leftarrow J_1 + (\texttt{succ} ? J_{\mathrm{tail}} : \infty)$\;
+}
+\Return $\mathrm{argsort}_{g\in\mathcal{C}}\,\widehat{\mathrm{Cost}}(g)$ (ascending)\;
+\end{algorithm}
