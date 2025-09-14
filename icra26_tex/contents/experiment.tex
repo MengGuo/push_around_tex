@@ -9,12 +9,28 @@ The implementation is in \texttt{Python~3} and simulations are run in
 \texttt{PyBullet}~\cite{coumans2019} on a laptop with an Intel
 Core i7\textendash1280P CPU. Videos and logs are provided in the
 supplementary material.
+\begin{figure}
+  \centering
+  \includegraphics[width=\columnwidth]{figures/straight.pdf}
+
+\caption{SL-Push}
+\end{figure}
+
+\begin{figure}
+  \centering
+  \includegraphics[width=\columnwidth]{figures/Recursive.pdf}
+\caption{Rec-NAMO}
+\end{figure}
+
+
 
 % ========================================
 \subsection{Numerical Simulations}
 \label{subsec:sim}
 % ========================================
-
+\begin{figure}
+  
+\end{figure}
 \subsubsection{\change{Setup}}
 \label{subsec:sim-setup}
 \change{
@@ -90,28 +106,34 @@ priority-queue starvation by revisiting previously generated high-value
 nodes when a batch of actions fails.
 
 \begin{table}[t]
-\centering
-\begin{threeparttable}
-\caption{Performance on the nominal scenario with push-count (mean $\pm$ std).}
-\label{tab:main-push}
-\vspace{2pt}
-\begin{tabular}{lccccc}
-\toprule
-Method & Succ.~(\%) & \#PT (s) & \#ET (s) & \#Sims & \#Pushes \\
-\midrule
-DFS-WCCG            & -- & -- & -- & -- & -- \\
-SL-Push (off-line)  & -- & -- & -- & -- & -- \\
-SL-Push (sim)       & -- & -- & -- & -- & -- \\
-Rec-NAMO            & -- & -- & -- & -- & -- \\
-\textbf{SiLS (ours)}& \textbf{--} & \textbf{--} & \textbf{--} & \textbf{--} & \textbf{--} \\
-\bottomrule
-\end{tabular}
-\begin{tablenotes}[flushleft]\footnotesize
-\item \textbf{Metrics.} \emph{Succ.} = success rate; \emph{\#PT} = planning time; \emph{\#ET} = execution time;
-\emph{\#Sims} = simulations invoked; \emph{\#Pushes} = length of executed push sequence.
-\end{tablenotes}
-\end{threeparttable}
-\end{table}
+  \centering
+  \begin{threeparttable}
+  \caption{Performance on the nominal scenario with push-count (mean $\pm$ std).}
+  \label{tab:main-push}
+  \vspace{2pt}
+  
+  % 🔑 在这里调节列间距
+  \setlength{\tabcolsep}{2.3pt} % 默认是 6pt，调小
+  
+  \begin{tabular}{lccccc}
+  \toprule
+  Method & Succ.~(\%) & \#PT (s) & \#ET (s) & \#Sims & \#Pushes \\
+  \midrule
+  DFS-WCCG            & 25 & -- & -- & -- & -- \\
+  SL-Push (off-line)  & 62.5 & 0.02 & 145.147 & 0 & 7 \\
+  SL-Push (sim)       & 75 & 25.09 & 246.825 & 16 & 8 \\
+  Rec-NAMO            & 37.5 & 10.45 & 179.262 & 0 & 7 \\
+  \textbf{SiLS (ours)}& \textbf{--} & \textbf{--} & \textbf{--} & \textbf{--} & \textbf{--} \\
+  \bottomrule
+  \end{tabular}
+  
+  \begin{tablenotes}[flushleft]\footnotesize
+  \item \textbf{Metrics.} \emph{Succ.} = success rate; \emph{\#PT} = planning time; \emph{\#ET} = execution time;
+  \emph{\#Sims} = simulations invoked; \emph{\#Pushes} = length of executed push sequence.
+  \end{tablenotes}
+  \end{threeparttable}
+  \end{table}
+  
 
 
 \subsubsection{Ablations}
@@ -124,22 +146,31 @@ Table~\ref{tab:ablation} shows consistent drops in success and increased
 time/\#Sims when any component is disabled.
 
 \begin{table}[t]
-\centering
-\caption{Ablations on the nominal scenario (fill with measurements).}
-\label{tab:ablation}
-\vspace{2pt}
-\begin{tabular}{lcccc}
-\toprule
-Variant & Succ.~(\%) & Time (s) & \#Sims & Quick-pass (\%) \\
-\midrule
-SiLS (full)            & -- & -- & -- & -- \\
-\ \ w/o presearch      & -- & -- & -- & -- \\
-\ \ w/o ModeTable      & -- & -- & -- & -- \\
-\ \ w/o quick-pass/ES  & -- & -- & -- & -- \\
-\ \ w/o reinsertion    & -- & -- & -- & -- \\
-\bottomrule
-\end{tabular}
-\end{table}
+  \centering
+  \caption{Ablations on the nominal scenario (fill with measurements).}
+  \label{tab:ablation}
+  \vspace{2pt}
+  
+  % 🔑 调整列间距和行距（只对本表生效）
+  {%
+  \setlength{\tabcolsep}{3pt} % 列间距缩小
+  \renewcommand{\arraystretch}{0.9} % 行距缩小
+  
+  \begin{tabular}{lcccc}
+  \toprule
+  Variant & Succ.~(\%) & Time (s) & \#Sims & Quick-pass (\%) \\
+  \midrule
+  SiLS (full)            & -- & -- & -- & -- \\
+  \ \ w/o presearch      & -- & -- & -- & -- \\
+  \ \ w/o ModeTable      & -- & -- & -- & -- \\
+  \ \ w/o quick-pass/ES  & -- & -- & -- & -- \\
+  \ \ w/o reinsertion    & -- & -- & -- & -- \\
+  \bottomrule
+  \end{tabular}
+  }% 局部作用域结束
+  
+  \end{table}
+  
 
 \subsubsection{Efficiency and Scalability}
 \label{subsec:eff}
