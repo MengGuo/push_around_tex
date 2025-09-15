@@ -1,48 +1,37 @@
-\begin{algorithm}[t]
-\small
-\caption{SiLS with Deferred Expansion (clean version)}
-\label{alg:SiLS}
-\DontPrintSemicolon
-\SetKwInOut{Input}{In}\SetKwInOut{Output}{Out}
-\SetKwFunction{Build}{BuildWCCG}
-\SetKwFunction{Frontier}{BugPlannerFrontier}
-\SetKwFunction{Rank}{PresearchRank}
-\SetKwFunction{Predict}{SimPredict}
-\SetKwFunction{Next}{NextBatch}
+%==============================================
+\begin{algorithm}[t!]
+\caption{Physics-Informed Hybrid Search}\label{alg:push}
+\SetAlgoLined
+\KwIn{$\mathbf{s}_0$, $\alpha$, $\mathsf{EvalSim}(\cdot)$, $W$--criterion by~\eqref{eq:wccg_criterion}}
 
-\Input{$\mathbf{s}^{\texttt{S}}$, $\mathbf{s}^{\texttt{G}}$, $W$, initial snapshot, batch size $B$}
-\Output{Executable push plan or \texttt{fail}}
-
-\BlankLine
-\textbf{State of a node:} $\nu=(\texttt{snap}, \texttt{plan}, g, \mathcal{C}, j)$,
-with candidates $\mathcal{C}$ (ranked) and cursor $j$.\;
-
-\BlankLine
-\textbf{Init:} $\nu_0\!\leftarrow\!(\texttt{snap}_0,\emptyset,0,\varnothing,0)$;\;
-$\texttt{PQ}\!\leftarrow\!\{(\nu_0, f=\widehat{\mathsf{Cost}}_{\text{to-go}}(\texttt{snap}_0))\}$\;
-
-\While{\texttt{PQ} not empty}{
-  Pop $(\nu,f)$ with minimal $f$; \tcp*{$\nu=(\texttt{snap},\texttt{plan},g,\mathcal{C},j)$}
-  \If{$\mathcal{C}=\varnothing$}{
-    $(\texttt{connected}) \leftarrow \Build(\texttt{snap})$;\;
-    \If{\texttt{connected}}{\Return \texttt{plan}}
-    $\mathcal{L}\leftarrow \Frontier(\mathbf{s}^{\texttt{S}},\mathbf{s}^{\texttt{G}})$;\;
-    $\mathcal{C}\leftarrow \Rank(\mathcal{L})$;\; $j\leftarrow 0$\;
-  }
-  $\mathcal{B}\leftarrow \Next(\mathcal{C}, j, B)$;\; $j\leftarrow j+|\mathcal{B}|$\;
-
-  \ForEach{$\tau\in\mathcal{B}$ \textbf{in parallel}}{
-    $(\texttt{ok}, \texttt{snap}', t_\text{push}) \leftarrow \Predict(\tau)$\;
-    \If{\texttt{ok}}{
-      $g' \leftarrow g + \mathsf{C}_{\mathrm{trans}} + t_\text{push}$;\;
-      $h' \leftarrow \widehat{\mathsf{Cost}}_{\text{to-go}}(\texttt{snap}')$;\;
-      Push $\big((\texttt{snap}',\,\texttt{plan}\!\cup\!\{\tau\},\,g',\,\varnothing,\,0),\, f'=g'+h'\big)$ into \texttt{PQ}\;
+\KwOut{$\pi^\star$}
+\tcc{Initialization}
+$\nu_0\gets(\mathbf{s}_0,\emptyset),\;\chi(\nu_0)=0$\;
+Init $\mathcal{Q}$ by~\eqref{eq:priority}\;
+\While{not terminated}{
+  \tcc{Selection}
+  $\nu\gets\mathcal{Q}.\texttt{pop\_min}()$ by~\eqref{eq:priority}\;
+  \tcc{Parallel Expansion}
+  \ForEach{$g\in\mathsf{Rank}(\nu)$}{
+    \ForEach{$(\mathbf{v},\boldsymbol{\xi})\in\Xi_g$}{
+    $\tau=(g,\mathbf{v},\boldsymbol{\xi})$\;
+    $(\mathbf{s}',\delta_T,\delta_J)\gets\mathsf{EvalSim}(\nu,\tau)$ by~\eqref{eq:sim}\;
+    \If{success}{
+      $\nu'\gets(\mathbf{s}',\pi\cup\{\tau\})$\;
+      $\chi(\nu')\gets\chi(\nu)+\delta_\texttt{T}+\alpha\,\delta_\texttt{J}$\;
+      $\mathcal{Q}.\texttt{push}(\nu')$\;
+      }
     }
   }
-  \If{$j<|\mathcal{C}|$}{reinsert current $\nu$ into \texttt{PQ} with the same $f$}
+  \tcc{Termination Check}
+  \If{$\mathbf{s}'$ admits $\mathcal{P}^W_{\texttt{V}}$ by~\eqref{eq:wccg_criterion}}{
+    $\pi^\star\gets\pi'$, \textbf{break}\;
+  }
 }
-\Return \texttt{fail}\;
+\Return $\pi^\star$;
 \end{algorithm}
+%==============================================
+
 
 
 %==============================================
