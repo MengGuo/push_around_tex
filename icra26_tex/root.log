@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2021) (preloaded format=pdflatex 2022.3.4)  15 SEP 2025 21:58
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2021) (preloaded format=pdflatex 2022.3.4)  15 SEP 2025 22:34
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1604,15 +1604,12 @@ urs when a node $\OML/cmm/m/it/10 ^^W$
  []
 
 ) (./contents/overall.tex [5])) (./contents/experiment.tex
-<figures/SL_Push.pdf, id=281, 1445.4pt x 722.7pt>
+<figures/SL_Push.pdf, id=283, 1445.4pt x 722.7pt>
 File: figures/SL_Push.pdf Graphic file (type pdf)
 <use figures/SL_Push.pdf>
 Package pdftex.def Info: figures/SL_Push.pdf  used on input line 14.
 (pdftex.def)             Requested size: 245.71811pt x 122.85736pt.
-
-Underfull \vbox (badness 1067) has occurred while \output is active []
-
-<figures/Rec_NAMO.pdf, id=282, 1445.4pt x 722.7pt>
+<figures/Rec_NAMO.pdf, id=284, 1445.4pt x 722.7pt>
 File: figures/Rec_NAMO.pdf Graphic file (type pdf)
 <use figures/Rec_NAMO.pdf>
 Package pdftex.def Info: figures/Rec_NAMO.pdf  used on input line 23.
@@ -1653,17 +1650,19 @@ Before submitting the final camera ready copy, remember to:
  uses only Type 1 fonts and that every step in the generation
  process uses the US letter (8.5in X 11in) paper size.
 
-[8] (./root.aux)
+[8
+
+] (./root.aux)
 
 LaTeX Warning: There were undefined references.
 
 Package rerunfilecheck Info: File `root.out' has not changed.
-(rerunfilecheck)             Checksum: BCCC7BE4586825DD7D5B28FC5F82B36A;6581.
+(rerunfilecheck)             Checksum: D25F989257C8045FF8212F38703FD7EE;6486.
  ) 
 Here is how much of TeX's memory you used:
  28651 strings out of 478994
  536713 string characters out of 5858185
- 844145 words of memory out of 5000000
+ 844129 words of memory out of 5000000
  45426 multiletter control sequences out of 15000+600000
  462080 words of font info for 153 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
@@ -1697,10 +1696,10 @@ s/type1/urw/times/utmb8a.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/ur
 w/times/utmbi8a.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/urw/times/u
 tmr8a.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/urw/times/utmri8a.pfb
 >
-Output written on root.pdf (8 pages, 2574923 bytes).
+Output written on root.pdf (8 pages, 2572308 bytes).
 PDF statistics:
- 517 PDF objects out of 1000 (max. 8388607)
- 399 compressed objects within 4 object streams
+ 520 PDF objects out of 1000 (max. 8388607)
+ 401 compressed objects within 5 object streams
  107 named destinations out of 1000 (max. 500000)
  345 words of extra memory for PDF output out of 10000 (max. 10000000)
 
