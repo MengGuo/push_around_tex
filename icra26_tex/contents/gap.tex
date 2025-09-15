@@ -16,13 +16,13 @@ $(\mathbf{s}_\texttt{V}^{\texttt{S}},\mathbf{s}_\texttt{V}^{\texttt{G}},W)$,
 either confirms connectivity or returns a counter--clockwise frontier loop
 $\mathcal{L}$ that separates the two endpoints. The bridge--bridge edges
 visible on $\mathcal{L}$ form the first--hop candidate set
-$\mathcal{G}(\mathcal{L})\triangleq\{g_1,\cdots,g_K\}$,
+$\Gamma_\mathcal{L}\triangleq\{g_1,\cdots,g_K\}$,
 where each $g_k$ is a reachable candidate gap. These candidates are the inputs
 to the ranking module, while the output will be an ordered list of the same
 set sorted by predicted cost.
 
 \subsubsection{Evaluation for Immediate Cost}
-Each candidate $g\in\mathcal{G}(\mathcal{L})$ is evaluated by combining the
+Each candidate $g\in\Gamma_\mathcal{L}$ is evaluated by combining the
 cost for the robots to reach the gap and the effort required to widen it.
 Let $\mathbf{s}_{\mathcal{R}}$ be the current robot positions,
 and $\mathbf{o}_g$ as the outside insertion point of gap $g$. The
@@ -82,13 +82,13 @@ the dots indicate updated inputs along that rollout;
 and the scalar score $\widehat{\mathsf{Cost}}(g)>0$ for each candidate gap.
 Consequently,
 the final output of this module is the ranked list of candidate gaps, i.e.,
-$\textsf{Rank}\big(\mathcal{G}(\mathcal{L})\big)
-\triangleq \textbf{argsort}_{g\in\mathcal{G}(\mathcal{L})}\widehat{\mathsf{Cost}}(g)$,
-which sorts $\mathcal{G}(\mathcal{L})$ in ascending predicted cost. This
+$\textsf{Rank}\big(\Gamma_\mathcal{L}\big)
+\triangleq \textbf{argsort}_{g\in\Gamma_\mathcal{L}}\widehat{\mathsf{Cost}}(g)$,
+which sorts $\Gamma_\mathcal{L}$ in ascending predicted cost. This
 ordered set is passed to the hybrid search module, such that only the
 promising gaps are expanded first.
 
-\begin{remark}[Practical Heuristics]\label{remark:gap}
+\begin{remark}[Practical Improvement]\label{remark:gap}
 Efficiency of the above ranking procedure can be improved by
 caching frontier loops, storing the transitions
 $(\mathcal{L},g)\mapsto\mathcal{L}'$, and accelerating the edge queries with
