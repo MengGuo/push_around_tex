@@ -125,7 +125,7 @@ nodes when a batch of actions fails.
   \toprule
   Method & Succ.~(\%) & \#PT (s) & \#ET (s) & \#Sims & \#Pushes \\
   \midrule
-  DFS-WCCG            & 25 & timeout & N/A & - & - \\
+  DFS-WCCG            & 25 & 41.77 & N/A & - & - \\
   SL-Push (off-line)  & 62.5 & 0.02 & 145.147 & 0 & 7 \\
   SL-Push (sim)       & 75 & 25.09 & 246.825 & 16 & 8 \\
   Rec-NAMO            & 37.5 & 10.45 & 179.262 & 0 & 7 \\
@@ -177,6 +177,20 @@ time/\#Sims when any component is disabled.
   
   \end{table}
   
+\begin{figure*}
+  \centering
+  \includegraphics[width=1\linewidth]{figures/hardware_wccg.png}
+  \vspace{-2mm}
+\caption{SL-Push. Compute(offline) or simulate(sim-in-the-loop) the pushing directions for movable obstacles along the W-width straight path from sub-start to sub-goal. Top: Pushing steps. Bottom: Reachable region changes during pushing}
+\end{figure*}
+
+\begin{figure}
+  \centering
+  \includegraphics[width=1\linewidth]{figures/hardware_snap.png}
+  \vspace{-2mm}
+\caption{SL-Push. Compute(offline) or simulate(sim-in-the-loop) the pushing directions for movable obstacles along the W-width straight path from sub-start to sub-goal. Top: Pushing steps. Bottom: Reachable region changes during pushing}
+\end{figure}
+
 
 \subsubsection{Efficiency and Scalability}
 \label{subsec:eff}
