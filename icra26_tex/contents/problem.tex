@@ -64,6 +64,23 @@ $\Phi$ models the joint dynamics of robots and obstacles under contact. In
 general, $\Phi$ is not available in closed form and is instead evaluated
 through physics simulation.
 
+%==============================================
+\begin{figure*}[t!]
+  \centering
+  \includegraphics[width=\linewidth]{figures/wccg.pdf}
+  \vspace{-0.2in}
+  \caption{Illustration of the W--Clearance Connectivity Graph (WCCG).
+\textbf{Left:} Cluttered PyBullet scenario with the immovable walls and movable objects;
+\textbf{Middle:} WCCG overlay with the centroid nodes (blue squares), bridge nodes
+(red circles), centroid--bridge edges (blue), and bridge--bridge edges (red dashed)
+annotated by the gap widths;
+\textbf{Right:} Induced faces of the WCCG, where the colors indicate distinct connected
+regions. }
+  \label{fig:wccg}
+  \vspace{-0.2in}
+\end{figure*}
+%==============================================
+
 %==============================
 \subsection{Problem Statement}\label{subsec:objective}
 The goal is to compute a hybrid schedule for the robots that reconfigures the movable
