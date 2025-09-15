@@ -108,6 +108,11 @@ Z.~Tang, J.~Chen, and M.~Guo, ``Combinatorial-hybrid optimization for
   multi-agent systems under collaborative tasks,'' in \emph{IEEE Conference on
   Decision and Control (CDC)}, 2023.
 
+\bibitem{McGuireCroonTuyls2019}
+K.~N. McGuire, G.~C. H.~E. de~Croon, and K.~Tuyls, ``A comparative study of bug
+  algorithms for robot navigation,'' \emph{Robotics and Autonomous Systems},
+  vol. 121, p. 103261, 2019.
+
 \bibitem{coumans2019}
 E.~Coumans and Y.~Bai, ``Pybullet, a python module for physics simulation for
   games, robotics and machine learning,'' \url{http://pybullet.org},

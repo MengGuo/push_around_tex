@@ -1,78 +1,106 @@
 %==============================================
-\subsection{W–Clearance Connectivity Graph (WCCG)}
-\label{subsec:wccg}
-\begin{figure*}[t]
-  \centering
-  \includegraphics[width=\linewidth]{figures/wccg.pdf}
-  \vspace{-3mm}
-  \caption{(Left) top–down scene; (Middle) W–CCG with centroid (blue) and bridge (red) nodes, red dashed edges encode gaps $<W$; (Right) faces induced by W–CCG.}
-  \label{fig:wccg}
-  \vspace{-4mm}
-\end{figure*}
+\subsection{W--Clearance Connectivity Graph}\label{subsec:wccg}
 
-To reason about the existence of a traversable corridor of width~$W$, we construct a
-\emph{W–Clearance Connectivity Graph} (WCCG) that captures obstacle–to–obstacle
-adjacency under the threshold~$W$ and supports fast connectivity queries between
-start $\mathbf{s}^{\texttt{S}}$ and goal $\mathbf{s}^{\texttt{G}}$.
+The feasibility of routing the vehicle depends on whether a corridor of width
+$W$ exists between the start configuration $\mathbf{s}_\texttt{V}^{\texttt{S}}$
+and the goal configuration $\mathbf{s}_\texttt{V}^{\texttt{G}}$. To address
+this question, a \emph{W--Clearance Connectivity Graph} (WCCG) is introduced.
+The WCCG encodes adjacency relations between obstacles under the clearance
+threshold $W$ and supports efficient connectivity queries. Unlike grid maps or
+sampled roadmaps, it is constructed directly from obstacle geometry, avoiding
+discretization errors and ensuring consistent results. This is particularly
+important since clearance queries must be invoked repeatedly during planning.
 
-\subsubsection{Construction (high level).}
-Polygonal obstacles are convex–decomposed. For each convex part we add a
-\emph{centroid} node; for each visible closest pair between two parts whose distance
-is $<W$, we add \emph{bridge} nodes at the closest points and a bridge–bridge edge
-annotated by the gap width; centroid–bridge edges connect bridges to their parts.
-Red dashed edges (Fig.~\ref{fig:wccg}) mark \emph{narrow gaps}.
+\subsubsection{Graph Construction}
+The WCCG is built by decomposing each movable obstacle
+$\Omega_m\in\boldsymbol{\Omega}$ into convex components. From each component
+$C$, a centroid node $v_c$ is created. When two components $C_u$ and $C_v$
+have closest points $p_u\in C_u$ and $p_v\in C_v$ with distance smaller than
+$W$, bridge nodes are added at $p_u$ and $p_v$. These bridge nodes are
+connected by a bridge--bridge edge, annotated with the corresponding gap width
+$w_{uv}\triangleq\|p_u-p_v\|$, and further linked back to their centroids with
+centroid--bridge edges. Narrow passages with $w_{uv}<W$ are explicitly marked
+as potential bottlenecks. The resulting graph is defined below:
+\begin{equation}\label{eq:wccg}
+\mathcal{G}_W\triangleq(\mathcal{V},\; \mathcal{E}_c\cup\mathcal{E}_b),
+\end{equation}
+where $\mathcal{V}$ contains all centroid and bridge nodes,
+$\mathcal{E}_c$ is the set of centroid--bridge edges, and $\mathcal{E}_b$ the
+set of bridge--bridge edges annotated by widths $w_{uv}$.
 
-\subsubsection{Connectivity test.}\label{subsubsec:bugplanner}
-We employ a ray–shoot and loop–follow routine (“BugPlanner”) on the WCCG frontiers:
-from a current point we shoot toward the goal, walk the encountered frontier loop by
-angular order, and either reach $\mathbf{s}^{\texttt{G}}$ or certify a blocking
-loop. If connected, the routine returns a \emph{skeleton} (an ordered
-center–bridge–center sequence) witnessing that $\mathbf{s}^{\texttt{S}}$ and
-$\mathbf{s}^{\texttt{G}}$ lie in the same face of the induced decomposition.
+\subsubsection{Connectivity Criterion}\label{subsubsec:bugplanner}
+Once $\mathcal{G}_W$ has been constructed, connectivity queries can be
+performed without explicitly computing a geometric path. A frontier-tracing
+procedure, similar to the BugPlanner~\cite{McGuireCroonTuyls2019}, starts from the vehicle start
+$\mathbf{s}_\texttt{V}^{\texttt{S}}$, casts a ray toward the goal
+$\mathbf{s}_\texttt{V}^{\texttt{G}}$, and explores the encountered loop of
+frontier edges. If a valid exit is discovered, the process continues until the
+goal is reached; otherwise a blocking cycle is returned. Successful execution
+produces a skeleton $\Sigma$, which is an ordered sequence of centroid and
+bridge nodes that certifies $\mathbf{s}_\texttt{V}^{\texttt{S}}$ and
+$\mathbf{s}_\texttt{V}^{\texttt{G}}$ lie in the same connected face.
+Let the $W$--clear free space be
+$\mathcal{F}_W\triangleq\mathbb{R}^2\setminus(\mathcal{O}\oplus\mathbb{B}_{W/2})$,
+where $\oplus$ denotes Minkowski addition and $\mathbb{B}_{W/2}$ is a closed
+disk of radius $W/2$. A complete criterion for existence of a $W$--clear path
+$\mathcal{P}^W_\texttt{V}$ is defined as:
+\begin{equation}\label{eq:wccg_criterion}
+\begin{aligned}
+&\exists\,\mathcal{P}^W_\texttt{V}\subset\mathcal{F}_W:\
+  \mathbf{s}_\texttt{V}^{\texttt{S}}\leadsto\mathbf{s}_\texttt{V}^{\texttt{G}} \Longleftrightarrow\
+  \Big{\{}\mathbf{s}_\texttt{V}^{\texttt{S}},\mathbf{s}_\texttt{V}^{\texttt{G}}
+  \ \text{belong to the} \\
+  & \text{same face of }\mathcal{G}_W; \;\mathbb{B}_{W/2}(\mathbf{s}_\texttt{V}^{\texttt{S}}),
+  \,\mathbb{B}_{W/2}(\mathbf{s}_\texttt{V}^{\texttt{G}})\subset\mathcal{F}_W\Big{\}},
+\end{aligned}
+\end{equation}
+where $\mathbb{B}_{W/2}(\cdot)$ denotes a disk of radius $W/2$ centered at the
+argument. They align with~\eqref{eq:wclear} for the external vehicle.
 
-\begin{theorem}[Complete criterion for a $W$–clear path]
-\label{thm:complete-W-test}
-Let $\mathcal{F}_W := \mathbb{R}^2 \setminus (\mathcal{O}\oplus \mathbb{B}_{W/2})$
-be the $W$–clear free space. A collision–free path of clearance at least $W$
-exists between $\mathbf{s}^{\texttt{S}}$ and $\mathbf{s}^{\texttt{G}}$ iff
-(i) they lie in the same face of the WCCG induced by $\mathcal{F}_W$, and
-(ii) both endpoint disks $\mathbb{B}_{W/2}(\mathbf{s}^{\texttt{S}})$ and
-$\mathbb{B}_{W/2}(\mathbf{s}^{\texttt{G}})$ are obstacle–free.
-\end{theorem}
+\subsubsection{Skeleton to Path}
+The {skeleton}~$\Sigma$ as an output of the previous step,
+is an ordered sequence of centroid and bridge nodes connected by frontier
+edges in $\mathcal{G}_W$. This skeleton serves as a compact certificate that
+$\mathbf{s}_\texttt{V}^{\texttt{S}}$ and $\mathbf{s}_\texttt{V}^{\texttt{G}}$
+lie in the same connected face. Given as input the skeleton $\Sigma$, together
+with $\mathcal{G}_W$, the clearance $W$, and the endpoint disks
+$\mathbb{B}_{W/2}(\mathbf{s}_\texttt{V}^{\texttt{S}})$ and
+$\mathbb{B}_{W/2}(\mathbf{s}_\texttt{V}^{\texttt{G}})$, the output is an explicit
+$W$--clear path $\mathcal{P}^W_\texttt{V}$. This path is constructed by sliding
+each skeleton segment along the boundary of the inflated obstacles, offsetting
+slightly inward into $\mathcal{F}_W$, and attaching short connectors inside the
+endpoint disks. The resulting $\mathcal{P}^W_\texttt{V}$ remains in
+$\mathcal{F}_W$, preserves the homotopy of $\Sigma$, and guarantees clearance of
+at least $W$.
 
-\noindent\textit{Proof sketch.}
-BugPlanner yields a frontier \emph{skeleton} within one face.
-By convex decomposition and angular–order, each center–bridge–center segment
-can be slid onto the boundary of the $W/2$–inflated obstacles without touching
-unintended parts; concatenating these slides forms a boundary–following curve with
-cross–gap hops. A small inward offset lies entirely in $\mathcal{F}_W$; with cleared
-endpoint disks, short connectors attach the endpoints, giving a geometric $W$–clear
-path. The converse is immediate.
 
-\begin{remark}[Practical check]
-In code we simply (a) run WCCG connectivity; (b) verify the two $W/2$ endpoint disks.
-If (a) passes but (b) fails, a few \emph{away–from–endpoint} pushes may clear the disks;
-this is an engineering add–on, not core to the method.
+\begin{remark}\label{remark:wccg}
+  The WCCG differs from sampling- and grid-based planners in two key aspects:
+  (I) It avoids discretization of $\mathcal{W}$ and is therefore free from
+  resolution-induced errors;
+  (II) It relies purely on geometry, which makes
+queries highly efficient. These two features are crucial, since connectivity
+checks and clearance tests are invoked many times within the hybrid
+planner described in the sequel. \hfill$\blacksquare$
 \end{remark}
 
 
-\begin{algorithm}[t]
-\small
-\caption{BugPlanner for $W$-width connectivity (skeleton witness)}
-\label{alg:bugplanner}
-\DontPrintSemicolon
-\SetKwInOut{Input}{In}\SetKwInOut{Output}{Out}
-\Input{$\mathbf{s}^{\texttt{S}}$, $\mathbf{s}^{\texttt{G}}$, WCCG}
-\Output{if connected: skeleton $\Sigma$; else: frontier loop $\mathcal{L}$}
-$P\leftarrow\mathbf{s}^{\texttt{S}}$, $\Sigma\leftarrow[\ ]$\;
-\While{true}{
-  \If{segment $P\mathbf{s}^{\texttt{G}}$ hits no edge}{\Return $\Sigma \cup \{\texttt{straight}(P,\mathbf{s}^{\texttt{G}})\}$}
-  Build loop $\mathcal{L}$ by angle-follow from the hit edge; append traversed edges to $\Sigma$\;
-  \If{$\mathrm{parity}(\mathcal{L},\,\mathbf{s}^{\texttt{S}}\mathbf{s}^{\texttt{G}})$ is odd}{\Return $(\emptyset,\mathcal{L})$}
-  Choose exit $e$ on $\mathcal{L}$ (outward normal $\to\,\mathbf{s}^{\texttt{G}}$); append arc to $\Sigma$; $P\leftarrow e$ (tiny bias)\;
-}
-\end{algorithm}
 
-\begin{remark}[Skeleton $\to$ path]
-BugPlanner certifies connectivity via a frontier skeleton. A geometric $W$–clear path is obtained by sliding $\Sigma$ onto the $W/2$–inflated boundary, offsetting slightly inward into $\mathcal F_W$, and attaching the cleared endpoint disks. This mapping is continuous and preserves homotopy.
-\end{remark}
+
+
+%% \begin{algorithm}[t!]
+%% \small
+%% \caption{BugPlanner for $W$-width connectivity (skeleton witness)}
+%% \label{alg:bugplanner}
+%% \DontPrintSemicolon
+%% \SetKwInOut{Input}{In}\SetKwInOut{Output}{Out}
+%% \Input{$\mathbf{s}^{\texttt{S}}$, $\mathbf{s}^{\texttt{G}}$, WCCG}
+%% \Output{if connected: skeleton $\Sigma$; else: frontier loop $\mathcal{L}$}
+%% $P\leftarrow\mathbf{s}^{\texttt{S}}$, $\Sigma\leftarrow[\ ]$\;
+%% \While{true}{
+%%   \If{segment $P\mathbf{s}^{\texttt{G}}$ hits no edge}{\Return $\Sigma \cup \{\texttt{straight}(P,\mathbf{s}^{\texttt{G}})\}$}
+%%   Build loop $\mathcal{L}$ by angle-follow from the hit edge; append traversed edges to $\Sigma$\;
+%%   \If{$\mathrm{parity}(\mathcal{L},\,\mathbf{s}^{\texttt{S}}\mathbf{s}^{\texttt{G}})$ is odd}{\Return $(\emptyset,\mathcal{L})$}
+%%   Choose exit $e$ on $\mathcal{L}$ (outward normal $\to\,\mathbf{s}^{\texttt{G}}$); append arc to $\Sigma$; $P\leftarrow e$ (tiny bias)\;
+%% }
+%% \end{algorithm}
