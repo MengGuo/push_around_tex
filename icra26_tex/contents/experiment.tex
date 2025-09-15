@@ -13,7 +13,7 @@ supplementary material.
   \centering
   \includegraphics[width=\columnwidth]{figures/SL_Push.pdf}
   \vspace{-10mm}
-\caption{SL-Push}
+\caption{SL-Push. Computate(offline) or simulate(sim-in-the-loop) the push directions for movable obstacles along the W-width straight path from sub-start to sub-goal. Top: Push steps. Bottom: Changes in the reachable region during pushes}
 \end{figure}
 
 \begin{figure}
@@ -21,7 +21,7 @@ supplementary material.
   \vspace{-3mm}
   \includegraphics[width=\columnwidth]{figures/Rec_NAMO.pdf}
   \vspace{-10mm}
-\caption{Rec-NAMO}
+\caption{Rec-NAMO. Rec-NAMO builds path segments sequentially but fails to construct the full width-w path from start to goal. Top: Push steps. Bottom: Changes in the reachable region during pushes}
 \end{figure}
 
 
@@ -125,7 +125,7 @@ nodes when a batch of actions fails.
   \toprule
   Method & Succ.~(\%) & \#PT (s) & \#ET (s) & \#Sims & \#Pushes \\
   \midrule
-  DFS-WCCG            & 25 & -- & -- & -- & -- \\
+  DFS-WCCG            & 25 & timeout & N/A & - & - \\
   SL-Push (off-line)  & 62.5 & 0.02 & 145.147 & 0 & 7 \\
   SL-Push (sim)       & 75 & 25.09 & 246.825 & 16 & 8 \\
   Rec-NAMO            & 37.5 & 10.45 & 179.262 & 0 & 7 \\
