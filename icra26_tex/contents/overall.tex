@@ -1,84 +1,78 @@
 %==============================
 \subsection{Overall Analyses}\label{subsec:overall}
 %==============================
-%----------------------------------------------
-\subsubsection{Online Execution and Adaptation}\label{subsec:execute}
-%----------------------------------------------
-After the search returns a push sequence $\texttt{Plan}=\{\tau_1,\ldots,\tau_K\}$,
-execution proceeds \emph{sequentially} with an online hybrid controller that
-alternates between \textbf{transition} (robots move to contact) and \textbf{pushing}
-(robots regulate while the object moves).
 
-\textbf{Controller overview.}
-Each task $\tau_k$ specifies a target obstacle and a world-frame twist
-$\widehat{\mathbf{u}}=(\widehat{v}_x,\widehat{v}_y,\widehat{\omega})$ for a short
-horizon. We synthesize a reference object trajectory by integrating
-$\widehat{\mathbf{u}}$ and map it to per-robot reference contact states using the
-active contact mode. Robots are commanded by proportional velocity control on
-position/yaw errors at their \emph{contact-centric} targets:
+\subsubsection{Execution and Online Adaptation}\label{subsec:execute}
+The output of the hybrid search is a pushing schedule
+$\pi=\{\tau_1,\cdots,\tau_K\}$, where each $\tau_k$ specifies a target gap, a
+short-horizon velocity $\mathbf{v}_k\triangleq(v_x,v_y,\omega)$, and a contact
+mode $\boldsymbol{\xi}_k$. Execution proceeds sequentially under a hybrid
+controller that alternates between transition and pushing phases.
+
+During transition, robots plan collision-free paths in the
+instantaneous freespace $\widehat{\mathcal{W}}(t)$ to reach their designated
+contact points. If two paths are imminently head-on, the associated`
+contacts are swapped to avoid deadlock.
+During pushing, the commanded velocity $\mathbf{v}_k$ is integrated to form a
+short reference trajectory for the manipulated obstacle. This trajectory is
+mapped to per-robot contact states using $\boldsymbol{\xi}_k$, and each robot
+$R_n$ executes proportional velocity control:
 \[
 \mathbf{v}_n = K_{\!p}\!\left(\widehat{\mathbf{p}}^{\,\text{c}}_n - \mathbf{p}^{\text{c}}_n\right),
 \qquad
 \omega_n = K_{\!r}\!\left(\widehat{\psi}^{\,\text{c}}_n - \psi^{\text{c}}_n\right),
 \]
-with periodic \emph{forward-reference refresh} to remain predictive. During
-transition, each robot plans a collision-free path (grid/A*) to a small offset of
-its contact pose; a lightweight conflict check swaps a pair of goal contacts if two
-transition paths are imminently head-on. During pushing, small contact-frame offsets
-are adapted online to absorb object yaw drift, keeping contact consistent without
-re-planning.
+where $(\widehat{\mathbf{p}}^{\,\text{c}}_n,\widehat{\psi}^{\,\text{c}}_n)$ are
+the reference contact states, $(\mathbf{p}^{\text{c}}_n,\psi^{\text{c}}_n)$ are
+the measured states, and $K_{\!p},K_{\!r}>0$ are control gains. Small offsets
+are adapted online to compensate for yaw drift and maintain stable contact.
 
-\textbf{Task switching and re-planning.}
-Execution monitors (i) transition feasibility/timeouts and (ii) pushing progress via
-a short-horizon early-stop test that triggers when the commanded widening succeeds
-or progress stalls. On task completion, the executor advances to $\tau_{k+1}$. If a
-failure/stall is detected, execution yields control back to the planner with the
-current snapshot. Previously explored but unexecuted nodes are \emph{preserved} and
-reinserted by priority, avoiding priority-queue exhaustion and continuing from the
-most promising frontier.
+Execution is monitored continuously. Transition feasibility is checked by
+timeouts, while pushing is monitored by early-stop tests. If the commanded
+widening succeeds, execution advances to $\tau_{k+1}$; otherwise, the
+executor returns control to the planner with the current state. At a lower rate,
+the WCCG is rebuilt and the execution terminates immediately once a
+$W$--clear path $\mathcal{P}^W_\texttt{V}$ exists between
+$\mathbf{s}_\texttt{V}^{\texttt{S}}$ and $\mathbf{s}_\texttt{V}^{\texttt{G}}$.
 
-\textbf{Global goal check.}
-At a coarse cadence, the system rebuilds the $W$-clearance graph on the live
-snapshot and terminates the episode as soon as a $W$-clear path exists from start
-to goal; this prevents unnecessary additional pushes once connectivity is achieved.
-
-\begin{remark}[Endpoint disks as a sufficiency booster]
-The $W$-CCG connectivity test is necessary but may be conservative at the path
-endpoints. We therefore include a lightweight \emph{endpoint-clearing} supplement:
-if connectivity holds but either endpoint’s $W/2$ disk is contaminated, the planner
-proposes a small set of \emph{away-from-endpoint} pushes to clear the disk, after
-which execution proceeds. This is an implementation convenience rather than a core
-component of the method.
+\begin{remark}[Endpoint Booster]
+The $W$--CCG criterion of~\eqref{eq:wccg_criterion} may be conservative near
+the endpoints. If connectivity holds but the disks
+$\mathbb{B}_{W/2}(\mathbf{s}_\texttt{V}^{\texttt{S}})$ or
+$\mathbb{B}_{W/2}(\mathbf{s}_\texttt{V}^{\texttt{G}})$ intersect obstacles, the
+planner generates a small set of auxiliary pushes directed away from the
+endpoints. These pushes clear the disks and allow execution to proceed.
+\hfill$\blacksquare$
 \end{remark}
 
 %----------------------------------------------
-\subsubsection{Complexity (Core Conclusions)}\label{subsubsec:complexity}
-%----------------------------------------------
-Per expansion, the dominant cost is parallel prediction of a small batch of push
-candidates; frontier/$W$-connectivity and gap presearch are typically subdominant.
+\subsubsection{Computational Complexity}\label{subsubsec:complexity}
+The cost of each node expansion is dominated by simulation of pushing
+strategies. Construction of the $W$--clearance graph $\mathcal{G}_W$ and the
+associated connectivity tests scale nearly linearly in the number of movable
+obstacles $|\boldsymbol{\Omega}|$, while gap ranking by presearch
+(Sec.~\ref{subsec:gap}) is lightweight because it is limited to a small subset
+of frontier gaps. At expansion, only a fraction of the strategies in
+$\mathsf{Rank}(\nu)$ survive the geometric quick-pass and early-stop checks,
+which shortens the horizon of the simulator calls defined by
+$\mathsf{EvalSim}$. Parallel execution of these simulations across multiple
+workers reduces the effective cost nearly linearly until communication overhead
+is reached. Deferred expansion further improves efficiency by distributing the
+evaluation of $\mathsf{Rank}(\nu)$ across iterations, avoiding redundant
+restarts and keeping the priority queue focused on promising frontiers.
 
-\[
-T_{\text{exp}} \;\approx\; \tilde{\mathcal O}(M) \;+\; \mathcal O(BD) \;+\; \frac{K}{P}\!\left(T_{\text{qp}} + S\,T_{\text{phys}}\right),
-\]
-where $M$ is \#obstacles, $B/D$ are beam width/depth for presearch, $K$ candidates per
-expansion, $P$ worker processes, $S$ average physics steps (post quick-pass/early-stop),
-$T_{\text{qp}}$ geometry screen time, and $T_{\text{phys}}$ per-step physics time.
-
-\noindent\textbf{Implications.}
-(i) ModeTable and beam presearch reduce $K$ and keep $BD\!\ll\!M$;
-(ii) quick-pass/early-stop cut $S$ and the simulator hit-rate;
-(iii) increasing $P$ yields near-linear speedup until IPC bounds;
-(iv) deferred reinsertion keeps expansions focused, avoiding wasted restarts.
 
 %----------------------------------------------
-\subsubsection{Generalization and limits}\label{subsec:general}
-%----------------------------------------------
-\textbf{Heterogeneous teams.} The controller already exposes per-robot gains and
-supports basic heterogeneity during transition (e.g., avoiding goal swaps across
-mismatched capability classes). Extending the ModeTable prior with robot-specific
-limits is straightforward. \textbf{Sequential vs.\ concurrent pushes.} The current
-executor applies one push task at a time; concurrent pushing is a natural extension
-but requires multi-object mode synthesis and conflict-aware transitions. \textbf{Dynamic
-changes.} Because the executor performs periodic global $W$-connectivity checks and
-re-plans on failure, modest perturbations (e.g., small drifts or unmodeled contacts)
-are handled online without restarting the episode.
+\subsubsection{Generalization}\label{subsec:general}
+The framework admits several natural extensions:
+(I) \textit{Heterogeneous teams.} The controller structure admits per-robot gain
+tuning, and mode priors can be augmented with robot-specific constraints.
+This enables heterogeneous robots to cooperate within the same framework;
+(II) \textit{Concurrent pushing.} While the executor applies one push task at a
+time, the framework can be extended to allow concurrent pushing of multiple
+obstacles. Such an extension requires multi-object mode generation and
+transition planning to account for inter-robot conflicts;
+(III) \textit{Dynamic environments.} Periodic $W$--connectivity checks and
+on-demand re-planning enable adaptation to moderate disturbances such as object
+drift or unmodeled contacts. The framework can therefore generalize to settings
+where the environment changes gradually during execution.

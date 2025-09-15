@@ -56,6 +56,15 @@ Z.~Ren, B.~Suvonov, G.~Chen, B.~He, Y.~Liao, C.~Fermuller, and J.~Zhang,
   Automation (ICRA)}.\hskip 1em plus 0.5em minus 0.4em\relax IEEE, 2025, pp.
   533--539.
 
+\bibitem{goyal1989limit}
+S.~Goyal, A.~Ruina, and J.~Papadopoulos, ``Limit surface and moment function
+  descriptions of planar sliding,'' in \emph{IEEE International Conference on
+  Robotics and Automation (ICRA)}, 1989, pp. 794--795.
+
+\bibitem{lynch1992manipulation}
+K.~M. Lynch, H.~Maekawa, and K.~Tanie, ``Manipulation and active sensing by
+  pushing using tactile feedback.'' in \emph{IROS}, vol.~1, 1992, pp. 416--421.
+
 \bibitem{ni2023progressive}
 R.~Ni and A.~H. Qureshi, ``Progressive learning for physics-informed neural
   motion planning,'' \emph{arXiv preprint arXiv:2306.00616}, 2023.
@@ -65,11 +74,21 @@ Y.~Liu, R.~Ni, and A.~H. Qureshi, ``Physics-informed neural mapping and motion
   planning in unknown environments,'' \emph{IEEE Transactions on Robotics},
   2025.
 
+\bibitem{chen2015occlusion}
+J.~Chen, M.~Gauci, W.~Li, A.~Kolling, and R.~Gro{\ss}, ``Occlusion-based
+  cooperative transport with a swarm of miniature mobile robots,'' \emph{IEEE
+  Transactions on Robotics}, vol.~31, no.~2, pp. 307--321, 2015.
+
 \bibitem{ni2024physics}
 R.~Ni and A.~H. Qureshi, ``Physics-informed neural motion planning on
   constraint manifolds,'' in \emph{2024 IEEE International Conference on
   Robotics and Automation (ICRA)}.\hskip 1em plus 0.5em minus 0.4em\relax IEEE,
   2024, pp. 12\,179--12\,185.
+
+\bibitem{wang2006multi}
+Y.~Wang and C.~W. De~Silva, ``Multi-robot box-pushing: Single-agent q-learning
+  vs. team q-learning,'' in \emph{2006 IEEE/RSJ international conference on
+  intelligent robots and systems}, 2006, pp. 3694--3699.
 
 \bibitem{feng2025learning}
 Y.~Feng, C.~Hong, Y.~Niu, S.~Liu, Y.~Yang, and D.~Zhao, ``Learning multi-agent
@@ -88,7 +107,19 @@ Q.~Rouxel, S.~Ivaldi, and J.-B. Mouret, ``Multi-contact whole-body force
   control for position-controlled robots,'' \emph{IEEE Robotics and Automation
   Letters}, vol.~9, no.~6, pp. 5639--5646, 2024.
 
-\bibitem{glop}
-G.~L.~O. Solver, \texttt{\url{https://developers.google.com/optimization/lp}}.
+\bibitem{tang2023combinatorial}
+Z.~Tang, J.~Chen, and M.~Guo, ``Combinatorial-hybrid optimization for
+  multi-agent systems under collaborative tasks,'' in \emph{IEEE Conference on
+  Decision and Control (CDC)}, 2023.
+
+\bibitem{McGuireCroonTuyls2019}
+K.~N. McGuire, G.~C. H.~E. de~Croon, and K.~Tuyls, ``A comparative study of bug
+  algorithms for robot navigation,'' \emph{Robotics and Autonomous Systems},
+  vol. 121, p. 103261, 2019.
+
+\bibitem{coumans2019}
+E.~Coumans and Y.~Bai, ``Pybullet, a python module for physics simulation for
+  games, robotics and machine learning,'' \url{http://pybullet.org},
+  2016--2019.
 
 \end{thebibliography}

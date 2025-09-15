@@ -14,6 +14,7 @@ supplementary material.
   \includegraphics[width=\columnwidth]{figures/SL_Push.pdf}
   \vspace{-10mm}
 \caption{SL-Push. Compute(offline) or simulate(sim-in-the-loop) the pushing directions for movable obstacles along the W-width straight path from sub-start to sub-goal. Top: Pushing steps. Bottom: Reachable region changes during pushing}
+\label{fig:SL-Push}
 \end{figure}
 
 \begin{figure}
@@ -21,7 +22,8 @@ supplementary material.
   \vspace{-3mm}
   \includegraphics[width=\columnwidth]{figures/Rec_NAMO.pdf}
   \vspace{-10mm}
-\caption{Rec-NAMO. Rec-NAMO builds path segments sequentially but fails to construct the full W-widthpath from start to goal. Top: Pushing steps. Bottom: Reachable region changes during pushing}
+\caption{Rec-NAMO. Rec-NAMO builds path segments sequentially but fails to construct the full W-clear path from start to goal. Top: Pushing steps. Bottom: Reachable region changes during pushing}
+\label{fig:Rec-NAMO}
 \end{figure}
 
 
@@ -102,20 +104,28 @@ cost-to-go, quick-pass ratio, early-stop ratio, and worker-pool
 utilization. Results are averaged over 10 seeds unless noted.
 
 % ==============================
-\subsubsection{Main Results}
-\label{subsec:main-results}
-Table~\ref{tab:main} summarizes performance on the nominal scenario.
-SiLS attains higher success with fewer simulations and lower time due to:
-(i) frontier-based gap ranking, (ii) ModeTable-guided push directions,
-and (iii) quick-pass/early-stop. Deferred reinsertion prevents
-priority-queue starvation by revisiting previously generated high-value
-nodes when a batch of actions fails.
+\subsubsection{Comparison of Main Results}
+\label{subsec:comparison}
+Table~\ref{tab:main} summarizes the performance of four baseline methods and our proposed SiLS method on the nominal scenario. DFS-WCCG exhibits high computational overhead due to the exponential growth of the search space with the number of movable obstacles, resulting in very long planning times and frequent timeouts, which is reflected in its lowest success rate. SL-Push (offline) achieves the fastest planning times, typically under 0.1 s, but the lack of physics-informed simulation leads to physically infeasible solutions. The simulation-in-the-loop type of SL-Push improves solution feasibility; however, it still requires many simulation calls, resulting in increased planning times. Furthermore, the straight-line pushing strategy may generate unnecessarily long action sequences, as the direct path is not always the minimal pushing path. Figure~\ref{fig:SL-Push} illustrates the step-by-step execution of SL-Push with two manually defined subgoals, showing how the environment gradually becomes connected such that the start and goal are in the same connected face.
+
+Rec-NAMO, while faster than simulation-in-the-loop approaches and effective in classical NAMO tasks, struggles to generate fully connected W-clear paths in our setting. Although its recursive search produces locally connected regions along the pushing sequence, the final map often fails to contain a continuous W-clear path, as demonstrated in Figure~\ref{fig:Rec-NAMO}. This limitation is reflected in its relatively low success rate in Table~\ref{tab:main}.
+
+Our SiLS method attains higher success rates with fewer simulation calls and shorter planning and execution times, thanks to (i) frontier-based gap ranking, (ii) ModeTable-guided push directions, and (iii) quick-pass/early-stop. In addition, deferred reinsertion prevents priority-queue starvation by revisiting previously generated high-value nodes when a batch of actions fails, further improving efficiency and solution quality.
+
+% \subsubsection{Main Results}
+% \label{subsec:main-results}
+% Table~\ref{tab:main} summarizes performance on the nominal scenario.
+% SiLS attains higher success with fewer simulations and lower time due to:
+% (i) frontier-based gap ranking, (ii) ModeTable-guided push directions,
+% and (iii) quick-pass/early-stop. Deferred reinsertion prevents
+% priority-queue starvation by revisiting previously generated high-value
+% nodes when a batch of actions fails.
 
 \begin{table}[t]
   \centering
   \begin{threeparttable}
   \caption{Performance on the nominal scenario with push-count (mean $\pm$ std).}
-  \label{tab:main-push}
+  \label{tab:main}
   \vspace{2pt}
   
   % 🔑 在这里调节列间距
