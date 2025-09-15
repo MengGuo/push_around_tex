@@ -24,8 +24,8 @@ as potential bottlenecks. The resulting graph is defined below:
 \begin{equation}\label{eq:wccg}
 \mathcal{G}_W\triangleq(\mathcal{V},\; \mathcal{E}_c\cup\mathcal{E}_b),
 \end{equation}
-where $\mathcal{V}$ contains all centroid and bridge nodes,
-$\mathcal{E}_c$ is the set of centroid--bridge edges, and $\mathcal{E}_b$ the
+where $\mathcal{V}$ contains all centroid and bridge nodes;
+$\mathcal{E}_c$ is the set of centroid--bridge edges; and $\mathcal{E}_b$ the
 set of bridge--bridge edges annotated by widths $w_{uv}$.
 
 \subsubsection{Connectivity Criterion}\label{subsubsec:bugplanner}
@@ -75,7 +75,7 @@ at least $W$.
 
 
 \begin{remark}\label{remark:wccg}
-  The WCCG differs from sampling- and grid-based planners in two key aspects:
+  The proposed WCCG differs from sampling- and grid-based planners in two key aspects:
   (I) It avoids discretization of $\mathcal{W}$ and is therefore free from
   resolution-induced errors;
   (II) It relies purely on geometry, which makes
