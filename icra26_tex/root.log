@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2021) (preloaded format=pdflatex 2022.3.4)  15 SEP 2025 17:01
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2021) (preloaded format=pdflatex 2022.3.4)  15 SEP 2025 19:05
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1554,7 +1554,7 @@ LaTeX Warning: No \author given.
 
 pdfTeX warning: pdflatex (file ./figures/presearch.pdf): PDF inclusion: found P
 DF version <1.7>, but at most version <1.5> allowed
-<figures/presearch.pdf, id=167, 441.85497pt x 323.35704pt>
+<figures/presearch.pdf, id=163, 441.85497pt x 323.35704pt>
 File: figures/presearch.pdf Graphic file (type pdf)
 <use figures/presearch.pdf>
 Package pdftex.def Info: figures/presearch.pdf  used on input line 23.
@@ -1572,7 +1572,7 @@ File: ot1pcr.fd 2001/06/04 font definitions for OT1/pcr.
 
 pdfTeX warning: pdflatex (file ./figures/wccg.pdf): PDF inclusion: found PDF ve
 rsion <1.7>, but at most version <1.5> allowed
-<figures/wccg.pdf, id=184, 479.51295pt x 111.46744pt>
+<figures/wccg.pdf, id=180, 479.51295pt x 111.46744pt>
 File: figures/wccg.pdf Graphic file (type pdf)
 <use figures/wccg.pdf>
 Package pdftex.def Info: figures/wccg.pdf  used on input line 70.
@@ -1584,24 +1584,31 @@ Underfull \hbox (badness 1558) in paragraph at lines 32--47
  []
 
 [3 <./figures/wccg.pdf>]) (./contents/gap.tex
-LaTeX Font Info:    Font shape `OT1/pcr/m/it' in size <9> not available
-(Font)              Font shape `OT1/pcr/m/sl' tried instead on input line 16.
 File: figures/presearch.pdf Graphic file (type pdf)
 <use figures/presearch.pdf>
-Package pdftex.def Info: figures/presearch.pdf  used on input line 28.
+Package pdftex.def Info: figures/presearch.pdf  used on input line 48.
 (pdftex.def)             Requested size: 245.71811pt x 179.82053pt.
-) (./contents/simloop.tex [4]
+LaTeX Font Info:    Trying to load font information for OT1+phv on input line 8
+6.
+
+(/usr/local/texlive/2021/texmf-dist/tex/latex/psnfss/ot1phv.fd
+File: ot1phv.fd 2020/03/25 scalable font definitions for OT1/phv.
+))
+(./contents/simloop.tex
+LaTeX Font Info:    Font shape `OT1/pcr/m/it' in size <9> not available
+(Font)              Font shape `OT1/pcr/m/sl' tried instead on input line 45.
+ [4]
 
 LaTeX Warning: Reference `fig:reach-contacts' on page 5 undefined on input line
  92.
 
 ) (./contents/overall.tex [5])) (./contents/experiment.tex
-<figures/SL_Push.pdf, id=297, 1445.4pt x 722.7pt>
+<figures/SL_Push.pdf, id=281, 1445.4pt x 722.7pt>
 File: figures/SL_Push.pdf Graphic file (type pdf)
 <use figures/SL_Push.pdf>
 Package pdftex.def Info: figures/SL_Push.pdf  used on input line 14.
 (pdftex.def)             Requested size: 245.71811pt x 122.85736pt.
-<figures/Rec_NAMO.pdf, id=298, 1445.4pt x 722.7pt>
+<figures/Rec_NAMO.pdf, id=282, 1445.4pt x 722.7pt>
 File: figures/Rec_NAMO.pdf Graphic file (type pdf)
 <use figures/Rec_NAMO.pdf>
 Package pdftex.def Info: figures/Rec_NAMO.pdf  used on input line 22.
@@ -1652,55 +1659,55 @@ Before submitting the final camera ready copy, remember to:
 LaTeX Warning: There were undefined references.
 
 Package rerunfilecheck Info: File `root.out' has not changed.
-(rerunfilecheck)             Checksum: 47A96E63C1C44C390CBCCC95E3199D45;6527.
+(rerunfilecheck)             Checksum: 5CB5ADAE957290BFCF7309DE09B02A6D;6670.
  ) 
 Here is how much of TeX's memory you used:
- 28649 strings out of 478994
- 536516 string characters out of 5858185
- 845464 words of memory out of 5000000
- 45398 multiletter control sequences out of 15000+600000
- 465658 words of font info for 166 fonts, out of 8000000 for 9000
+ 28689 strings out of 478994
+ 537048 string characters out of 5858185
+ 842593 words of memory out of 5000000
+ 45446 multiletter control sequences out of 15000+600000
+ 468630 words of font info for 170 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 98i,21n,102p,738b,840s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 98i,21n,102p,828b,840s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/local/texlive/2021/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/local/t
 exlive/2021/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/local/te
 xlive/2021/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx9.pfb></usr/local/texl
 ive/2021/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/local/texli
 ve/2021/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi5.pfb></usr/local/texlive
-/2021/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi6.pfb></usr/local/texlive/2
-021/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb></usr/local/texlive/202
-1/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr/local/texlive/2021/
-texmf-dist/fonts/type1/public/amsfonts/cm/cmmi9.pfb></usr/local/texlive/2021/te
-xmf-dist/fonts/type1/public/amsfonts/cm/cmmib10.pfb></usr/local/texlive/2021/te
-xmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/local/texlive/2021/texm
-f-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb></usr/local/texlive/2021/texmf-d
-ist/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/local/texlive/2021/texmf-dist
-/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/local/texlive/2021/texmf-dist/fo
-nts/type1/public/amsfonts/cm/cmr9.pfb></usr/local/texlive/2021/texmf-dist/fonts
-/type1/public/amsfonts/cm/cmss10.pfb></usr/local/texlive/2021/texmf-dist/fonts/
-type1/public/amsfonts/cm/cmss9.pfb></usr/local/texlive/2021/texmf-dist/fonts/ty
-pe1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/2021/texmf-dist/fonts/typ
-e1/public/amsfonts/cm/cmsy6.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1
-/public/amsfonts/cm/cmsy9.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/p
-ublic/mathabx-type1/matha10.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1
-/public/mathabx-type1/matha5.pfb></usr/local/texlive/2021/texmf-dist/fonts/type
-1/public/mathabx-type1/matha6.pfb></usr/local/texlive/2021/texmf-dist/fonts/typ
-e1/public/mathabx-type1/matha7.pfb></usr/local/texlive/2021/texmf-dist/fonts/ty
-pe1/public/mathabx-type1/matha8.pfb></usr/local/texlive/2021/texmf-dist/fonts/t
-ype1/public/mathabx-type1/matha9.pfb></usr/local/texlive/2021/texmf-dist/fonts/
-type1/public/mathabx-type1/mathb10.pfb></usr/local/texlive/2021/texmf-dist/font
-s/type1/public/mathabx-type1/mathx10.pfb></usr/local/texlive/2021/texmf-dist/fo
-nts/type1/public/amsfonts/symbols/msam10.pfb></usr/local/texlive/2021/texmf-dis
-t/fonts/type1/public/amsfonts/symbols/msbm10.pfb></usr/local/texlive/2021/texmf
--dist/fonts/type1/urw/courier/ucrr8a.pfb></usr/local/texlive/2021/texmf-dist/fo
-nts/type1/urw/courier/ucrro8a.pfb></usr/local/texlive/2021/texmf-dist/fonts/typ
-e1/urw/times/utmb8a.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/urw/tim
-es/utmbi8a.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/urw/times/utmr8a
-.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
-Output written on root.pdf (8 pages, 2637190 bytes).
+/2021/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb></usr/local/texlive/2
+021/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr/local/texlive/202
+1/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi9.pfb></usr/local/texlive/2021/
+texmf-dist/fonts/type1/public/amsfonts/cm/cmmib10.pfb></usr/local/texlive/2021/
+texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/local/texlive/2021/te
+xmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb></usr/local/texlive/2021/texmf
+-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/local/texlive/2021/texmf-di
+st/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/local/texlive/2021/texmf-dist/
+fonts/type1/public/amsfonts/cm/cmr9.pfb></usr/local/texlive/2021/texmf-dist/fon
+ts/type1/public/amsfonts/cm/cmss10.pfb></usr/local/texlive/2021/texmf-dist/font
+s/type1/public/amsfonts/cm/cmss9.pfb></usr/local/texlive/2021/texmf-dist/fonts/
+type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/2021/texmf-dist/fonts/t
+ype1/public/amsfonts/cm/cmsy7.pfb></usr/local/texlive/2021/texmf-dist/fonts/typ
+e1/public/amsfonts/cm/cmsy9.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1
+/public/mathabx-type1/matha10.pfb></usr/local/texlive/2021/texmf-dist/fonts/typ
+e1/public/mathabx-type1/matha5.pfb></usr/local/texlive/2021/texmf-dist/fonts/ty
+pe1/public/mathabx-type1/matha6.pfb></usr/local/texlive/2021/texmf-dist/fonts/t
+ype1/public/mathabx-type1/matha7.pfb></usr/local/texlive/2021/texmf-dist/fonts/
+type1/public/mathabx-type1/matha8.pfb></usr/local/texlive/2021/texmf-dist/fonts
+/type1/public/mathabx-type1/matha9.pfb></usr/local/texlive/2021/texmf-dist/font
+s/type1/public/mathabx-type1/mathb10.pfb></usr/local/texlive/2021/texmf-dist/fo
+nts/type1/public/mathabx-type1/mathx10.pfb></usr/local/texlive/2021/texmf-dist/
+fonts/type1/public/amsfonts/symbols/msam10.pfb></usr/local/texlive/2021/texmf-d
+ist/fonts/type1/public/amsfonts/symbols/msbm10.pfb></usr/local/texlive/2021/tex
+mf-dist/fonts/type1/urw/courier/ucrr8a.pfb></usr/local/texlive/2021/texmf-dist/
+fonts/type1/urw/courier/ucrro8a.pfb></usr/local/texlive/2021/texmf-dist/fonts/t
+ype1/urw/helvetic/uhvr8a.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/ur
+w/times/utmb8a.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/urw/times/ut
+mbi8a.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/urw/times/utmr8a.pfb>
+</usr/local/texlive/2021/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
+Output written on root.pdf (8 pages, 2622019 bytes).
 PDF statistics:
- 555 PDF objects out of 1000 (max. 8388607)
- 429 compressed objects within 5 object streams
- 125 named destinations out of 1000 (max. 500000)
- 353 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 537 PDF objects out of 1000 (max. 8388607)
+ 411 compressed objects within 5 object streams
+ 112 named destinations out of 1000 (max. 500000)
+ 345 words of extra memory for PDF output out of 10000 (max. 10000000)
 
