@@ -1,101 +1,128 @@
+%==============================================
+\begin{algorithm}[t!]
+\caption{Physics-Informed Hybrid Search}\label{alg:push}
+\SetAlgoLined
+\KwIn{$\mathbf{s}_0$, $\alpha$, $\mathsf{EvalSim}(\cdot)$, $W$--criterion by~\eqref{eq:wccg_criterion}}
 
-\begin{algorithm}[t]
-\small
-\caption{SiLS with Deferred Expansion (clean version)}
-\label{alg:SiLS}
-\DontPrintSemicolon
-\SetKwInOut{Input}{In}\SetKwInOut{Output}{Out}
-\SetKwFunction{Build}{BuildWCCG}
-\SetKwFunction{Frontier}{BugPlannerFrontier}
-\SetKwFunction{Rank}{PresearchRank}
-\SetKwFunction{Predict}{SimPredict}
-\SetKwFunction{Next}{NextBatch}
-
-\Input{$\mathbf{s}^{\texttt{S}}$, $\mathbf{s}^{\texttt{G}}$, $W$, initial snapshot, batch size $B$}
-\Output{Executable push plan or \texttt{fail}}
-
-\BlankLine
-\textbf{State of a node:} $\nu=(\texttt{snap}, \texttt{plan}, g, \mathcal{C}, j)$,
-with candidates $\mathcal{C}$ (ranked) and cursor $j$.\;
-
-\BlankLine
-\textbf{Init:} $\nu_0\!\leftarrow\!(\texttt{snap}_0,\emptyset,0,\varnothing,0)$;\;
-$\texttt{PQ}\!\leftarrow\!\{(\nu_0, f=\widehat{\mathsf{Cost}}_{\text{to-go}}(\texttt{snap}_0))\}$\;
-
-\While{\texttt{PQ} not empty}{
-  Pop $(\nu,f)$ with minimal $f$; \tcp*{$\nu=(\texttt{snap},\texttt{plan},g,\mathcal{C},j)$}
-  \If{$\mathcal{C}=\varnothing$}{
-    $(\texttt{connected}) \leftarrow \Build(\texttt{snap})$;\;
-    \If{\texttt{connected}}{\Return \texttt{plan}}
-    $\mathcal{L}\leftarrow \Frontier(\mathbf{s}^{\texttt{S}},\mathbf{s}^{\texttt{G}})$;\;
-    $\mathcal{C}\leftarrow \Rank(\mathcal{L})$;\; $j\leftarrow 0$\;
-  }
-  $\mathcal{B}\leftarrow \Next(\mathcal{C}, j, B)$;\; $j\leftarrow j+|\mathcal{B}|$\;
-
-  \ForEach{$\tau\in\mathcal{B}$ \textbf{in parallel}}{
-    $(\texttt{ok}, \texttt{snap}', t_\text{push}) \leftarrow \Predict(\tau)$\;
-    \If{\texttt{ok}}{
-      $g' \leftarrow g + \mathsf{C}_{\mathrm{trans}} + t_\text{push}$;\;
-      $h' \leftarrow \widehat{\mathsf{Cost}}_{\text{to-go}}(\texttt{snap}')$;\;
-      Push $\big((\texttt{snap}',\,\texttt{plan}\!\cup\!\{\tau\},\,g',\,\varnothing,\,0),\, f'=g'+h'\big)$ into \texttt{PQ}\;
+\KwOut{$\pi^\star$}
+\tcc{Initialization}
+$\nu_0\gets(\mathbf{s}_0,\emptyset),\;\chi(\nu_0)=0$\;
+Init $\mathcal{Q}$ by~\eqref{eq:priority}\;
+\While{not terminated}{
+  \tcc{Selection}
+  $\nu\gets\mathcal{Q}.\texttt{pop\_min}()$ by~\eqref{eq:priority}\;
+  \tcc{Parallel Expansion}
+  \ForEach{$g\in\mathsf{Rank}(\nu)$}{
+    \ForEach{$(\mathbf{v},\boldsymbol{\xi})\in\Xi_g$}{
+    $\tau=(g,\mathbf{v},\boldsymbol{\xi})$\;
+    $(\mathbf{s}',\delta_T,\delta_J)\gets\mathsf{EvalSim}(\nu,\tau)$ by~\eqref{eq:sim}\;
+    \If{success}{
+      $\nu'\gets(\mathbf{s}',\pi\cup\{\tau\})$\;
+      $\chi(\nu')\gets\chi(\nu)+\delta_\texttt{T}+\alpha\,\delta_\texttt{J}$\;
+      $\mathcal{Q}.\texttt{push}(\nu')$\;
+      }
     }
   }
-  \If{$j<|\mathcal{C}|$}{reinsert current $\nu$ into \texttt{PQ} with the same $f$}
+  \tcc{Termination Check}
+  \If{$\mathbf{s}'$ admits $\mathcal{P}^W_{\texttt{V}}$ by~\eqref{eq:wccg_criterion}}{
+    $\pi^\star\gets\pi'$, \textbf{break}\;
+  }
 }
-\Return \texttt{fail}\;
+\Return $\pi^\star$;
 \end{algorithm}
+%==============================================
 
 
-%----------------------------------------------
-% Helper semantics (informal):
-%   BuildCandidates(S; s^S, s^G, W): build WCCG at S; if connected return (true, ·);
-%     else return (false, ranked push-task list from frontier-gap presearch).
-%   Predict(τ): quick-pass → (optional) short-horizon physics; returns (ok, S', t_push).
-%   Heuristic(S): WCCG-based cost-to-go from snapshot S.
 
-\subsection{Simulation-in-the-Loop Search}
-\label{subsec:simloop}
-We embed a parallel physics predictor into search. Each expansion proposes ranked push tasks, filters them by a geometry \emph{quick-pass} and a short-horizon simulation with \emph{early-stop}, and refreshes the $W$-connectivity heuristic via frontier presearch—closing the gap between graph reasoning and executable actions. We refer to this two-stage filter as \emph{the pipeline} below.
+%==============================================
+\subsection{Physics-Informed Hybrid Search}\label{subsec:simloop}
 
-\subsubsection{Nodes \& Priority (Deferred Expansion)}
-A node $\nu=(\texttt{snapshot},\texttt{plan},g)$ keeps a lazily built, ranked candidate list $\mathcal{C}(\nu)$ and a cursor $j(\nu)$ to the next untried batch. We use a best-first score
-\[
-f(\nu)=g(\nu)+\widehat{\mathsf{Cost}}_{\text{to-go}}(\texttt{snapshot}),
-\]
-where $g$ accumulates robot transit plus predicted push time, and $\widehat{\mathsf{Cost}}_{\text{to-go}}$ comes from the frontier presearch (Sec.~\ref{subsec:gap}).
+The hybrid search couples high-level decisions about blocking gaps with
+low-level feasibility of multi-robot pushing. Unlike purely geometric
+planners, this procedure simultaneously determines a sequence of gaps to clear
+and physically feasible pushing actions, including directions, contact modes,
+and forces. Parallel physics simulation is embedded so that many candidate
+push strategies can be evaluated simultaneously at each expansion, and the resulting
+successor states are returned to the search. This tight coupling of discrete
+graph reasoning with continuous pushing dynamics is unique for the considered problem.
 
-\subsubsection{Progressive Expansion}
-When a node \(\nu\) is popped, we expand it \emph{progressively}.
+\subsubsection{Tree and Initialization}
+The search tree $\mathcal{T}$ is composed of nodes
+$\nu\triangleq(\mathbf{s},\pi)$, where $\mathbf{s}$ is the current system
+state including the positions and orientations of all robots and movable
+obstacles as in~\eqref{eq:transition}, and $\pi$ is the partial pushing
+strategy realized so far as in~\eqref{eq:schedule}. Two global functions are
+maintained: $\mathsf{Rank}(\nu)$ stores a ranked list of candidate gaps at this
+node together with their exploration status, derived from~\eqref{eq:pred_cost};
+and $\chi(\nu)$ returns the cumulative execution cost
+from the root to $\nu$.
+The root is initialized as
+$\nu_0\triangleq(\mathbf{s}_0,\emptyset)$, where
+$\mathbf{S}^{\texttt{S}}$ corresponds to the initial system state
+$\mathbf{s}_0$. At initialization, $\chi(\nu_0)=0$, and
+$\mathsf{Rank}(\nu_0)$ is constructed by first computing the frontier loop
+$\mathcal{L}_\nu$ associated with~$\mathbf{s}_0$, then extracting the visible
+gaps $\Gamma_{\mathcal{L}_\nu}$, and finally ranking them by their predicted
+cost-to-connect.
 
-\textbf{Initialize on demand.}
-If \(\mathcal{C}(\nu)\) is empty, we (a) build the WCCG and extract one frontier loop via BugPlanner, (b) rank its bridge–bridge gaps by the frontier presearch, and (c) instantiate a few push tasks per top gap (ModeTable prior; fallback \emph{away\,+\,jitter}). Set \(j(\nu)=0\).
+\subsubsection{Node Selection}
+At each iteration, the node with minimum best-first priority is selected from
+the queue. The priority function balances the realized execution cost and the
+estimated effort of remaining gaps:
+\begin{equation}\label{eq:priority}
+  f(\nu)\triangleq \chi(\nu)+\underset{g\in \textsf{Rank}(\nu)}{\textbf{min}}
+  \widehat{\mathsf{Cost}}(g),
+\end{equation}
+where $\chi(\nu)$ is the cumulative execution cost so far, and the second term
+is the minimum predicted remaining cost among the unexplored gaps of~$\nu$.
+This scoring ensures that nodes are expanded in an order that jointly accounts
+for physical effort already incurred and the most promising future actions.
 
-\textbf{Evaluate a small slice.}
-Take the next \(B\) tasks
-\(
-\mathcal{B}=\mathcal{C}(\nu)[\,j(\nu):\,j(\nu){+}B\,],
-\)
-advance \(j(\nu)\!\leftarrow\!j(\nu){+}|\mathcal{B}|\),
-and evaluate \(\mathcal{B}\) in parallel through \emph{the pipeline}.
-Each successful task \(\tau\) yields a child \(\nu'\) with updated snapshot, cost \(g'\), and priority \(f'=g'+\widehat{\mathsf{Cost}}_{\text{to-go}}\).
+\subsubsection{Node Expansion with Parallel Simulation}
+When a node $\nu$ is selected for expansion, a batch of \emph{pushing
+strategies} from $\mathsf{Rank}(\nu)$ is evaluated in parallel by simulation.
+Each pushing strategy is defined as
+\(\tau\triangleq(g,\mathbf{v},\boldsymbol{\xi})\), where
+$g\in \boldsymbol{\Omega}$ is the chosen gap;
+$\mathbf{v}\triangleq(v_x,v_y,\omega)\in \mathbb{R}^3$ is a short-horizon body
+velocity for the manipulated obstacle;
+and $\boldsymbol{\xi}\triangleq (\mathcal{C}_m,\mathbf{u}_m) \in (\partial\Omega_m)^N \times \mathbb{R}^{2N}$
+is a contact mode specifying robot contact points and pushing forces as in~\eqref{eq:transition}.
+Moreover, each candidate $\tau$ is first checked by a geometric quick-pass. If it passes,
+it is evaluated by the simulator with the current state and pushing strategy:
+\begin{equation}\label{eq:sim}
+  (\mathbf{s}',\, \delta_\texttt{T},\, \delta_{\texttt{J}}) \triangleq \mathsf{EvalSim}
+  \big{(}\nu,\, (g,\mathbf{v},\boldsymbol{\xi})\big{)},
+\end{equation}
+where $\mathbf{s}'$ is the successor state; $\delta_\texttt{T}>0$ is the time
+cost; and $\delta_\texttt{J}$ is the control effort as in~\eqref{eq:problem}.
+Thus, a successful evaluation produces a child
+$\nu'\triangleq (\mathbf{s}',\pi')$, where $\pi'$ is obtained by appending
+$\pi$ with $\tau$. The incremental realized cost of $\tau$ is
+$\widehat{\mathsf{C}}(\nu,\,\tau)\triangleq \delta_\texttt{T} + \alpha\, \delta_\texttt{J}$,
+with $\alpha>0$ the same trade-off parameter as in~\eqref{eq:problem}. The
+cumulative cost is then updated by
+$\chi(\nu')\triangleq \chi(\nu)+\widehat{\mathsf{C}}(\nu,\,\tau)$. Since many
+pushing strategies are simulated concurrently, numerous successors can be
+expanded in parallel at each iteration.
 
-\textbf{Reinsert if unfinished.}
-If \(j(\nu)<|\mathcal{C}(\nu)|\), reinsert \(\nu\) into the PQ with the \emph{same} priority \(f(\nu)\) to preserve best-first ordering across partially expanded nodes and avoid PQ starvation.
+\subsubsection{Termination}
+Termination occurs when a node $\nu$ reaches a state $\mathbf{s}$ for which a
+$W$--clear path $\mathcal{P}^W_\texttt{V}$ exists from
+$\mathbf{s}_\texttt{V}^{\texttt{S}}$ to $\mathbf{s}_\texttt{V}^{\texttt{G}}$,
+as certified by~\eqref{eq:wccg_criterion}. In this case, the schedule $\pi$
+stored in $\nu$ constitutes a complete solution to~\eqref{eq:problem}, encoding
+both the sequence of gaps to clear and the physically feasible pushing actions
+that realize them.
 
-\subsubsection{Collaborative Pushing in Parallel Prediction}
-\label{subsubsec:mode-cache}
-Each candidate task \(\tau\) specifies a target gap and a short-horizon body twist \(\mathbf{v}=(v_x,v_y,\omega)\).
-We synthesize per-robot contact modes \(\boldsymbol{\xi}\) aligned with \(\mathbf{v}\), validate \((\boldsymbol{\xi},\mathbf{v})\) via \emph{the pipeline}, and reuse verified modes within the subtree.
-
-\textbf{Reachable contact region from WCCG/BugPlanner.}
-We reuse the same machinery with \(W\) set to the robot’s circumscribed diameter, yielding the \emph{reachable band} on the target boundary (convex pieces) for non–point robots.
-We uniformly sample contact points on this band and attach local frames \((\mathbf{n},\tau)\) (see Fig.~\ref{fig:reach-contacts}).
-
-\textbf{Greedy mode search on sampled contacts.}
-Given the desired body-frame velocity (arc tracker), we greedily assemble a contact assignment across robots using the objective of~\cite{tang2024collaborative} (balanced normal support, torque leverage, slip margin), restricted to the sampled candidates. This returns a small set of locally optimal modes \(\{\boldsymbol{\xi}\}\) for the requested velocity bin.
-
-\textbf{Online reuse.}
-Verified \((\boldsymbol{\xi},\mathbf{v})\) pairs and summary stats (tracking error, success rate, push time) are cached for the current expansion and descendants; a lightweight ModeTable acts as a persistent cache across scenes, exploiting the near-invariance of feasible modes for arc-like motions on a given shape. Only a few hundred entries per shape typically cover most velocity directions.
-
-\subsubsection{Efficiency Notes}
-Frontier loops are cached (loop signatures; $(\mathcal{L},g)\!\mapsto\!\mathcal{L}'$ memoization), ray casts are vectorized with AABB culling, predictor workers are pre-forked and reused, and deferred expansion keeps the PQ nonempty until all candidates are tried.
+\begin{remark}[Parallel Expansion and Mode Reuse]\label{remark:simloop}
+Efficiency of the hybrid search stems primarily from parallel evaluation of
+pushing strategies, which allows many candidate futures to be simulated at once
+for each expansion. Deferred expansion ensures that nodes with long candidate
+lists remain in the priority queue until all tasks are attempted.
+Moreover, validated $(\mathbf{v},\boldsymbol{\xi})$ pairs
+are cached locally within a subtree and stored in a persistent ModeTable for
+reuse across similar obstacles, significantly reducing repeated physics calls.
+These mechanisms yield orders-of-magnitude speedup relative to naive
+simulation-based search. \hfill$\blacksquare$
+\end{remark}
