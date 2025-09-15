@@ -119,8 +119,8 @@ that realize them.
 Efficiency of the hybrid search stems primarily from parallel evaluation of
 pushing strategies, which allows many candidate futures to be simulated at once
 for each expansion. Deferred expansion ensures that nodes with long candidate
-lists remain in the priority queue until all tasks are attempted, preventing
-search starvation. In addition, validated $(\boldsymbol{\xi},\mathbf{v})$ pairs
+lists remain in the priority queue until all tasks are attempted.
+Moreover, validated $(\mathbf{v},\boldsymbol{\xi})$ pairs
 are cached locally within a subtree and stored in a persistent ModeTable for
 reuse across similar obstacles, significantly reducing repeated physics calls.
 These mechanisms yield orders-of-magnitude speedup relative to naive
