@@ -16,6 +16,24 @@ making some obstacle boundaries inaccessible; and pushing actions introduce stro
 coupling, where a single push may trigger chained motions of multiple obstacles, further
 complicating prediction and planning.
 
+
+
+\begin{figure}[t!]
+  \centering
+  \includegraphics[width=\linewidth]{figures/presearch.pdf}% or {presearch.pdf}
+  \vspace{-0.2in}
+  \caption{
+  \textbf{Frontier presearch and gap prioritization.}
+  Each panel overlays the WCCG together with the currently selected face (light blue).
+  Numbers in \textbf{red} mark the \emph{gap-crossing order} returned by the presearch,
+  and numbers in \textbf{blue} indicate the \emph{local ranking} of first-hop gaps on the current face boundary.
+  \textbf{Top left/right:} the same scene with start/goal swapped, results in symmetric gap orders with same cost (\(\approx 12.99\)).
+  \textbf{Bottom:} a longer map with \(\sim 30\) obstacles, showing a 14-gap sequence with cost \(\approx 40.36\).
+  }
+  \label{fig:overall}
+  \vspace{-0.2in}
+\end{figure}
+
 \subsection{Related Work}\label{subsec:intro-related}
 Navigation Among Movable Obstacles (NAMO) has been studied as a core
 extension of motion planning in cluttered environments. Early approaches
@@ -38,6 +56,39 @@ type and assume strict collision avoidance with surrounding obstacles.
 Such assumptions exclude the possibility of exploiting inter-object
 interactions, and the challenges of coupled dynamics and chain reactions
 remain largely unaddressed~\cite{feng2025learning}.
+
+
+\begin{figure*}[t!] % 单栏
+\centering
+\begin{tikzpicture}[
+  scale=0.88, every node/.style={transform shape},
+  font=\footnotesize,
+  node distance=4mm and 6mm,
+  >=Latex,
+  box/.style={draw, rounded corners=1.5pt, thick, align=center, inner sep=3pt, fill=white},
+  side/.style={box, fill=gray!10},
+  line/.style={->, very thick},
+  dsh/.style={->, thick, dash pattern=on 3pt off 2pt}
+]
+\node[box, minimum width=2.6cm] (in)  {Scene \& Inputs};
+\node[box, right=8mm of in, minimum width=2.9cm] (wccg) {WCCG\\ + BugPlanner};
+\node[box, right=8mm of wccg, minimum width=2.9cm] (pre) {Frontier\\ Presearch};
+\node[box, right=8mm of pre, minimum width=3.4cm, minimum height=1.2cm] (sils) {SiLS (Deferred Expansion)};
+\node[box, right=8mm of sils, minimum width=2.6cm] (out) {Executable Plan};
+
+% side caches贴在SiLS上方/下方，超短
+\node[side, above=2mm of sils, xshift=-6mm] (mt) {ModeTable};
+\node[side, below=2mm of sils, xshift=-6mm] (cache) {Online Cache};
+
+\draw[line] (in) -- (wccg);
+\draw[line] (wccg) -- (pre);
+\draw[line] (pre) -- (sils);
+\draw[line] (sils) -- (out);
+\draw[dsh] (mt.west) -| ($(sils.north west)!0.5!(sils.north)$);
+\draw[dsh] (cache.west) -| ($(sils.south west)!0.5!(sils.south)$);
+\end{tikzpicture}
+\caption{\todo{Overall framework.}}
+\end{figure*}
 
 Physics-informed planning has recently emerged to incorporate realistic
 dynamics into motion planning. Some methods employ physics engines to
@@ -74,39 +125,3 @@ framework that couples multi-robot collaborative pushing with simulation-in-the-
 planning to construct physically feasible paths in cluttered environments; (II)
 it demonstrates significant improvements in feasibility, efficiency,
 and scalability compared to existing NAMO and collaborative pushing approaches.
-
-% 导言区确保：
-% \usepackage{tikz}
-% \usetikzlibrary{arrows.meta,positioning,fit}
-
-\begin{figure*}[t] % 单栏
-\centering
-\begin{tikzpicture}[
-  scale=0.88, every node/.style={transform shape},
-  font=\footnotesize,
-  node distance=4mm and 6mm,
-  >=Latex,
-  box/.style={draw, rounded corners=1.5pt, thick, align=center, inner sep=3pt, fill=white},
-  side/.style={box, fill=gray!10},
-  line/.style={->, very thick},
-  dsh/.style={->, thick, dash pattern=on 3pt off 2pt}
-]
-\node[box, minimum width=2.6cm] (in)  {Scene \& Inputs};
-\node[box, right=8mm of in, minimum width=2.9cm] (wccg) {WCCG\\ + BugPlanner};
-\node[box, right=8mm of wccg, minimum width=2.9cm] (pre) {Frontier\\ Presearch};
-\node[box, right=8mm of pre, minimum width=3.4cm, minimum height=1.2cm] (sils) {SiLS (Deferred Expansion)};
-\node[box, right=8mm of sils, minimum width=2.6cm] (out) {Executable Plan};
-
-% side caches贴在SiLS上方/下方，超短
-\node[side, above=2mm of sils, xshift=-6mm] (mt) {ModeTable};
-\node[side, below=2mm of sils, xshift=-6mm] (cache) {Online Cache};
-
-\draw[line] (in) -- (wccg);
-\draw[line] (wccg) -- (pre);
-\draw[line] (pre) -- (sils);
-\draw[line] (sils) -- (out);
-\draw[dsh] (mt.west) -| ($(sils.north west)!0.5!(sils.north)$);
-\draw[dsh] (cache.west) -| ($(sils.south west)!0.5!(sils.south)$);
-\end{tikzpicture}
-\caption{\todo{Overall framework.}}
-\end{figure*}
