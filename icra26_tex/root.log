@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2021) (preloaded format=pdflatex 2022.3.4)  15 SEP 2025 22:34
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2021) (preloaded format=pdflatex 2022.3.4)  15 SEP 2025 23:04
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1557,8 +1557,23 @@ DF version <1.7>, but at most version <1.5> allowed
 <figures/presearch.pdf, id=163, 441.85497pt x 323.35704pt>
 File: figures/presearch.pdf Graphic file (type pdf)
 <use figures/presearch.pdf>
-Package pdftex.def Info: figures/presearch.pdf  used on input line 23.
+Package pdftex.def Info: figures/presearch.pdf  used on input line 26.
 (pdftex.def)             Requested size: 245.71811pt x 179.82053pt.
+
+LaTeX Warning: Citation `zhou2017pushing' on page 1 undefined on input line 72.
+
+
+
+LaTeX Warning: Citation `hou2020physics' on page 1 undefined on input line 72.
+
+
+LaTeX Warning: Citation `agrawal2016learning' on page 1 undefined on input line
+ 74.
+
+
+LaTeX Warning: Citation `ha2018reinforcement' on page 1 undefined on input line
+ 74.
+
 [1{/usr/local/texlive/2021/texmf-var/fonts/map/pdftex/updmap/pdftex.map}
 
 
@@ -1583,7 +1598,10 @@ Underfull \hbox (badness 1558) in paragraph at lines 32--47
 \OMS/cmsy/m/n/10 G[]$ \OT1/ptm/m/n/10 has been con-
  []
 
-[3 <./figures/wccg.pdf>]) (./contents/gap.tex
+
+Underfull \vbox (badness 7595) has occurred while \output is active []
+
+ [3 <./figures/wccg.pdf>]) (./contents/gap.tex
 File: figures/presearch.pdf Graphic file (type pdf)
 <use figures/presearch.pdf>
 Package pdftex.def Info: figures/presearch.pdf  used on input line 47.
@@ -1650,9 +1668,7 @@ Before submitting the final camera ready copy, remember to:
  uses only Type 1 fonts and that every step in the generation
  process uses the US letter (8.5in X 11in) paper size.
 
-[8
-
-] (./root.aux)
+[8] (./root.aux)
 
 LaTeX Warning: There were undefined references.
 
@@ -1660,10 +1676,10 @@ Package rerunfilecheck Info: File `root.out' has not changed.
 (rerunfilecheck)             Checksum: D25F989257C8045FF8212F38703FD7EE;6486.
  ) 
 Here is how much of TeX's memory you used:
- 28651 strings out of 478994
- 536713 string characters out of 5858185
- 844129 words of memory out of 5000000
- 45426 multiletter control sequences out of 15000+600000
+ 28653 strings out of 478994
+ 536743 string characters out of 5858185
+ 845866 words of memory out of 5000000
+ 45427 multiletter control sequences out of 15000+600000
  462080 words of font info for 153 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  98i,22n,102p,1161b,840s stack positions out of 5000i,500n,10000p,200000b,80000s
@@ -1696,10 +1712,10 @@ s/type1/urw/times/utmb8a.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/ur
 w/times/utmbi8a.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/urw/times/u
 tmr8a.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/urw/times/utmri8a.pfb
 >
-Output written on root.pdf (8 pages, 2572308 bytes).
+Output written on root.pdf (8 pages, 2573054 bytes).
 PDF statistics:
- 520 PDF objects out of 1000 (max. 8388607)
- 401 compressed objects within 5 object streams
- 107 named destinations out of 1000 (max. 500000)
+ 521 PDF objects out of 1000 (max. 8388607)
+ 402 compressed objects within 5 object streams
+ 108 named destinations out of 1000 (max. 500000)
  345 words of extra memory for PDF output out of 10000 (max. 10000000)
 
