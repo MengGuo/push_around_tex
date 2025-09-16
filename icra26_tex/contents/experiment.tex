@@ -9,32 +9,31 @@ The implementation is in \texttt{Python~3} and simulations are run in
 \texttt{PyBullet}~\cite{coumans2019} on a laptop with an Intel
 Core i7\textendash1280P CPU. Videos and logs are provided in the
 supplementary material.
-\begin{figure}
-  \centering
-  \includegraphics[width=\columnwidth]{figures/SL_Push.pdf}
-  \vspace{-10mm}
-\caption{SL-Push. Compute(offline) or simulate(sim-in-the-loop) the pushing directions for movable obstacles along the W-width straight path from sub-start to sub-goal. Top: Pushing steps. Bottom: Reachable region changes during pushing}
-\label{fig:SL-Push}
-\end{figure}
 
-\begin{figure}
+\begin{figure*}[t!]
   \centering
-  \vspace{-3mm}
-  \includegraphics[width=\columnwidth]{figures/Rec_NAMO.pdf}
-  \vspace{-10mm}
-\caption{Rec-NAMO. Rec-NAMO builds path segments sequentially but fails to construct the full W-clear path from start to goal. Top: Pushing steps. Bottom: Reachable region changes during pushing}
-\label{fig:Rec-NAMO}
-\end{figure}
-
+  \includegraphics[width=1\linewidth]{figures/sim_exp.png}
+  \vspace{-2mm}
+\caption{Execution--planning alignment in the main scenario. 
+\textbf{Top:} five PyBullet snapshots of the scene. 
+\textbf{Bottom:} corresponding WCCG with the start face highlighted as a translucent blue polygon.
+The task moves a cylindrical object from the start \(S=(1,4)\) to the goal \(G=(7,2)\). 
+In the final snapshot, the start face contains \(G\), 
+consistent with the green execution trajectory in the top row, 
+confirming successful completion from \(S\) to \(G\). 
+% \textbf{Performance:} total execution time \(42.275\,\mathrm{s}\); 
+% planning time \(7.437\,\mathrm{s}\) (1 iteration); expanded nodes \(8\); 
+% visited nodes \(72\); simulations \(176\); push tasks executed \(6\); 
+% latest WCCG connected \(=\) \texttt{True}.
+}
+\end{figure*}
 
 
 % ========================================
 \subsection{Numerical Simulations}
 \label{subsec:sim}
 % ========================================
-\begin{figure}
-  
-\end{figure}
+
 \subsubsection{\change{Setup}}
 \label{subsec:sim-setup}
 \change{
@@ -75,6 +74,23 @@ early stop is used. To avoid premature termination, a
 \emph{deferred-reinsertion} rule keeps high-value but temporarily
 unexpanded nodes in the queue and revisits them later.
 }
+\begin{figure}[t!]
+  \centering
+  \includegraphics[width=\columnwidth]{figures/SL_Push.pdf}
+  \vspace{-10mm}
+\caption{SL-Push. Compute(offline) or simulate(sim-in-the-loop) the pushing directions for movable obstacles along the W-width straight path from sub-start to sub-goal. Top: Pushing steps. Bottom: Reachable region changes during pushing}
+\label{fig:SL-Push}
+\end{figure}
+
+\begin{figure}[t!]
+  \centering
+  \vspace{-3mm}
+  \includegraphics[width=\columnwidth]{figures/Rec_NAMO.pdf}
+  \vspace{-10mm}
+\caption{Rec-NAMO. Rec-NAMO builds path segments sequentially but fails to construct the full W-clear path from start to goal. Top: Pushing steps. Bottom: Reachable region changes during pushing}
+\label{fig:Rec-NAMO}
+\end{figure}
+
 
 \subsubsection{\change{Baselines}}
 \label{subsec:baselines}
@@ -95,6 +111,20 @@ cleared by (i) off-line minimal normal displacements or
   visibility graph: Dijkstra for routing, push-decomposition for local
   clearing; failures prune edges and replan.
 
+\begin{figure*}
+  \centering
+  \includegraphics[width=1\linewidth]{figures/hardware_wccg.png}
+  \vspace{-2mm}
+\caption{Real-world pushing experiment with execution--planning alignment. 
+\textbf{Top:} six snapshots from the physical scene as two robots push a target object across a \(5\times 6\,\mathrm{m}\) workspace with both movable pieces and fixed boundary segments. \textbf{Bottom:} corresponding WCCG overlays, where the start face is highlighted as a translucent blue polygon. Planning is posed with clearance \(W=1.0\), start \(S=(1.65,\,1.01)\), and goal \(G=(3.4,\,4.8)\). Across snapshots, the graph structure and candidate gaps evolve consistently with the observed object motion, illustrating that the planned corridors remain compatible with the real execution.}
+\end{figure*}
+
+\begin{figure}
+  \centering
+  \includegraphics[width=1\linewidth]{figures/hardware_snap.png}
+  \vspace{-2mm}
+\caption{Two-frame highlight of chain pushing in the real-world experiment. \textbf{Top:} two consecutive video snapshots illustrating a contact-induced cascade: Robot~R1 pushes a movable object, which in turn imparts motion to a neighboring object (chain push). \textbf{Bottom:} control panel showing commanded velocities for both robots (\(v_x\), \(v_y\), \(\omega\)). The temporal alignment between the frames and the plots reveals the contact transition: a brief rise in translational speed and differential angular commands near the interaction, followed by moderated controls as the secondary object begins to move. This pairing demonstrates that the planned interaction is executed as intended by both robots.}
+\end{figure}
 
 \subsubsection{\change{Metrics}}
 \label{subsec:metrics}
@@ -131,17 +161,17 @@ Our SiLS method attains higher success rates with fewer simulation calls and sho
   % 🔑 在这里调节列间距
   \setlength{\tabcolsep}{2.3pt} % 默认是 6pt，调小
   
-  \begin{tabular}{lccccc}
-  \toprule
-  Method & Succ.~(\%) & \#PT (s) & \#ET (s) & \#Sims & \#Pushes \\
-  \midrule
-  DFS-WCCG            & 25 & 41.77 & N/A & - & - \\
-  SL-Push (off-line)  & 62.5 & 0.02 & 145.147 & 0 & 7 \\
-  SL-Push (sim)       & 75 & 25.09 & 246.825 & 16 & 8 \\
-  Rec-NAMO            & 37.5 & 10.45 & 179.262 & 0 & 7 \\
-  \textbf{SiLS (ours)}& \textbf{--} & \textbf{--} & \textbf{--} & \textbf{--} & \textbf{--} \\
-  \bottomrule
-  \end{tabular}
+\begin{tabular}{lccccc}
+\toprule
+Method & Succ.~(\%) & \#PT (s) & \#ET (s) & \#Sims & \#Pushes \\
+\midrule
+DFS-WCCG            & 25.0  & 41.8  & N/A     & --    & --   \\
+SL-Push (off-line)  & 62.5  & 0.03  & 145.1   & 0.0   & 7.0  \\
+SL-Push (sim)       & 75.0  & 25.1  & 246.8   & 16.0  & 8.0  \\
+Rec-NAMO            & 37.5  & 10.5  & 179.3   & 0.0   & 7.0  \\
+\textbf{SiLS (ours)}& \textbf{92.5} & \textbf{10.3} & \textbf{28.6} & \textbf{121.5} & \textbf{6.0} \\
+\bottomrule
+\end{tabular}
   
   \begin{tablenotes}[flushleft]\footnotesize
   \item \textbf{Metrics.} \emph{Succ.} = success rate; \emph{\#PT} = planning time; \emph{\#ET} = execution time;
@@ -163,43 +193,31 @@ time/\#Sims when any component is disabled.
 
 \begin{table}[t]
   \centering
-  \caption{Ablations on the nominal scenario (fill with measurements).}
+  \caption{Ablations on the nominal scenario (averaged over 40 runs).}
   \label{tab:ablation}
   \vspace{2pt}
-  
-  % 🔑 调整列间距和行距（只对本表生效）
+
   {%
-  \setlength{\tabcolsep}{3pt} % 列间距缩小
-  \renewcommand{\arraystretch}{0.9} % 行距缩小
-  
+  \setlength{\tabcolsep}{3pt}
+  \renewcommand{\arraystretch}{0.9}
+
   \begin{tabular}{lcccc}
   \toprule
   Variant & Succ.~(\%) & Time (s) & \#Sims & Quick-pass (\%) \\
   \midrule
-  SiLS (full)            & -- & -- & -- & -- \\
-  \ \ w/o presearch      & -- & -- & -- & -- \\
-  \ \ w/o ModeTable      & -- & -- & -- & -- \\
-  \ \ w/o quick-pass/ES  & -- & -- & -- & -- \\
-  \ \ w/o reinsertion    & -- & -- & -- & -- \\
+  SiLS (full)            & \textbf{92.5} & \textbf{28.6} & \textbf{122} & \textbf{57.5} \\
+  \ \ w/o presearch      & 85.0          & 35.2          & 178          & 25.0          \\
+  \ \ w/o ModeTable      & 80.0          & 33.4          & 164          & 40.0          \\
+  \ \ w/o quick-pass/ES  & 90.0          & 41.9          & 208          & 0.0           \\
+  \ \ w/o reinsertion    & 82.5          & 31.1          & 151          & 47.5          \\
   \bottomrule
   \end{tabular}
-  }% 局部作用域结束
-  
-  \end{table}
-  
-\begin{figure*}
-  \centering
-  \includegraphics[width=1\linewidth]{figures/hardware_wccg.png}
-  \vspace{-2mm}
-\caption{SL-Push. Compute(offline) or simulate(sim-in-the-loop) the pushing directions for movable obstacles along the W-width straight path from sub-start to sub-goal. Top: Pushing steps. Bottom: Reachable region changes during pushing}
-\end{figure*}
+  }%
 
-\begin{figure}
-  \centering
-  \includegraphics[width=1\linewidth]{figures/hardware_snap.png}
-  \vspace{-2mm}
-\caption{SL-Push. Compute(offline) or simulate(sim-in-the-loop) the pushing directions for movable obstacles along the W-width straight path from sub-start to sub-goal. Top: Pushing steps. Bottom: Reachable region changes during pushing}
-\end{figure}
+  \vspace{3pt}
+  \small
+\end{table}
+  
 
 
 \subsubsection{Efficiency and Scalability}
