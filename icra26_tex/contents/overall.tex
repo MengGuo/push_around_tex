@@ -1,6 +1,20 @@
 %==============================
 \subsection{Overall Analyses}\label{subsec:overall}
 %==============================
+\begin{figure*}[t!]
+  \centering
+  \includegraphics[width=1\linewidth]{figures/sim_exp.png}
+  \vspace{-2mm}
+\caption{Execution--planning alignment in the main scenario. 
+\textbf{Top:} five PyBullet snapshots of the scene. 
+\textbf{Bottom:} corresponding WCCG with the start face highlighted as a translucent blue polygon.
+The task moves a cylindrical object from the start \(S=(1,4)\) to the goal \(G=(7,2)\). 
+In the final snapshot, the start face contains \(G\), 
+consistent with the green execution trajectory in the top row, 
+confirming successful completion from \(S\) to \(G\). 
+}
+\end{figure*}
+
 
 \subsubsection{Execution and Online Adaptation}\label{subsec:execute}
 The output of the hybrid search is a pushing schedule
