@@ -51,33 +51,6 @@ most NAMO approaches still idealize robots as point agents with unlimited
 actuation and neglect robot size, obstacle mass, and realistic dynamics, which
 leads to plans that are geometrically valid but physically unrealizable.
 
-Collaborative pushing has also been widely investigated in multi-robot
-manipulation. Foundational studies examined the mechanics of pushing and the
-limit surface model~\cite{goyal1989limit,lynch1992manipulation}, while more
-recent work addressed force synchronization~\cite{ni2023progressive}, contact
-stability and slip margins~\cite{liu2025physics,chen2015occlusion}, and
-cooperative transport of large payloads in structured
-environments~\cite{ni2024physics,wang2006multi}. Learning-based approaches have
-further explored emergent coordination in cluttered
-settings~\cite{feng2025learning}. These studies demonstrate effective
-multi-robot cooperation but are generally limited to single-object tasks and
-assume strict collision avoidance with surrounding obstacles. As a result,
-inter-object interactions and the coupled dynamics of multiple movable
-obstacles remain largely unaddressed.
-
-Physics-informed planning has emerged to integrate realistic dynamics into
-motion generation. Several methods use physics engines to validate candidate
-manipulations~\cite{lin2019efficient} or embed contact simulation directly in
-the planning loop~\cite{rouxel2024multi}. Other approaches incorporate dynamic
-models into planning for non-prehensile manipulation~\cite{zhou2017pushing,hou2020physics}
-or apply learning with physics priors and differentiable physics for
-contact-rich tasks~\cite{agrawal2016learning,ha2018reinforcement,ni2023progressive,liu2025physics}.
-While these approaches highlight the benefits of embedding physical reasoning,
-they often decouple high-level planning from low-level feasibility checks or
-remain confined to single-object manipulation. Consequently, they do not scale
-to collaborative path clearing in cluttered environments with many movable
-obstacles.
-
 
 \begin{figure*}[t!] % 单栏
 \centering
@@ -110,6 +83,35 @@ obstacles.
 \end{tikzpicture}
 \caption{\todo{Overall framework.}}
 \end{figure*}
+
+
+Collaborative pushing has also been widely investigated in multi-robot
+manipulation. Foundational studies examined the mechanics of pushing and the
+limit surface model~\cite{goyal1989limit,lynch1992manipulation}, while more
+recent work addressed force synchronization~\cite{ni2023progressive}, contact
+stability and slip margins~\cite{liu2025physics,chen2015occlusion}, and
+cooperative transport of large payloads in structured
+environments~\cite{ni2024physics,wang2006multi}. Learning-based approaches have
+further explored emergent coordination in cluttered
+settings~\cite{feng2025learning}. These studies demonstrate effective
+multi-robot cooperation but are generally limited to single-object tasks and
+assume strict collision avoidance with surrounding obstacles. As a result,
+inter-object interactions and the coupled dynamics of multiple movable
+obstacles remain largely unaddressed.
+
+Physics-informed planning has emerged to integrate realistic dynamics into
+motion generation. Several methods use physics engines to validate candidate
+manipulations~\cite{lin2019efficient} or embed contact simulation directly in
+the planning loop~\cite{rouxel2024multi}. Other approaches incorporate dynamic
+models into planning for non-prehensile manipulation~\cite{zhou2017pushing,hou2020physics}
+or apply learning with physics priors and differentiable physics for
+contact-rich tasks~\cite{agrawal2016learning,ha2018reinforcement,ni2023progressive,liu2025physics}.
+While these approaches highlight the benefits of embedding physical reasoning,
+they often decouple high-level planning from low-level feasibility checks or
+remain confined to single-object manipulation. Consequently, they do not scale
+to collaborative path clearing in cluttered environments with many movable
+obstacles.
+
 
 %==============================
 \subsection{Our Method}\label{subsec:intro-our}
