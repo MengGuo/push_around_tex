@@ -64,7 +64,25 @@ $\mathsf{Rank}(\nu_0)$ is constructed by first computing the frontier loop
 $\mathcal{L}_\nu$ associated with~$\mathbf{s}_0$, then extracting the visible
 gaps $\Gamma_{\mathcal{L}_\nu}$, and finally ranking them by their predicted
 cost-to-connect.
-
+%------------------------------
+\begin{figure}[t!]
+  \centering
+  \includegraphics[width=0.95\linewidth]{figures/PIHS.png}
+  \vspace{-0.15in}
+  \caption{
+  Overview of \textbf{PIHS} (physics–informed hybrid search). 
+  \textbf{Top row (four panels):} (1) current simulation snapshot rendered in \texttt{PyBullet}; 
+  (2) the corresponding $W$--clearance connectivity graph (WCCG); 
+  (3) presearch on the WCCG with ranked candidate gaps (numbers indicate local/global ranks); 
+  (4) robot \emph{reachable contacts} on obstacle boundaries (green arrows).
+  \textbf{Bottom row:} given the current snapshot, the reachable contacts, and the ranked gaps, 
+  PIHS samples push \emph{tasks} and \emph{modes} (e.g., face/edge, normal/tangential), 
+  executes short-horizon physics rollouts, and visualizes the predicted outcomes: 
+  ghosted trails show slider/object trajectories, and the final panel depicts the updated state used for the next search expansion.}
+    \label{fig:PIHS}
+   \vspace{-4mm}
+\end{figure}
+%------------------------------
 \subsubsection{Node Selection}
 At each iteration, the node with minimum best-first priority is selected from
 the queue. The priority function balances the realized execution cost and the

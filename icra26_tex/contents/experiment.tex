@@ -39,6 +39,26 @@ Rec-NAMO            & 37.5  & 10.5  & 179.3   & 0.0   & 7.0  \\
 \end{table}
 
 % ========================================
+\begin{table}[t]
+\centering
+\caption{Ablations on the nominal scenario (40 trials).}
+\label{tab:ablation}
+\vspace{2pt}
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{0.95}
+\begin{tabular}{lcccc}
+\toprule
+Variant & Succ.~(\%) & Time (s) & \#Sims & \#PT / \#Sims / Succ. \\
+\midrule
+SiLS (full)          & 92.5 & 28.6 & 122 & baseline \\
+w/o presearch        & 85.0 & 35.2 & 178 & +6.6 / +56 / $-7.5$\% \\
+w/o ModeTable        & 80.0 & 33.4 & 164 & +4.8 / +42 / $-12.5$\% \\
+w/o quick-pass       & 90.0 & 41.9 & 208 & +13.3 / +86 / $-2.5$\% \\
+w/o reinsertion      & 82.5 & 31.1 & 151 & +2.5 / +29 / $-10.0$\% \\
+\bottomrule
+\end{tabular}
+\end{table}
+% ========================================
 \begin{figure}[t!]
   \centering
   \includegraphics[width=0.95\linewidth]{figures/scalability.png}
@@ -80,15 +100,41 @@ Unless stated otherwise: the per-task simulation horizon is $80$ steps; up to $6
 \label{subsec:baselines}
 We compare against three representative families, all using the same $W$-clearance criterion and contact models:
 
-\textbf{(I) DFS-WCCG:} a simulation-in-the-loop depth-first search sharing our physics predictor and W-CCG for goal checking. Each node is a snapshot; actions are four fixed axis-aligned pushes ${\leftarrow,\rightarrow,\uparrow,\downarrow}$ applied to any movable (branching $\le 4n$ for $n$ objects).
+\textbf{(I) DFS-WCCG:} a simulation-in-the-loop depth-first search 
+sharing our physics predictor and W-CCG for goal checking. 
+Each node is a snapshot; actions are four fixed axis-aligned pushes 
+${\leftarrow,\rightarrow,\uparrow,\downarrow}$ applied to any movable 
+(branching $\le 4n$ for $n$ objects).
 
-\textbf{(II) SL-Push:} a straight-line (or waypointed) route where blockers are cleared by (i) offline minimal normal displacements or (ii) sim-in-the-loop normal pushes from near to far.
+\textbf{(II) SL-Push:} a straight-line (or waypointed) route where blockers 
+are cleared by (i) offline minimal normal displacements or 
+(ii) sim-in-the-loop normal pushes from near to far.
 
-\textbf{(III) Rec-NAMO:} recursive routing/pushing on a cost-weighted visibility graph: Dijkstra for routing; local push decomposition for clearing; failures prune edges and trigger replanning.
+\textbf{(III) Rec-NAMO:} recursive routing/pushing on a cost-weighted visibility graph: 
+Dijkstra for routing; local push decomposition for clearing; 
+failures prune edges and trigger replanning.
 
-Table~\ref{tab:main} summarizes performance on the nominal scenario. DFS-WCCG suffers exponential growth of the search space as the number of movables increases, leading to long planning times and frequent timeouts (lowest success rate). SL-Push (offline) plans very quickly ($<0.1$\,s), but the lack of physics leads to physically unrealizable plans. Its sim-in-the-loop variant improves feasibility, but still requires many simulations and can produce unnecessarily long action sequences when the straight-line route is not the minimal pushing route; Fig.~\ref{fig:SL-Push} illustrates a two-subgoal case. Rec-NAMO is faster than sim-in-the-loop approaches and effective for classical NAMO, yet it often fails to produce a fully connected $W$-clear route (Fig.~\ref{fig:Rec-NAMO}), resulting in lower success. 
+Table~\ref{tab:main} summarizes performance on the nominal scenario. 
+DFS-WCCG suffers exponential growth of the search space as the number of movables increases, 
+leading to long planning times and frequent timeouts (lowest success rate). 
+SL-Push (offline) plans very quickly ($<0.1$\,s), 
+but the lack of physics leads to physically unrealizable plans. 
+Its sim-in-the-loop variant improves feasibility, 
+but still requires many simulations and can produce unnecessarily 
+long action sequences when the straight-line route is not the minimal pushing route; 
+Fig.~\ref{fig:baseline} illustrates a two-subgoal case. Rec-NAMO is faster than 
+sim-in-the-loop approaches and effective for classical NAMO, 
+yet it often fails to produce a fully connected $W$-clear route (Fig.~\ref{fig:baseline}), 
+resulting in lower success. 
 
 By contrast, \textbf{PIHS} attains higher success with fewer simulations and lower planning/execution time due to (i) frontier-based gap ranking, (ii) ModeTable-guided push directions, and (iii) quick-pass/early-stop. Deferred reinsertion further prevents priority-queue starvation by revisiting previously generated high-value nodes when a batch of actions fails.
+\subsubsection{Ablation Studies}
+Table~\ref{tab:ablation} quantifies the contribution of each component by removing one factor at a time from SiLS.
+\textbf{Presearch} (frontier extraction + ranked gaps) is the largest time saver: without it, the planner invokes \#Sims $+56$ and planning time increases by $+6.6$\,s, while success drops by $-7.5\%$. This confirms that presearch focuses expansions on high-yield gaps and avoids unproductive physics rollouts.
+\textbf{ModeTable} also provides a strong prior: removing it yields \#Sims $+42$, \#PT $+4.8$\,s, and a $-12.5\%$ success drop, indicating the importance of structured contact-mode guidance beyond naive pushing heuristics.
+Disabling \textbf{quick-pass/early-stop} forces full-horizon simulation, increasing \#Sims by $+86$ and \#PT by $+13.3$\,s, with only a minor success change ($-2.5\%$); this shows that most expansions can be decided early without sacrificing feasibility.
+Finally, removing \textbf{deferred reinsertion} causes mild queue starvation (\#Sims $+29$) and reduces success by $-10.0\%$, highlighting the benefit of revisiting previously high-value nodes after local failures.
+Overall, each component contributes to either \emph{efficiency} (fewer simulations, shorter planning time) or \emph{robustness} (higher success), and the full SiLS configuration achieves the best trade-off across all metrics.
 
 \subsubsection{Dense-clutter scalability.}
 We further evaluate SiLS in a larger $8{\times}5$\,m workspace populated with $30$ movable objects.
