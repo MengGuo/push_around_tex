@@ -18,23 +18,17 @@ pushing introduces strong physical coupling where one action can trigger chained
 motions of multiple obstacles, making prediction and planning substantially more
 complex.
 
-
-
-
 \begin{figure}[t!]
   \centering
-  \includegraphics[width=\linewidth]{figures/presearch.pdf}% or {presearch.pdf}
-  \vspace{-0.2in}
+  \vspace{1mm}
+  \includegraphics[width=\linewidth]{figures/cover.png}% or {presearch.pdf}
   \caption{
-  \textbf{Frontier presearch and gap prioritization.}
-  Each panel overlays the WCCG together with the currently selected face (light blue).
-  Numbers in \textbf{red} mark the \emph{gap-crossing order} returned by the presearch,
-  and numbers in \textbf{blue} indicate the \emph{local ranking} of first-hop gaps on the current face boundary.
-  \textbf{Top left/right:} the same scene with start/goal swapped, results in symmetric gap orders with same cost (\(\approx 12.99\)).
-  \textbf{Bottom:} a longer map with \(\sim 30\) obstacles, showing a 14-gap sequence with cost \(\approx 40.36\).
+  Snapshots of collaborative path clearing system in both simulation and
+  hardware. A team of mobile robots actively reconfigures movable
+  obstacles to create a $W$-clear path for a large vehicle
+  to traverse from start to goal.
   }
-  \label{fig:overall}
-  \vspace{-0.2in}
+  \label{fig:snapshots}
 \end{figure}
 
 \subsection{Related Work}\label{subsec:intro-related}
