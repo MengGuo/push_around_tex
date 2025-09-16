@@ -191,43 +191,43 @@ We remove one component at a time: (i) W-CCG presearch (random gap order),
 Table~\ref{tab:ablation} shows consistent drops in success and increased
 time/\#Sims when any component is disabled.
 
-\begin{table}[t]
-  \centering
-  \caption{Ablations on the nominal scenario (averaged over 40 runs).}
-  \label{tab:ablation}
-  \vspace{2pt}
+% \begin{table}[t]
+%   \centering
+%   \caption{Ablations on the nominal scenario (averaged over 40 runs).}
+%   \label{tab:ablation}
+%   \vspace{2pt}
 
-  {%
-  \setlength{\tabcolsep}{3pt}
-  \renewcommand{\arraystretch}{0.9}
+%   {%
+%   \setlength{\tabcolsep}{3pt}
+%   \renewcommand{\arraystretch}{0.9}
 
-  \begin{tabular}{lcccc}
-  \toprule
-  Variant & Succ.~(\%) & Time (s) & \#Sims & Quick-pass (\%) \\
-  \midrule
-  SiLS (full)            & \textbf{92.5} & \textbf{28.6} & \textbf{122} & \textbf{57.5} \\
-  \ \ w/o presearch      & 85.0          & 35.2          & 178          & 25.0          \\
-  \ \ w/o ModeTable      & 80.0          & 33.4          & 164          & 40.0          \\
-  \ \ w/o quick-pass/ES  & 90.0          & 41.9          & 208          & 0.0           \\
-  \ \ w/o reinsertion    & 82.5          & 31.1          & 151          & 47.5          \\
-  \bottomrule
-  \end{tabular}
-  }%
+%   \begin{tabular}{lcccc}
+%   \toprule
+%   Variant & Succ.~(\%) & Time (s) & \#Sims & Quick-pass (\%) \\
+%   \midrule
+%   SiLS (full)            & \textbf{92.5} & \textbf{28.6} & \textbf{122} & \textbf{57.5} \\
+%   \ \ w/o presearch      & 85.0          & 35.2          & 178          & 25.0          \\
+%   \ \ w/o ModeTable      & 80.0          & 33.4          & 164          & 40.0          \\
+%   \ \ w/o quick-pass/ES  & 90.0          & 41.9          & 208          & 0.0           \\
+%   \ \ w/o reinsertion    & 82.5          & 31.1          & 151          & 47.5          \\
+%   \bottomrule
+%   \end{tabular}
+%   }%
 
-  \vspace{3pt}
-  \small
-\end{table}
+%   \vspace{3pt}
+%   \small
+% \end{table}
   
 
 
-\subsubsection{Efficiency and Scalability}
-\label{subsec:eff}
-\textbf{Frontier caching} makes BugPlanner near-linear in visible edges.
-\textbf{Parallel prediction} uses a persistent worker pool with per-round
-broadcast of snapshots and reachable-contact sets to reduce IPC.
-\textbf{Quick-pass} and \textbf{early-stop} skip or truncate physics when
-geometry suffices. \textbf{Deferred reinsertion} maintains steady depth
-growth even when many pushes are rejected.
+% \subsubsection{Efficiency and Scalability}
+% \label{subsec:eff}
+% \textbf{Frontier caching} makes BugPlanner near-linear in visible edges.
+% \textbf{Parallel prediction} uses a persistent worker pool with per-round
+% broadcast of snapshots and reachable-contact sets to reduce IPC.
+% \textbf{Quick-pass} and \textbf{early-stop} skip or truncate physics when
+% geometry suffices. \textbf{Deferred reinsertion} maintains steady depth
+% growth even when many pushes are rejected.
 
 \subsubsection{Qualitative Results}
 \label{subsec:qual}
@@ -251,3 +251,19 @@ Random seeds are fixed, JSONL snapshots are logged, and the driver and
 scenario generator are released. ModeTable entries are auto-generated if
 absent to ensure repeatability across machines.
 
+\subsection{Hardware Experiments}\label{subsec:hardware}
+{
+\subsubsection{System Description}\label{subsec:exp-description}
+As shown in Fig.~\ref{fig:hardware},
+the real-world experiments are conducted in a $5\,\mathrm{m}\times6\,\mathrm{m}$ workspace assembled from interlocking $0.6\,\mathrm{m}\times0.6\,\mathrm{m}$ foam mats. 
+Two AgileX LIMO mobile robots and six movable obstacles (cardboard boxes covered with colored paper) are used in each trial. 
+Each robot and each movable obstacle carries 3--4 motion-capture markers.
+A motion-capture system provides global pose estimates, which are streamed into \texttt{PyBullet} in real time to enable both policy execution and visualization.
+Movable obstacles are randomly placed at the start of each trial to create diverse cluttered layouts.
+
+\subsubsection{Results}\label{subsec:exp-results}
+The proposed method achieves a high success rate across randomly generated clutter while compensating for hardware imperfections such as occasional wheel slippage.
+During execution, the robots consistently select safe, reachable contact points along obstacle boundaries, choose appropriate pushing modes, and adapt online to observed inter-object contacts and frictional effects.
+These behaviors indicate that the planned interactions can be reliably realized on physical hardware, demonstrating the practicality of our approach in real-world settings. 
+Additional qualitative results and control traces are provided in Fig.~\ref{fig:hardware} and the supplementary videos.
+}

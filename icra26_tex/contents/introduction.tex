@@ -52,37 +52,22 @@ actuation and neglect robot size, obstacle mass, and realistic dynamics, which
 leads to plans that are geometrically valid but physically unrealizable.
 
 
-\begin{figure*}[t!] % 单栏
-\centering
-\begin{tikzpicture}[
-  scale=0.88, every node/.style={transform shape},
-  font=\footnotesize,
-  node distance=4mm and 6mm,
-  >=Latex,
-  box/.style={draw, rounded corners=1.5pt, thick, align=center, inner sep=3pt, fill=white},
-  side/.style={box, fill=gray!10},
-  line/.style={->, very thick},
-  dsh/.style={->, thick, dash pattern=on 3pt off 2pt}
-]
-\node[box, minimum width=2.6cm] (in)  {Scene \& Inputs};
-\node[box, right=8mm of in, minimum width=2.9cm] (wccg) {WCCG\\ + BugPlanner};
-\node[box, right=8mm of wccg, minimum width=2.9cm] (pre) {Frontier\\ Presearch};
-\node[box, right=8mm of pre, minimum width=3.4cm, minimum height=1.2cm] (sils) {SiLS (Deferred Expansion)};
-\node[box, right=8mm of sils, minimum width=2.6cm] (out) {Executable Plan};
-
-% side caches贴在SiLS上方/下方，超短
-\node[side, above=2mm of sils, xshift=-6mm] (mt) {ModeTable};
-\node[side, below=2mm of sils, xshift=-6mm] (cache) {Online Cache};
-
-\draw[line] (in) -- (wccg);
-\draw[line] (wccg) -- (pre);
-\draw[line] (pre) -- (sils);
-\draw[line] (sils) -- (out);
-\draw[dsh] (mt.west) -| ($(sils.north west)!0.5!(sils.north)$);
-\draw[dsh] (cache.west) -| ($(sils.south west)!0.5!(sils.south)$);
-\end{tikzpicture}
-\caption{\todo{Overall framework.}}
+%==============================================
+\begin{figure*}[t!]
+  \centering
+  \includegraphics[width=\linewidth]{figures/overall.png}
+  \vspace{-0.2in}
+  \caption{Illustration of the W--Clearance Connectivity Graph (WCCG).
+\textbf{Left:} Cluttered PyBullet scenario with the immovable walls and movable objects;
+\textbf{Middle:} WCCG overlay with the centroid nodes (blue squares), bridge nodes
+(red circles), centroid--bridge edges (blue), and bridge--bridge edges (red dashed)
+annotated by the gap widths;
+\textbf{Right:} Induced faces of the WCCG, where the colors indicate distinct connected
+regions.}
+  \label{fig:wccg}
+  \vspace{-0.2in}
 \end{figure*}
+%==============================================
 
 
 Collaborative pushing has also been widely investigated in multi-robot
