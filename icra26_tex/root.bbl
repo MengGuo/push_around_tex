@@ -107,6 +107,21 @@ Q.~Rouxel, S.~Ivaldi, and J.-B. Mouret, ``Multi-contact whole-body force
   control for position-controlled robots,'' \emph{IEEE Robotics and Automation
   Letters}, vol.~9, no.~6, pp. 5639--5646, 2024.
 
+\bibitem{hou2020physics}
+\BIBentryALTinterwordspacing
+F.~Hou and <Coauthors>, ``<physics-based planning for non-prehensile
+  manipulation / exact title>,'' in \emph{<Conference (e.g., ICRA/ICRA
+  Workshop/IROS)>}, 2020, pp. <pp--pp>. [Online]. Available:
+  \url{<pdf-or-arXiv-link>}
+\BIBentrySTDinterwordspacing
+
+\bibitem{agrawal2016learning}
+\BIBentryALTinterwordspacing
+P.~Agrawal, A.~Nair, and P.~Abbeel, ``Learning to poke by poking: Experiential
+  learning of intuitive physics,'' \emph{arXiv preprint arXiv:1606.07419},
+  2016. [Online]. Available: \url{https://arxiv.org/abs/1606.07419}
+\BIBentrySTDinterwordspacing
+
 \bibitem{tang2023combinatorial}
 Z.~Tang, J.~Chen, and M.~Guo, ``Combinatorial-hybrid optimization for
   multi-agent systems under collaborative tasks,'' in \emph{IEEE Conference on

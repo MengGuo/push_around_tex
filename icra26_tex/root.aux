@@ -101,30 +101,34 @@
 \@writefile{toc}{\contentsline {subsection}{\numberline {III-C}Physics-Informed Hybrid Search}{5}{subsection.3.3}\protected@file@percent }
 \newlabel{subsec:simloop}{{III-C}{5}{Physics-Informed Hybrid Search}{subsection.3.3}{}}
 \@writefile{toc}{\contentsline {subsubsection}{\numberline {III-C.1}Tree and Initialization}{5}{subsubsection.3.3.1}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces  Overview of \textbf  {PIHS} (physics–informed hybrid search). \textbf  {Top row (four panels):} (1) current simulation snapshot rendered in \texttt  {PyBullet}; (2) the corresponding $W$--clearance connectivity graph (WCCG); (3) presearch on the WCCG with ranked candidate gaps (numbers indicate local/global ranks); (4) robot \emph  {reachable contacts} on obstacle boundaries (green arrows). \textbf  {Bottom row:} given the current snapshot, the reachable contacts, and the ranked gaps, PIHS samples push \emph  {tasks} and \emph  {modes} (e.g., face/edge, normal/tangential), executes short-horizon physics rollouts, and visualizes the predicted outcomes: ghosted trails show slider/object trajectories, and the final panel depicts the updated state used for the next search expansion.}}{5}{figure.5}\protected@file@percent }
+\newlabel{fig:PIHS}{{5}{5}{Overview of \textbf {PIHS} (physics–informed hybrid search). \textbf {Top row (four panels):} (1) current simulation snapshot rendered in \texttt {PyBullet}; (2) the corresponding $W$--clearance connectivity graph (WCCG); (3) presearch on the WCCG with ranked candidate gaps (numbers indicate local/global ranks); (4) robot \emph {reachable contacts} on obstacle boundaries (green arrows). \textbf {Bottom row:} given the current snapshot, the reachable contacts, and the ranked gaps, PIHS samples push \emph {tasks} and \emph {modes} (e.g., face/edge, normal/tangential), executes short-horizon physics rollouts, and visualizes the predicted outcomes: ghosted trails show slider/object trajectories, and the final panel depicts the updated state used for the next search expansion}{figure.5}{}}
 \@writefile{toc}{\contentsline {subsubsection}{\numberline {III-C.2}Node Selection}{5}{subsubsection.3.3.2}\protected@file@percent }
 \newlabel{eq:priority}{{10}{5}{Node Selection}{equation.3.10}{}}
 \@writefile{toc}{\contentsline {subsubsection}{\numberline {III-C.3}Node Expansion with Parallel Simulation}{5}{subsubsection.3.3.3}\protected@file@percent }
 \newlabel{eq:sim}{{11}{5}{Node Expansion with Parallel Simulation}{equation.3.11}{}}
 \@writefile{toc}{\contentsline {subsubsection}{\numberline {III-C.4}Termination}{5}{subsubsection.3.3.4}\protected@file@percent }
-\newlabel{remark:simloop}{{4}{5}{Parallel Expansion and Mode Reuse}{remark.4}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {III-D}Overall Analyses}{5}{subsection.3.4}\protected@file@percent }
-\newlabel{subsec:overall}{{III-D}{5}{Overall Analyses}{subsection.3.4}{}}
-\newlabel{subsec:execute}{{III-D.1}{5}{Execution and Online Adaptation}{subsubsection.3.4.1}{}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {III-D.1}Execution and Online Adaptation}{5}{subsubsection.3.4.1}\protected@file@percent }
 \citation{coumans2019}
-\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces Execution--planning alignment in the main scenario. \textbf  {Top:} five PyBullet snapshots of the scene. \textbf  {Bottom:} corresponding WCCG with the start face highlighted as a translucent blue polygon. The task moves a cylindrical object from the start \(S=(1,4)\) to the goal \(G=(7,2)\). In the final snapshot, the start face contains \(G\), consistent with the green execution trajectory in the top row, confirming successful completion from \(S\) to \(G\). }}{6}{figure.5}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces Rec-NAMO. Sequentially builds path segments but often fails to form a complete $W$-clear path from start to goal. \textbf  {Top:} pushing steps. \textbf  {Bottom:} reachable region evolution.}}{6}{figure.6}\protected@file@percent }
-\newlabel{fig:Rec-NAMO}{{6}{6}{Rec-NAMO. Sequentially builds path segments but often fails to form a complete $W$-clear path from start to goal. \textbf {Top:} pushing steps. \textbf {Bottom:} reachable region evolution}{figure.6}{}}
+\newlabel{remark:simloop}{{4}{6}{Parallel Expansion and Mode Reuse}{remark.4}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {III-D}Overall Analyses}{6}{subsection.3.4}\protected@file@percent }
+\newlabel{subsec:overall}{{III-D}{6}{Overall Analyses}{subsection.3.4}{}}
+\newlabel{subsec:execute}{{III-D.1}{6}{Execution and Online Adaptation}{subsubsection.3.4.1}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {III-D.1}Execution and Online Adaptation}{6}{subsubsection.3.4.1}\protected@file@percent }
 \newlabel{subsubsec:complexity}{{III-D.2}{6}{Computational Complexity}{subsubsection.3.4.2}{}}
 \@writefile{toc}{\contentsline {subsubsection}{\numberline {III-D.2}Computational Complexity}{6}{subsubsection.3.4.2}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {I}{\ignorespaces Performance on the nominal scenario with push-count (mean $\pm $ std).}}{6}{table.1}\protected@file@percent }
+\newlabel{tab:main}{{I}{6}{Performance on the nominal scenario with push-count (mean $\pm $ std)}{table.1}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {II}{\ignorespaces Ablations on the nominal scenario (40 trials).}}{6}{table.2}\protected@file@percent }
+\newlabel{tab:ablation}{{II}{6}{Ablations on the nominal scenario (40 trials)}{table.2}{}}
 \newlabel{subsec:general}{{III-D.3}{6}{Generalization}{subsubsection.3.4.3}{}}
 \@writefile{toc}{\contentsline {subsubsection}{\numberline {III-D.3}Generalization}{6}{subsubsection.3.4.3}\protected@file@percent }
 \@writefile{toc}{\contentsline {section}{\numberline {IV}Numerical Experiments}{6}{section.4}\protected@file@percent }
 \newlabel{sec:experiments}{{IV}{6}{Numerical Experiments}{section.4}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {I}{\ignorespaces Performance on the nominal scenario with push-count (mean $\pm $ std).}}{7}{table.1}\protected@file@percent }
-\newlabel{tab:main}{{I}{7}{Performance on the nominal scenario with push-count (mean $\pm $ std)}{table.1}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces Scalability in dense clutter ($\boldsymbol  {30}$ movables). \textbf  {Top:} four execution snapshots as the robots clear bottlenecks and advance toward the goals. \textbf  {Bottom:} corresponding WCCG overlays with the active face (translucent blue) and ranked gaps. }}{7}{figure.7}\protected@file@percent }
-\newlabel{fig:scalability}{{7}{7}{Scalability in dense clutter ($\boldsymbol {30}$ movables). \textbf {Top:} four execution snapshots as the robots clear bottlenecks and advance toward the goals. \textbf {Bottom:} corresponding WCCG overlays with the active face (translucent blue) and ranked gaps}{figure.7}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces Execution--planning alignment in the main scenario. \textbf  {Top:} five PyBullet snapshots of the scene. \textbf  {Bottom:} corresponding WCCG with the start face highlighted as a translucent blue polygon. The task moves a cylindrical object from the start \(S=(1,4)\) to the goal \(G=(7,2)\). In the final snapshot, the start face contains \(G\), consistent with the green execution trajectory in the top row, confirming successful completion from \(S\) to \(G\). }}{7}{figure.6}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces Rec-NAMO. Sequentially builds path segments but often fails to form a complete $W$-clear path from start to goal. \textbf  {Top:} pushing steps. \textbf  {Bottom:} reachable region evolution.}}{7}{figure.7}\protected@file@percent }
+\newlabel{fig:baseline}{{7}{7}{Rec-NAMO. Sequentially builds path segments but often fails to form a complete $W$-clear path from start to goal. \textbf {Top:} pushing steps. \textbf {Bottom:} reachable region evolution}{figure.7}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {8}{\ignorespaces Scalability in dense clutter ($\boldsymbol  {30}$ movables). \textbf  {Top:} four execution snapshots as the robots clear bottlenecks and advance toward the goals. \textbf  {Bottom:} corresponding WCCG overlays with the active face (translucent blue) and ranked gaps. }}{7}{figure.8}\protected@file@percent }
+\newlabel{fig:scalability}{{8}{7}{Scalability in dense clutter ($\boldsymbol {30}$ movables). \textbf {Top:} four execution snapshots as the robots clear bottlenecks and advance toward the goals. \textbf {Bottom:} corresponding WCCG overlays with the active face (translucent blue) and ranked gaps}{figure.8}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {IV-A}Numerical Simulations}{7}{subsection.4.1}\protected@file@percent }
 \newlabel{subsec:sim}{{IV-A}{7}{Numerical Simulations}{subsection.4.1}{}}
 \newlabel{subsec:sim-setup}{{IV-A.1}{7}{Setup}{subsubsection.4.1.1}{}}
@@ -133,13 +137,18 @@
 \@writefile{toc}{\contentsline {subsubsection}{\numberline {IV-A.2}Algorithm Configuration}{7}{subsubsection.4.1.2}\protected@file@percent }
 \newlabel{subsec:baselines}{{IV-A.3}{7}{Baselines and Comparison}{subsubsection.4.1.3}{}}
 \@writefile{toc}{\contentsline {subsubsection}{\numberline {IV-A.3}Baselines and Comparison}{7}{subsubsection.4.1.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {IV-A.4}Dense-clutter scalability.}{7}{subsubsection.4.1.4}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {IV-B}Hardware Experiments}{7}{subsection.4.2}\protected@file@percent }
-\newlabel{subsec:hardware}{{IV-B}{7}{Hardware Experiments}{subsection.4.2}{}}
-\newlabel{subsec:exp-description}{{IV-B.1}{7}{System Description}{subsubsection.4.2.1}{}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {IV-B.1}System Description}{7}{subsubsection.4.2.1}\protected@file@percent }
-\newlabel{subsec:exp-results}{{IV-B.2}{7}{Results}{subsubsection.4.2.2}{}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {IV-B.2}Results}{7}{subsubsection.4.2.2}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {9}{\ignorespaces Real-world pushing experiment with execution--planning alignment. \textbf  {Top:} six snapshots as two robots push a target object in a \(5{\times }6\,\mathrm  {m}\) workspace with both movable pieces and fixed boundaries. \textbf  {Bottom:} corresponding WCCG overlays; the start face is highlighted in translucent blue. Planning uses clearance \(W{=}1.0\), start \(S{=}(1.65,1.01)\), goal \(G{=}(3.4,4.8)\). The evolving graph and candidate gaps stay consistent with observed motions, indicating that planned corridors are compatible with execution.}}{8}{figure.9}\protected@file@percent }
+\newlabel{fig:hardware}{{9}{8}{Real-world pushing experiment with execution--planning alignment. \textbf {Top:} six snapshots as two robots push a target object in a \(5{\times }6\,\mathrm {m}\) workspace with both movable pieces and fixed boundaries. \textbf {Bottom:} corresponding WCCG overlays; the start face is highlighted in translucent blue. Planning uses clearance \(W{=}1.0\), start \(S{=}(1.65,1.01)\), goal \(G{=}(3.4,4.8)\). The evolving graph and candidate gaps stay consistent with observed motions, indicating that planned corridors are compatible with execution}{figure.9}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {IV-A.4}Ablation Studies}{8}{subsubsection.4.1.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {IV-A.5}Dense-clutter scalability.}{8}{subsubsection.4.1.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {IV-B}Hardware Experiments}{8}{subsection.4.2}\protected@file@percent }
+\newlabel{subsec:hardware}{{IV-B}{8}{Hardware Experiments}{subsection.4.2}{}}
+\newlabel{subsec:exp-description}{{IV-B.1}{8}{System Description}{subsubsection.4.2.1}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {IV-B.1}System Description}{8}{subsubsection.4.2.1}\protected@file@percent }
+\newlabel{subsec:exp-results}{{IV-B.2}{8}{Results}{subsubsection.4.2.2}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {IV-B.2}Results}{8}{subsubsection.4.2.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {V}Conclusion}{8}{section.5}\protected@file@percent }
+\newlabel{sec:conclusion}{{V}{8}{Conclusion}{section.5}{}}
 \bibstyle{IEEEtran}
 \bibdata{contents/references}
 \bibcite{liu2023path}{1}
@@ -157,13 +166,11 @@
 \bibcite{wang2006multi}{13}
 \bibcite{feng2025learning}{14}
 \bibcite{lin2019efficient}{15}
-\@writefile{lof}{\contentsline {figure}{\numberline {8}{\ignorespaces Real-world pushing experiment with execution--planning alignment. \textbf  {Top:} six snapshots as two robots push a target object in a \(5{\times }6\,\mathrm  {m}\) workspace with both movable pieces and fixed boundaries. \textbf  {Bottom:} corresponding WCCG overlays; the start face is highlighted in translucent blue. Planning uses clearance \(W{=}1.0\), start \(S{=}(1.65,1.01)\), goal \(G{=}(3.4,4.8)\). The evolving graph and candidate gaps stay consistent with observed motions, indicating that planned corridors are compatible with execution.}}{8}{figure.8}\protected@file@percent }
-\newlabel{fig:hardware}{{8}{8}{Real-world pushing experiment with execution--planning alignment. \textbf {Top:} six snapshots as two robots push a target object in a \(5{\times }6\,\mathrm {m}\) workspace with both movable pieces and fixed boundaries. \textbf {Bottom:} corresponding WCCG overlays; the start face is highlighted in translucent blue. Planning uses clearance \(W{=}1.0\), start \(S{=}(1.65,1.01)\), goal \(G{=}(3.4,4.8)\). The evolving graph and candidate gaps stay consistent with observed motions, indicating that planned corridors are compatible with execution}{figure.8}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {V}Conclusion}{8}{section.5}\protected@file@percent }
-\newlabel{sec:conclusion}{{V}{8}{Conclusion}{section.5}{}}
-\@writefile{toc}{\contentsline {section}{References}{8}{section*.1}\protected@file@percent }
 \bibcite{rouxel2024multi}{16}
-\bibcite{tang2023combinatorial}{17}
-\bibcite{McGuireCroonTuyls2019}{18}
-\bibcite{coumans2019}{19}
+\bibcite{hou2020physics}{17}
+\bibcite{agrawal2016learning}{18}
+\bibcite{tang2023combinatorial}{19}
+\bibcite{McGuireCroonTuyls2019}{20}
+\bibcite{coumans2019}{21}
+\@writefile{toc}{\contentsline {section}{References}{9}{section*.1}\protected@file@percent }
 \gdef \@abspage@last{9}
