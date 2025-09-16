@@ -1,22 +1,23 @@
 %------------------------------
 \begin{figure*}[t!]
   \centering
-  \includegraphics[width=\linewidth]{figures/presearch.png}% or {presearch.pdf}
+  \includegraphics[width=0.95\linewidth]{figures/presearch.png}% or {presearch.pdf}
   \vspace{-0.15in}
-  \caption{
-  Illustration for {the ranking of potential gaps.}
-  Each panel overlays the WCCG together with the currently selected face (light blue).
-  The algorithm (i) extracts the frontier loop from BugPlanner,
-  (ii) enumerates candidate bridge--bridge gaps on the loop,
-  (iii) assigns local first-hop ranks (blue numbers),
-  and (iv) simulates a short presearch to predict the full gap-crossing sequence (red numbers).
-  \textbf{Top:} identical environment with start and goal swapped;
-  the resulting gap sequences are symmetric with identical predicted cost at $12.99$;
-  \textbf{Bottom:} a larger map with about $30$ obstacles, where presearch returns a 14-gap sequence
-  of predicted cost at $24.10$.
+\caption{
+Illustration for {the ranking of potential gaps.}
+Each panel shows the WCCG with the current face (light blue). 
+The algorithm (i) extracts the frontier loop from BugPlanner, 
+(ii) enumerates candidate bridge--bridge gaps on the loop, 
+(iii) assigns local first-hop ranks (blue numbers), 
+and (iv) simulates a short presearch to predict the full gap-crossing sequence (red numbers).
+\textbf{Top:} start/goal swapped in the same map $\Rightarrow$ symmetric sequences, 
+predicted cost $12.99$. 
+\textbf{Bottom:} larger map ($\sim30$ obstacles) with a 14-gap sequence, 
+predicted cost $24.10$.
 }
+
   \label{fig:presearch}
-  \vspace{-0.1in}
+   \vspace{-4mm}
 \end{figure*}
 %------------------------------
 %==============================================

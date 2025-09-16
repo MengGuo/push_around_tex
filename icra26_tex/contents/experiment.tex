@@ -1,9 +1,62 @@
 % ============================================================
 \section{Numerical Experiments}
 \label{sec:experiments}
-We evaluate the proposed simulation-in-the-loop NAMO planner (SiLS) in cluttered environments containing both movable and immovable obstacles. All components—W-CCG presearch, frontier extraction, and the \textit{ModeTable} prior—are integrated as described in Sec.~\ref{sec:solution}. The implementation is in \texttt{Python~3}; simulations run in \texttt{PyBullet}~\cite{coumans2019} on a laptop with an Intel Core i7\textendash1280P CPU. Videos and logs are provided in the supplementary material.
+We evaluate the proposed simulation-in-the-loop NAMO planner (SiLS) 
+in cluttered environments containing both movable 
+and immovable obstacles. All components—W-CCG presearch, frontier extraction, 
+and the \textit{ModeTable} prior—are integrated as described in Sec.~\ref{sec:solution}. 
+The implementation is in \texttt{Python~3}; 
+simulations run in \texttt{PyBullet}~\cite{coumans2019} on a laptop with an Intel Core i7\textendash1280P CPU. 
+Videos and logs are provided in the supplementary material.
+
+\begin{figure}[t!]
+  \centering
+  \vspace{-3mm}
+  \includegraphics[width=0.95\columnwidth]{figures/Rec_NAMO.pdf}
+  \vspace{-10mm}
+  \caption{Rec-NAMO. Sequentially builds path segments but often fails to form a complete $W$-clear path from start to goal. \textbf{Top:} pushing steps. \textbf{Bottom:} reachable region evolution.}
+  \vspace{-6mm}
+  \label{fig:Rec-NAMO}
+\end{figure}
+
 
 % ========================================
+\begin{table}[t]
+  \centering
+\begin{threeparttable}
+  \caption{Performance on the nominal scenario with push-count (mean $\pm$ std).}
+  \label{tab:main}
+  \vspace{2pt}
+  \setlength{\tabcolsep}{2.3pt}
+\begin{tabular}{lccccc}
+\toprule
+Method & Succ.~(\%) & \#PT (s) & \#ET (s) & \#Sims & \#Pushes \\
+\midrule
+DFS-WCCG            & 25.0  & 41.8  & N/A     & --    & --   \\
+SL-Push (off-line)  & 62.5  & 0.03  & 145.1   & 0.0   & 7.0  \\
+SL-Push (sim)       & 75.0  & 25.1  & 246.8   & 16.0  & 8.0  \\
+Rec-NAMO            & 37.5  & 10.5  & 179.3   & 0.0   & 7.0  \\
+\textbf{SiLS (ours)}& \textbf{92.5} & \textbf{10.3} & \textbf{28.6} & \textbf{121.5} & \textbf{6.0} \\
+\bottomrule
+\end{tabular}
+  \begin{tablenotes}[flushleft]\footnotesize
+  \item \textbf{Metrics.} \emph{Succ.} = success rate; \emph{\#PT} = planning time; \emph{\#ET} = execution time; \emph{\#Sims} = simulations invoked; \emph{\#Pushes} = length of executed push sequence.
+  \end{tablenotes}
+  \end{threeparttable}
+  \vspace{-4mm}
+\end{table}
+% ========================================
+% ========================================
+
+\begin{figure*}[t]
+  \centering
+  \includegraphics[width=0.95\linewidth]{figures/hardware_wccg.png}
+  \vspace{-4mm}
+  \caption{Real-world pushing experiment with execution--planning alignment. \textbf{Top:} six snapshots as two robots push a target object in a \(5{\times}6\,\mathrm{m}\) workspace with both movable pieces and fixed boundaries. \textbf{Bottom:} corresponding WCCG overlays; the start face is highlighted in translucent blue. Planning uses clearance \(W{=}1.0\), start \(S{=}(1.65,1.01)\), goal \(G{=}(3.4,4.8)\). The evolving graph and candidate gaps stay consistent with observed motions, indicating that planned corridors are compatible with execution.}
+  \vspace{-4mm}
+  \label{fig:hardware}
+\end{figure*}
+
 \subsection{Numerical Simulations}
 \label{subsec:sim}
 % ========================================
@@ -26,21 +79,7 @@ Unless stated otherwise: the per-task simulation horizon is $80$ steps; up to $6
 %   \label{fig:SL-Push}
 % \end{figure}
 
-\begin{figure}[t!]
-  \centering
-  \vspace{-3mm}
-  \includegraphics[width=\columnwidth]{figures/Rec_NAMO.pdf}
-  \vspace{-10mm}
-  \caption{Rec-NAMO. Sequentially builds path segments but often fails to form a complete $W$-clear path from start to goal. \textbf{Top:} pushing steps. \textbf{Bottom:} reachable region evolution.}
-  \label{fig:Rec-NAMO}
-\end{figure}
-\begin{figure*}[t]
-  \centering
-  \includegraphics[width=\linewidth]{figures/hardware_wccg.png}
-  \vspace{-2mm}
-  \caption{Real-world pushing experiment with execution--planning alignment. \textbf{Top:} six snapshots as two robots push a target object in a \(5{\times}6\,\mathrm{m}\) workspace with both movable pieces and fixed boundaries. \textbf{Bottom:} corresponding WCCG overlays; the start face is highlighted in translucent blue. Planning uses clearance \(W{=}1.0\), start \(S{=}(1.65,1.01)\), goal \(G{=}(3.4,4.8)\). The evolving graph and candidate gaps stay consistent with observed motions, indicating that planned corridors are compatible with execution.}
-  \label{fig:hardware}
-\end{figure*}
+
 
 \subsubsection{Baselines and Comparison}
 \label{subsec:baselines}
@@ -56,29 +95,7 @@ Table~\ref{tab:main} summarizes performance on the nominal scenario. DFS-WCCG su
 
 By contrast, \textbf{SiLS} attains higher success with fewer simulations and lower planning/execution time due to (i) frontier-based gap ranking, (ii) ModeTable-guided push directions, and (iii) quick-pass/early-stop. Deferred reinsertion further prevents priority-queue starvation by revisiting previously generated high-value nodes when a batch of actions fails.
 
-\begin{table}[t]
-  \centering
-  \begin{threeparttable}
-  \caption{Performance on the nominal scenario with push-count (mean $\pm$ std).}
-  \label{tab:main}
-  \vspace{2pt}
-  \setlength{\tabcolsep}{2.3pt}
-\begin{tabular}{lccccc}
-\toprule
-Method & Succ.~(\%) & \#PT (s) & \#ET (s) & \#Sims & \#Pushes \\
-\midrule
-DFS-WCCG            & 25.0  & 41.8  & N/A     & --    & --   \\
-SL-Push (off-line)  & 62.5  & 0.03  & 145.1   & 0.0   & 7.0  \\
-SL-Push (sim)       & 75.0  & 25.1  & 246.8   & 16.0  & 8.0  \\
-Rec-NAMO            & 37.5  & 10.5  & 179.3   & 0.0   & 7.0  \\
-\textbf{SiLS (ours)}& \textbf{92.5} & \textbf{10.3} & \textbf{28.6} & \textbf{121.5} & \textbf{6.0} \\
-\bottomrule
-\end{tabular}
-  \begin{tablenotes}[flushleft]\footnotesize
-  \item \textbf{Metrics.} \emph{Succ.} = success rate; \emph{\#PT} = planning time; \emph{\#ET} = execution time; \emph{\#Sims} = simulations invoked; \emph{\#Pushes} = length of executed push sequence.
-  \end{tablenotes}
-  \end{threeparttable}
-\end{table}
+
 
 \subsubsection{Qualitative Results}
 \label{subsec:qual}
