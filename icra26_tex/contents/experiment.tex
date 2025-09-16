@@ -1,7 +1,7 @@
 % ============================================================
 \section{Numerical Experiments}
 \label{sec:experiments}
-We evaluate the proposed simulation-in-the-loop NAMO planner (SiLS) 
+We evaluate the proposed physics-informed hybrid search(PIHS)
 in cluttered environments containing both movable 
 and immovable obstacles. All components—W-CCG presearch, frontier extraction, 
 and the \textit{ModeTable} prior—are integrated as described in Sec.~\ref{sec:solution}. 
@@ -9,15 +9,7 @@ The implementation is in \texttt{Python~3};
 simulations run in \texttt{PyBullet}~\cite{coumans2019} on a laptop with an Intel Core i7\textendash1280P CPU. 
 Videos and logs are provided in the supplementary material.
 
-\begin{figure}[t!]
-  \centering
-  \vspace{-3mm}
-  \includegraphics[width=0.95\columnwidth]{figures/Rec_NAMO.pdf}
-  \vspace{-10mm}
-  \caption{Rec-NAMO. Sequentially builds path segments but often fails to form a complete $W$-clear path from start to goal. \textbf{Top:} pushing steps. \textbf{Bottom:} reachable region evolution.}
-  \vspace{-6mm}
-  \label{fig:Rec-NAMO}
-\end{figure}
+
 
 
 % ========================================
@@ -36,7 +28,7 @@ DFS-WCCG            & 25.0  & 41.8  & N/A     & --    & --   \\
 SL-Push (off-line)  & 62.5  & 0.03  & 145.1   & 0.0   & 7.0  \\
 SL-Push (sim)       & 75.0  & 25.1  & 246.8   & 16.0  & 8.0  \\
 Rec-NAMO            & 37.5  & 10.5  & 179.3   & 0.0   & 7.0  \\
-\textbf{SiLS (ours)}& \textbf{92.5} & \textbf{10.3} & \textbf{28.6} & \textbf{121.5} & \textbf{6.0} \\
+\textbf{PIHS (ours)}& \textbf{92.5} & \textbf{10.3} & \textbf{28.6} & \textbf{121.5} & \textbf{6.0} \\
 \bottomrule
 \end{tabular}
   \begin{tablenotes}[flushleft]\footnotesize
@@ -45,9 +37,24 @@ Rec-NAMO            & 37.5  & 10.5  & 179.3   & 0.0   & 7.0  \\
   \end{threeparttable}
   \vspace{-4mm}
 \end{table}
-% ========================================
-% ========================================
 
+% ========================================
+\begin{figure}[t!]
+  \centering
+  \includegraphics[width=0.95\linewidth]{figures/scalability.png}
+  \vspace{-2mm}
+ \caption{Scalability in dense clutter ($\boldsymbol{30}$ movables). 
+  \textbf{Top:} four execution snapshots as the robots clear bottlenecks and advance toward the goals. 
+  \textbf{Bottom:} corresponding WCCG overlays with the active face (translucent blue) and ranked gaps. 
+  }
+\label{fig:scalability}
+\vspace{-4mm}
+\end{figure}
+
+\subsection{Numerical Simulations}
+\label{subsec:sim}
+% ========================================
+% ========================================
 \begin{figure*}[t]
   \centering
   \includegraphics[width=0.95\linewidth]{figures/hardware_wccg.png}
@@ -56,9 +63,6 @@ Rec-NAMO            & 37.5  & 10.5  & 179.3   & 0.0   & 7.0  \\
   \vspace{-4mm}
   \label{fig:hardware}
 \end{figure*}
-
-\subsection{Numerical Simulations}
-\label{subsec:sim}
 % ========================================
 
 \subsubsection{Setup}
@@ -70,15 +74,6 @@ We use a \emph{nominal scenario} with an $8{\times}5$\,m bounded workspace, two 
 \subsubsection{Algorithm Configuration}
 \label{subsec:algo-config}
 Unless stated otherwise: the per-task simulation horizon is $80$ steps; up to $64$ candidate push tasks are generated per expansion; and the node priority is $f=g+\widehat{\mathsf{Cost}}_{\text{to-go}}$ with heuristic factor $10$. Gap sampling uses a softmax with temperature $0.05$. \textit{ModeTable} is enabled (auto-baked when missing). A \emph{quick-pass} geometric screen may skip physics if a reference rollout already clears a gap; otherwise a short-horizon simulation with early stop is used. To avoid premature termination, a \emph{deferred-reinsertion} rule retains high-value yet temporarily unexpanded nodes and revisits them later.
-
-% \begin{figure}[t!]
-%   \centering
-%   \includegraphics[width=\columnwidth]{figures/SL_Push.pdf}
-%   \vspace{-10mm}
-%   \caption{SL-Push. Either compute (offline) or simulate (sim-in-the-loop) pushing directions for movables along a $W$-width straight route from sub-start to sub-goal. \textbf{Top:} pushing steps. \textbf{Bottom:} evolution of the reachable region.}
-%   \label{fig:SL-Push}
-% \end{figure}
-
 
 
 \subsubsection{Baselines and Comparison}
@@ -93,14 +88,15 @@ We compare against three representative families, all using the same $W$-clearan
 
 Table~\ref{tab:main} summarizes performance on the nominal scenario. DFS-WCCG suffers exponential growth of the search space as the number of movables increases, leading to long planning times and frequent timeouts (lowest success rate). SL-Push (offline) plans very quickly ($<0.1$\,s), but the lack of physics leads to physically unrealizable plans. Its sim-in-the-loop variant improves feasibility, but still requires many simulations and can produce unnecessarily long action sequences when the straight-line route is not the minimal pushing route; Fig.~\ref{fig:SL-Push} illustrates a two-subgoal case. Rec-NAMO is faster than sim-in-the-loop approaches and effective for classical NAMO, yet it often fails to produce a fully connected $W$-clear route (Fig.~\ref{fig:Rec-NAMO}), resulting in lower success. 
 
-By contrast, \textbf{SiLS} attains higher success with fewer simulations and lower planning/execution time due to (i) frontier-based gap ranking, (ii) ModeTable-guided push directions, and (iii) quick-pass/early-stop. Deferred reinsertion further prevents priority-queue starvation by revisiting previously generated high-value nodes when a batch of actions fails.
+By contrast, \textbf{PIHS} attains higher success with fewer simulations and lower planning/execution time due to (i) frontier-based gap ranking, (ii) ModeTable-guided push directions, and (iii) quick-pass/early-stop. Deferred reinsertion further prevents priority-queue starvation by revisiting previously generated high-value nodes when a batch of actions fails.
 
-
-
-\subsubsection{Qualitative Results}
-\label{subsec:qual}
-Figure~\ref{fig:qual} shows a typical run: frontiers and ranked gaps, a top-ranked gap sequence, simulated pushes widening bottlenecks, and the final $W$-clear path. Per-step overlays and GIFs are generated by a lightweight snapshot logger.
-
+\subsubsection{Dense-clutter scalability.}
+We further evaluate SiLS in a larger $8{\times}5$\,m workspace populated with $30$ movable objects.
+Despite the increased combinatorics, WCCG presearch and ModeTable guidance keep the branching small:
+the run in Fig.~\ref{fig:scalability} completes with $10$ node expansions (visited $115$), $312$ short simulation calls,
+and only $7$ executed push tasks, yielding a connected $W$–clear corridor.
+Wall-clock planning takes $21.2$\,s and execution $24.5$\,s, after which all robots arrive at their goals.
+This illustrates that SiLS maintains efficiency and solution quality as scene density grows.
 % ========================================
 \subsection{Hardware Experiments}\label{subsec:hardware}
 % ========================================
