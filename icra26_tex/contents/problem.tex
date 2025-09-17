@@ -5,7 +5,7 @@
   \includegraphics[width=0.95\linewidth]{figures/wccg.pdf}
   \vspace{-0.1in}
   \caption{Illustration of the W--Clearance Connectivity Graph (WCCG).
-\textbf{Left:} Cluttered PyBullet scenario with the immovable walls and movable objects;
+\textbf{Left:} Cluttered PyBullet scenario with immovable walls and movable objects;
 \textbf{Middle:} WCCG overlay with the centroid nodes (blue squares), bridge nodes
 (red circles), centroid--bridge edges (blue), and bridge--bridge edges (red dashed)
 annotated by the gap widths;
@@ -95,8 +95,8 @@ $\Delta t_k>0$ the duration of execution.
 Thus, the optimization problem balances the execution time and the physical effort
 of the clearance process, subject to various constraints, i.e.,
 \begin{equation}\label{eq:problem}
-\underset{\pi}{\textbf{min}}\ \Big{\{} T+\alpha\sum_{k=1}^{K}
-J\!\left(m_k,\,\boldsymbol{\xi}_k,\,\mathbf{S}(\tau_k)\right)\Big{\}},
+\min_{\pi}\ \Big{\{} T+\alpha\sum_{k=1}^{K}
+J\!\left(m_k,\,\boldsymbol{\xi}_k,\,\mathbf{S}(t_k)\right)\Big{\}},
 \end{equation}
 where $T\triangleq\sum_{k=1}^{K}\Delta t_k$ is the total task duration,
 $\alpha>0$ is a trade-off parameter, and $J(\cdot)$ is a simulation-based

@@ -39,10 +39,11 @@ Init $\mathcal{Q}$ by~\eqref{eq:priority}\;
 
 As shown in Fig.~\ref{fig:PIHS},
 the hybrid search couples high-level decisions about blocking gaps with
-low-level feasibility of multi-robot pushing. Unlike purely geometric
-planners, this procedure simultaneously determines a sequence of gaps to clear
-and physically-feasible pushing actions, including directions, contact modes,
-and forces. Parallel physics simulation is embedded so that candidate
+low-level feasibility of multi-robot pushing. 
+Unlike purely geometric planners, 
+this procedure simultaneously determines a sequence of gaps to clear
+and physically-feasible pushing actions, including directions, contact modes,and forces. 
+Parallel physics simulation is embedded so that candidate
 push strategies can be evaluated simultaneously at each expansion, and the resulting
 successor states are returned to the search.
 The algorithmic details are summarized in Alg.~\ref{alg:push}
@@ -51,17 +52,14 @@ and explained below.
 \subsubsection{Tree and Initialization}
 The search tree $\mathcal{T}$ is composed of nodes
 $\nu\triangleq(\mathbf{s},\pi)$, where $\mathbf{s}$ is the current system
-state including the positions and orientations of all robots and movable
-obstacles as in~\eqref{eq:transition}, and $\pi$ is the partial pushing
-strategy realized so far as in~\eqref{eq:schedule}. Two global functions are
+state of all robots and movables (cf.~\eqref{eq:transition}), and $\pi$ the partial pushing strategy (cf.~\eqref{eq:schedule}). 
+Two global functions are
 maintained: $\mathsf{Rank}(\nu)$ stores a ranked list of candidate gaps at this
 node together with their exploration status, derived from~\eqref{eq:pred_cost};
 and $\chi(\nu)$ returns the cumulative execution cost
 from the root to $\nu$.
-The root is initialized as
-$\nu_0\triangleq(\mathbf{s}_0,\emptyset)$, where
-$\mathbf{S}^{\texttt{S}}$ corresponds to the initial system state
-$\mathbf{s}_0$. At initialization, $\chi(\nu_0)=0$, and
+The root is initialized as $\nu_0\triangleq(\mathbf{s}_0,\emptyset)$, where $\mathbf{s}_0$ is the initial system state. 
+At initialization, $\chi(\nu_0)=0$, and
 $\mathsf{Rank}(\nu_0)$ is constructed by first computing the frontier loop
 $\mathcal{L}_\nu$ associated with~$\mathbf{s}_0$, then extracting the visible
 gaps $\Gamma_{\mathcal{L}_\nu}$, and finally ranking them by their predicted
@@ -81,8 +79,7 @@ for search expansion.}
 %------------------------------
 \subsubsection{Node Selection}
 At each iteration, the node with minimum best-first priority is selected from
-the queue. The priority function balances the realized execution cost and the
-estimated effort of remaining gaps:
+the queue. Priority balances realized cost and estimated remaining effort:
 \begin{equation}\label{eq:priority}
   f(\nu)\triangleq \chi(\nu)+\underset{g\in \textsf{Rank}(\nu)}{\textbf{min}}
   \widehat{\mathsf{Cost}}(g),
@@ -98,7 +95,7 @@ for physical effort already incurred and the most promising future actions.
   \includegraphics[width=0.95\linewidth]{figures/sim_exp.png}
   \vspace{-0.15in}
 \caption{Execution--planning alignment in the main scenario.
-\textbf{Top:} $5$  PyBullet snapshots as $2$ robots push a cylindrical object.
+\textbf{Top:} $5$ PyBullet snapshots as $2$ robots push a cylindrical object.
 \textbf{Bottom:} corresponding WCCG overlays with the start face in blue.
 The task moves the object from \(\mathbf{s}^{\texttt{S}}_{\texttt{V}}=(1,4)\) to \(\mathbf{s}^{\texttt{G}}_{\texttt{V}}=(7,2)\).
 In the final state,
@@ -112,12 +109,13 @@ the start face contains \(G\), matching the executed trajectory and confirming s
 When a node $\nu$ is selected for expansion, a batch of \emph{pushing
 strategies} from $\mathsf{Rank}(\nu)$ is evaluated in parallel by simulation.
 Each pushing strategy is defined as
-\(\tau\triangleq(g,\mathbf{v},\boldsymbol{\xi})\), where
-$g\in \boldsymbol{\Omega}$ is the chosen gap;
+\(\tau\triangleq(g,\mathbf{v},\boldsymbol{\xi})\), 
+where $g\in \Gamma_{\mathcal{L}_\nu}$ is the chosen gap;
 $\mathbf{v}\triangleq(v_x,v_y,\omega)\in \mathbb{R}^3$ is a short-horizon body
 velocity for the manipulated obstacle;
-and $\boldsymbol{\xi}\triangleq (\mathcal{C}_m,\mathbf{u}_m) \in (\partial\Omega_m)^N \times \mathbb{R}^{2N}$
-is a contact mode specifying robot contact points and pushing forces as in~\eqref{eq:transition}.
+and $\boldsymbol{\xi}\triangleq (\mathcal{C}_m,\mathbf{u}_m) \in (\partial\Omega_m)^N \times \mathbb{R}^{2N}$ 
+is a contact mode for the manipulated obstacle $\Omega_m$ (adjacent to $g$), 
+specifying robot contact points and pushing forces as in~\eqref{eq:transition}.
 Moreover, each candidate $\tau$ is first checked by a geometric quick-pass. If it passes,
 it is evaluated by the simulator with the current state and pushing strategy:
 \begin{equation}\label{eq:sim}

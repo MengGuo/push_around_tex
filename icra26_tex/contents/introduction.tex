@@ -27,10 +27,10 @@ complex.
   \caption{
     Snapshots of collaborative path clearing in both simulation (\textbf{Top})
     and hardware (\textbf{Bottom}). Two robots actively push movable
-  obstacles to create a $W$--clear path for a large vehicle
-  to traverse from start to goal,
-  via hybrid search over the sequence of obstacles to push,
-  and the associated pushing directions and modes.
+    obstacles to create a $W$--clear path for a large vehicle
+    to traverse from start to goal,
+    via a hybrid search over the sequence of obstacles 
+    to push and the associated pushing directions and modes.
   }
   \vspace{-6mm}
   \label{fig:snapshots}
@@ -60,7 +60,7 @@ leads to plans that are geometrically valid but physically unrealizable.
 \caption{Overview of the proposed PushAround framework.
 \textbf{Top:} Scene inputs, WCCG construction with BugPlanner, gap ranking, and sampling of pushing
 modes for breaking frontier gaps.
-\textbf{Bottom-left:} Sim-in-the-loop hyrid search where candidate push modes are validated in parallel.
+\textbf{Bottom-left:} Sim-in-the-loop hybrid search, where candidate push modes are validated in parallel.
 \textbf{Bottom-right:} Online execution and adaptation during path clearing.}
 
   \label{fig:overall}
