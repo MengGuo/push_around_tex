@@ -5,7 +5,8 @@ When the condition in~\eqref{eq:wccg_criterion} fails, the vehicle cannot
 reach~$\mathbf{s}_\texttt{V}^{\texttt{G}}$ from
 $\mathbf{s}_\texttt{V}^{\texttt{S}}$ through a $W$--clear path
 $\mathcal{P}^W_\texttt{V}$. In this case, the planner must prioritize
-\emph{blocking gaps} on the reachable frontier of $\mathcal{G}_W$. The goal of
+\emph{blocking gaps} on the reachable frontier of $\mathcal{G}_W$.
+As shown in Fig.~\ref{fig:presearch}, the goal of
 this module is to provide an ordered list of such gaps, ranked by their
 predicted cost to eventually yield a feasible path, which serves
 as a critical guidance for the hybrid search in the sequel.

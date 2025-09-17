@@ -5,17 +5,16 @@
   \vspace{-0.15in}
 \caption{
 Illustration for {the ranking of potential gaps.}
-Each panel shows the WCCG with the current face (light blue). 
-The algorithm (i) extracts the frontier loop from BugPlanner, 
-(ii) enumerates candidate bridge--bridge gaps on the loop, 
-(iii) assigns local first-hop ranks (blue numbers), 
+Each panel shows the WCCG with the current face (light blue).
+The algorithm (i) extracts the frontier loop from BugPlanner,
+(ii) enumerates candidate bridge--bridge gaps on the loop,
+(iii) assigns local first-hop ranks (blue numbers),
 and (iv) simulates a short presearch to predict the full gap-crossing sequence (red numbers).
-\textbf{Top:} start/goal swapped in the same map $\Rightarrow$ symmetric sequences, 
-predicted cost $12.99$. 
-\textbf{Bottom:} larger map ($\sim30$ obstacles) with a 14-gap sequence, 
-predicted cost $24.10$.
+\textbf{Top}: start and goal swapped in the same map give symmetric
+sequences with cost $12.99$;
+\textbf{Right}: a larger map with about 30 obstacles produces a 14-gap sequence
+with cost $24.10$.
 }
-
   \label{fig:presearch}
    \vspace{-4mm}
 \end{figure*}
@@ -27,7 +26,7 @@ The feasibility of routing the vehicle depends on whether a corridor of width
 $W$ exists between the start configuration $\mathbf{s}_\texttt{V}^{\texttt{S}}$
 and the goal configuration $\mathbf{s}_\texttt{V}^{\texttt{G}}$. To address
 this question, a \emph{W--Clearance Connectivity Graph} (WCCG) is introduced.
-The WCCG encodes adjacency relations between obstacles under the clearance
+As shown in Fig.~\ref{fig:wccg}, The WCCG encodes adjacency relations between obstacles under the clearance
 threshold $W$ and supports efficient connectivity queries. Unlike grid maps or
 sampled roadmaps, it is constructed directly from obstacle geometry, avoiding
 discretization errors and ensuring consistent results. This is particularly

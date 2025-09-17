@@ -11,26 +11,31 @@ pulling, or rotating obstacles~\cite{stilman2005navigation}, yet most existing
 methods abstract away physical feasibility. Factors such as robot dimensions,
 obstacle size and mass, contact geometry, applied forces, and the coupled
 dynamics of pushing are typically ignored, producing plans that are geometrically
-valid but physically unrealizable. The difficulty is amplified by the fact that
+valid but physically unrealizable. As shown in Fig.~\ref{fig:snapshots},
+the difficulty is amplified by the fact that
 a single large robot is often unable to clear a corridor unaided, smaller robots
 are limited by their reach and access to obstacle boundaries, and cooperative
 pushing introduces strong physical coupling where one action can trigger chained
 motions of multiple obstacles, making prediction and planning substantially more
 complex.
 
+%==============================================
 \begin{figure}[t!]
   \centering
-  \vspace{1mm}
   \includegraphics[width=0.95\linewidth]{figures/cover.png}% or {presearch.pdf}
+  \vspace{-0.1in}
   \caption{
-  Snapshots of collaborative path clearing system in both simulation and
-  hardware. A team of robots actively reconfigures movable
-  obstacles to create a $W$-clear path for a large vehicle
-  to traverse from start to goal.
+    Snapshots of collaborative path clearing in both simulation (\textbf{Top})
+    and hardware (\textbf{Bottom}). Two robots actively push movable
+  obstacles to create a $W$--clear path for a large vehicle
+  to traverse from start to goal,
+  via hybrid search over the sequence of obstacles to push,
+  and the associated pushing directions and modes.
   }
   \vspace{-6mm}
   \label{fig:snapshots}
 \end{figure}
+%==============================================
 
 \subsection{Related Work}\label{subsec:intro-related}
 
@@ -51,14 +56,14 @@ leads to plans that are geometrically valid but physically unrealizable.
 \begin{figure*}[t!]
   \centering
   \includegraphics[width=0.95\linewidth]{figures/overall.png}
-  \caption{Illustration of the W--Clearance Connectivity Graph (WCCG).
-\textbf{Left:} Cluttered PyBullet scenario with the immovable walls and movable objects;
-\textbf{Middle:} WCCG overlay with the centroid nodes (blue squares), bridge nodes
-(red circles), centroid--bridge edges (blue), and bridge--bridge edges (red dashed)
-annotated by the gap widths;
-\textbf{Right:} Induced faces of the WCCG, where the colors indicate distinct connected
-regions.}
-  \label{fig:wccg}
+  \vspace{-0.1in}
+\caption{Overview of the proposed PushAround framework.
+\textbf{Top:} Scene inputs, WCCG construction with BugPlanner, gap ranking, and sampling of pushing
+modes for breaking frontier gaps.
+\textbf{Bottom-left:} Sim-in-the-loop hyrid search where candidate push modes are validated in parallel.
+\textbf{Bottom-right:} Online execution and adaptation during path clearing.}
+
+  \label{fig:overall}
   \vspace{-0.2in}
 \end{figure*}
 %==============================================
@@ -82,9 +87,9 @@ Physics-informed planning has emerged to integrate realistic dynamics into
 motion generation. Several methods use physics engines to validate candidate
 manipulations~\cite{lin2019efficient} or embed contact simulation directly in
 the planning loop~\cite{rouxel2024multi}. Other approaches incorporate dynamic
-models into planning for non-prehensile manipulation~\cite{zhou2017pushing,hou2020physics}
+models into planning for non-prehensile manipulation~\cite{xue2023guided,saxena2023planning}
 or apply learning with physics priors and differentiable physics for
-contact-rich tasks~\cite{agrawal2016learning,ha2018reinforcement,ni2023progressive,liu2025physics}.
+contact-rich tasks~\cite{ni2023progressive,liu2025physics}.
 While these approaches highlight the benefits of embedding physical reasoning,
 they often decouple high-level planning from low-level feasibility checks or
 remain confined to single-object manipulation. Consequently, they do not scale
@@ -94,7 +99,8 @@ obstacles.
 
 %==============================
 \subsection{Our Method}\label{subsec:intro-our}
-This work introduces \emph{PushAround}, a physics-informed framework for
+As shown in Fig.~\ref{fig:overall},
+this work introduces \emph{PushAround}, a physics-informed framework for
 collaborative multi-robot pushing that actively constructs traversable
 corridors for large vehicles in cluttered environments. The central novelty is
 a hybrid search that jointly determines which obstacles to displace and how to

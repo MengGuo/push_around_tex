@@ -1,19 +1,16 @@
 % %% ========================================
 \section{Proposed Solution}\label{sec:solution}
 
-The unified framework called PushAround is developed to enable collaborative multi-robot pushing
-with physical feasibility, as described in this section.
-The framework begins by constructing a
-W-Clearance Connectivity Graph, introduced in Sec.~\ref{subsec:wccg}, which
-captures the connectivity of the workspace under the clearance requirement
-and identifies frontier gaps that block passage. Building on this
-representation, Sec.~\ref{subsec:gap} presents a gap-ranking strategy that
-assigns costs to candidate gaps and determines which obstacle-clearing actions
-are most promising. These ranked actions are then evaluated within a
-simulation-in-the-loop search, described in Sec.~\ref{subsec:simloop}, where a
-configuration-space tree is expanded and candidate pushes are validated by
-parallel physical simulation. The complete execution flow together with
-generalization aspects is summarized in Sec.~\ref{subsec:overall}.
+The PushAround framework enables collaborative multi-robot pushing with physical 
+feasibility. As shown in Fig.~\ref{fig:overall},
+it first constructs a W-Clearance Connectivity Graph as described in 
+Sec.~\ref{subsec:wccg}, which captures workspace connectivity and identifies 
+blocking gaps. A gap-ranking strategy in Sec.~\ref{subsec:gap} then prioritizes 
+obstacle-clearing actions, which are evaluated through a simulation-in-the-loop 
+search in Sec.~\ref{subsec:simloop}. This search expands a configuration-space 
+tree and validates pushes by parallel simulation. The overall flow and possible 
+extensions are summarized in Sec.~\ref{subsec:overall}.
+
 
 
 

@@ -46,8 +46,8 @@ L.~Yao, V.~Modugno, A.~M. Delfaki, Y.~Liu, D.~Stoyanov, and D.~Kanoulas,
 
 \bibitem{tang2024collaborative}
 Z.~Tang, Y.~Feng, and M.~Guo, ``Collaborative planar pushing of polytopic
-  objects with multiple robots in complex scenes,'' \emph{arXiv preprint
-  arXiv:2405.07908}, 2024.
+  objects with multiple robots in complex scenes,'' in \emph{Proc. Robot., Sci.
+  Syst.}, 2024.
 
 \bibitem{ren2025search}
 Z.~Ren, B.~Suvonov, G.~Chen, B.~He, Y.~Liao, C.~Fermuller, and J.~Zhang,
@@ -107,20 +107,17 @@ Q.~Rouxel, S.~Ivaldi, and J.-B. Mouret, ``Multi-contact whole-body force
   control for position-controlled robots,'' \emph{IEEE Robotics and Automation
   Letters}, vol.~9, no.~6, pp. 5639--5646, 2024.
 
-\bibitem{hou2020physics}
-\BIBentryALTinterwordspacing
-F.~Hou and <Coauthors>, ``<physics-based planning for non-prehensile
-  manipulation / exact title>,'' in \emph{<Conference (e.g., ICRA/ICRA
-  Workshop/IROS)>}, 2020, pp. <pp--pp>. [Online]. Available:
-  \url{<pdf-or-arXiv-link>}
-\BIBentrySTDinterwordspacing
+\bibitem{xue2023guided}
+T.~Xue, H.~Girgin, T.~S. Lembono, and S.~Calinon, ``Guided optimal control for
+  long-term non-prehensile planar manipulation,'' in \emph{IEEE International
+  Conference on Robotics and Automation (ICRA)}, 2023, pp. 4999--5005.
 
-\bibitem{agrawal2016learning}
-\BIBentryALTinterwordspacing
-P.~Agrawal, A.~Nair, and P.~Abbeel, ``Learning to poke by poking: Experiential
-  learning of intuitive physics,'' \emph{arXiv preprint arXiv:1606.07419},
-  2016. [Online]. Available: \url{https://arxiv.org/abs/1606.07419}
-\BIBentrySTDinterwordspacing
+\bibitem{saxena2023planning}
+D.~M. Saxena and M.~Likhachev, ``Planning for complex non-prehensile
+  manipulation among movable objects by interleaving multi-agent pathfinding
+  and physics-based simulation,'' in \emph{2023 IEEE International Conference
+  on Robotics and Automation (ICRA)}.\hskip 1em plus 0.5em minus 0.4em\relax
+  IEEE, 2023, pp. 8141--8147.
 
 \bibitem{tang2023combinatorial}
 Z.~Tang, J.~Chen, and M.~Guo, ``Combinatorial-hybrid optimization for

@@ -37,14 +37,16 @@ Init $\mathcal{Q}$ by~\eqref{eq:priority}\;
 %==============================================
 \subsection{Physics-Informed Hybrid Search}\label{subsec:simloop}
 
-The hybrid search couples high-level decisions about blocking gaps with
+As shown in Fig.~\ref{fig:PIHS},
+the hybrid search couples high-level decisions about blocking gaps with
 low-level feasibility of multi-robot pushing. Unlike purely geometric
 planners, this procedure simultaneously determines a sequence of gaps to clear
-and physically feasible pushing actions, including directions, contact modes,
-and forces. Parallel physics simulation is embedded so that many candidate
+and physically-feasible pushing actions, including directions, contact modes,
+and forces. Parallel physics simulation is embedded so that candidate
 push strategies can be evaluated simultaneously at each expansion, and the resulting
-successor states are returned to the search. This tight coupling of discrete
-graph reasoning with continuous pushing dynamics is unique for the considered problem.
+successor states are returned to the search.
+The algorithmic details are summarized in Alg.~\ref{alg:push}
+and explained below.
 
 \subsubsection{Tree and Initialization}
 The search tree $\mathcal{T}$ is composed of nodes
@@ -70,15 +72,9 @@ cost-to-connect.
   \includegraphics[width=0.95\linewidth]{figures/PIHS.png}
   \vspace{-0.15in}
   \caption{
-  Overview of \textbf{PIHS} (physics–informed hybrid search). 
-  \textbf{Top row (four panels):} (1) current simulation snapshot rendered in \texttt{PyBullet}; 
-  (2) the corresponding $W$--clearance connectivity graph (WCCG); 
-  (3) presearch on the WCCG with ranked candidate gaps (numbers indicate local/global ranks); 
-  (4) robot \emph{reachable contacts} on obstacle boundaries (green arrows).
-  \textbf{Bottom row:} given the current snapshot, the reachable contacts, and the ranked gaps, 
-  PIHS samples push \emph{tasks} and \emph{modes} (e.g., face/edge, normal/tangential), 
-  executes short-horizon physics rollouts, and visualizes the predicted outcomes: 
-  ghosted trails show slider/object trajectories, and the final panel depicts the updated state used for the next search expansion.}
+\textbf{Top:} Core components of the proposed physics-informed hybrid search;
+\textbf{Bottom:} Sampled push tasks are evaluated via parallel simulation, producing updated states
+for search expansion.}
     \label{fig:PIHS}
    \vspace{-4mm}
 \end{figure}
@@ -95,6 +91,22 @@ where $\chi(\nu)$ is the cumulative execution cost so far, and the second term
 is the minimum predicted remaining cost among the unexplored gaps of~$\nu$.
 This scoring ensures that nodes are expanded in an order that jointly accounts
 for physical effort already incurred and the most promising future actions.
+
+%==============================
+\begin{figure*}[t!]
+  \centering
+  \includegraphics[width=0.95\linewidth]{figures/sim_exp.png}
+  \vspace{-0.15in}
+\caption{Execution--planning alignment in the main scenario.
+\textbf{Top:} $5$  PyBullet snapshots as $2$ robots push a cylindrical object.
+\textbf{Bottom:} corresponding WCCG overlays with the start face in blue.
+The task moves the object from \(\mathbf{s}^{\texttt{S}}_{\texttt{V}}=(1,4)\) to \(\mathbf{s}^{\texttt{G}}_{\texttt{V}}=(7,2)\).
+In the final state,
+the start face contains \(G\), matching the executed trajectory and confirming success.}
+\vspace{-0.1in}
+\label{fig:simloop}
+\end{figure*}
+% ========================================
 
 \subsubsection{Node Expansion with Parallel Simulation}
 When a node $\nu$ is selected for expansion, a batch of \emph{pushing
