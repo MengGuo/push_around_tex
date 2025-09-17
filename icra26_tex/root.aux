@@ -44,10 +44,10 @@
 \newlabel{sec:intro}{{I}{1}{Introduction}{section.1}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {I-A}Related Work}{1}{subsection.1.1}\protected@file@percent }
 \newlabel{subsec:intro-related}{{I-A}{1}{Related Work}{subsection.1.1}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces  Snapshots of collaborative path clearing in both simulation (\textbf  {Top}) and hardware (\textbf  {Bottom}). Two robots actively push movable obstacles to create a $W$--clear path for a large vehicle to traverse from start to goal, via hybrid search over the sequence of obstacles to push, and the associated pushing directions and modes. }}{1}{figure.1}\protected@file@percent }
-\newlabel{fig:snapshots}{{1}{1}{Snapshots of collaborative path clearing in both simulation (\textbf {Top}) and hardware (\textbf {Bottom}). Two robots actively push movable obstacles to create a $W$--clear path for a large vehicle to traverse from start to goal, via hybrid search over the sequence of obstacles to push, and the associated pushing directions and modes}{figure.1}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Overview of the proposed PushAround framework. \textbf  {Top:} Scene inputs, WCCG construction with BugPlanner, gap ranking, and sampling of pushing modes for breaking frontier gaps. \textbf  {Bottom-left:} Sim-in-the-loop hyrid search where candidate push modes are validated in parallel. \textbf  {Bottom-right:} Online execution and adaptation during path clearing.}}{2}{figure.2}\protected@file@percent }
-\newlabel{fig:overall}{{2}{2}{Overview of the proposed PushAround framework. \textbf {Top:} Scene inputs, WCCG construction with BugPlanner, gap ranking, and sampling of pushing modes for breaking frontier gaps. \textbf {Bottom-left:} Sim-in-the-loop hyrid search where candidate push modes are validated in parallel. \textbf {Bottom-right:} Online execution and adaptation during path clearing}{figure.2}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces  Snapshots of collaborative path clearing in both simulation (\textbf  {Top}) and hardware (\textbf  {Bottom}). Two robots actively push movable obstacles to create a $W$--clear path for a large vehicle to traverse from start to goal, via a hybrid search over the sequence of obstacles to push and the associated pushing directions and modes. }}{1}{figure.1}\protected@file@percent }
+\newlabel{fig:snapshots}{{1}{1}{Snapshots of collaborative path clearing in both simulation (\textbf {Top}) and hardware (\textbf {Bottom}). Two robots actively push movable obstacles to create a $W$--clear path for a large vehicle to traverse from start to goal, via a hybrid search over the sequence of obstacles to push and the associated pushing directions and modes}{figure.1}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Overview of the proposed PushAround framework. \textbf  {Top:} Scene inputs, WCCG construction with BugPlanner, gap ranking, and sampling of pushing modes for breaking frontier gaps. \textbf  {Bottom-left:} Sim-in-the-loop hybrid search, where candidate push modes are validated in parallel. \textbf  {Bottom-right:} Online execution and adaptation during path clearing.}}{2}{figure.2}\protected@file@percent }
+\newlabel{fig:overall}{{2}{2}{Overview of the proposed PushAround framework. \textbf {Top:} Scene inputs, WCCG construction with BugPlanner, gap ranking, and sampling of pushing modes for breaking frontier gaps. \textbf {Bottom-left:} Sim-in-the-loop hybrid search, where candidate push modes are validated in parallel. \textbf {Bottom-right:} Online execution and adaptation during path clearing}{figure.2}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {I-B}Our Method}{2}{subsection.1.2}\protected@file@percent }
 \newlabel{subsec:intro-our}{{I-B}{2}{Our Method}{subsection.1.2}{}}
 \@writefile{toc}{\contentsline {section}{\numberline {II}Problem Description}{2}{section.2}\protected@file@percent }
@@ -65,8 +65,8 @@
 \citation{chen2015occlusion}
 \citation{tang2023combinatorial}
 \citation{McGuireCroonTuyls2019}
-\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces Illustration of the W--Clearance Connectivity Graph (WCCG). \textbf  {Left:} Cluttered PyBullet scenario with the immovable walls and movable objects; \textbf  {Middle:} WCCG overlay with the centroid nodes (blue squares), bridge nodes (red circles), centroid--bridge edges (blue), and bridge--bridge edges (red dashed) annotated by the gap widths; \textbf  {Right:} Induced faces of the WCCG, where the colors indicate distinct connected regions.}}{3}{figure.3}\protected@file@percent }
-\newlabel{fig:wccg}{{3}{3}{Illustration of the W--Clearance Connectivity Graph (WCCG). \textbf {Left:} Cluttered PyBullet scenario with the immovable walls and movable objects; \textbf {Middle:} WCCG overlay with the centroid nodes (blue squares), bridge nodes (red circles), centroid--bridge edges (blue), and bridge--bridge edges (red dashed) annotated by the gap widths; \textbf {Right:} Induced faces of the WCCG, where the colors indicate distinct connected regions}{figure.3}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces Illustration of the W--Clearance Connectivity Graph (WCCG). \textbf  {Left:} Cluttered PyBullet scenario with immovable walls and movable objects; \textbf  {Middle:} WCCG overlay with the centroid nodes (blue squares), bridge nodes (red circles), centroid--bridge edges (blue), and bridge--bridge edges (red dashed) annotated by the gap widths; \textbf  {Right:} Induced faces of the WCCG, where the colors indicate distinct connected regions.}}{3}{figure.3}\protected@file@percent }
+\newlabel{fig:wccg}{{3}{3}{Illustration of the W--Clearance Connectivity Graph (WCCG). \textbf {Left:} Cluttered PyBullet scenario with immovable walls and movable objects; \textbf {Middle:} WCCG overlay with the centroid nodes (blue squares), bridge nodes (red circles), centroid--bridge edges (blue), and bridge--bridge edges (red dashed) annotated by the gap widths; \textbf {Right:} Induced faces of the WCCG, where the colors indicate distinct connected regions}{figure.3}{}}
 \newlabel{eq:transition}{{3}{3}{Collaborative Pushing Modes}{equation.2.3}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {II-D}Problem Statement}{3}{subsection.2.4}\protected@file@percent }
 \newlabel{subsec:objective}{{II-D}{3}{Problem Statement}{subsection.2.4}{}}
@@ -94,10 +94,10 @@
 \@writefile{toc}{\contentsline {subsubsection}{\numberline {III-B.3}Long-term Cost w.r.t. Goal}{4}{subsubsection.3.2.3}\protected@file@percent }
 \newlabel{eq:pred_cost}{{9}{4}{Long-term Cost w.r.t. Goal}{equation.3.9}{}}
 \newlabel{remark:gap}{{3}{4}{Practical Improvement}{remark.3}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {III-C}Physics-Informed Hybrid Search}{4}{subsection.3.3}\protected@file@percent }
-\newlabel{subsec:simloop}{{III-C}{4}{Physics-Informed Hybrid Search}{subsection.3.3}{}}
 \@writefile{loa}{\contentsline {algocf}{\numberline {1}{\ignorespaces Physics-Informed Hybrid Search}}{5}{algocf.1}\protected@file@percent }
 \newlabel{alg:push}{{1}{5}{Long-term Cost w.r.t. Goal}{algocf.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {III-C}Physics-Informed Hybrid Search}{5}{subsection.3.3}\protected@file@percent }
+\newlabel{subsec:simloop}{{III-C}{5}{Physics-Informed Hybrid Search}{subsection.3.3}{}}
 \@writefile{toc}{\contentsline {subsubsection}{\numberline {III-C.1}Tree and Initialization}{5}{subsubsection.3.3.1}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsubsection}{\numberline {III-C.2}Node Selection}{5}{subsubsection.3.3.2}\protected@file@percent }
 \newlabel{eq:priority}{{10}{5}{Node Selection}{equation.3.10}{}}
@@ -120,8 +120,8 @@
 \@writefile{toc}{\contentsline {subsubsection}{\numberline {III-D.3}Generalization}{6}{subsubsection.3.4.3}\protected@file@percent }
 \@writefile{toc}{\contentsline {section}{\numberline {IV}Experiments}{6}{section.4}\protected@file@percent }
 \newlabel{sec:experiments}{{IV}{6}{Experiments}{section.4}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {IV-A}Numerical Simulation}{6}{subsection.4.1}\protected@file@percent }
-\newlabel{subsec:sim}{{IV-A}{6}{Numerical Simulation}{subsection.4.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {IV-A}Numerical Simulations}{6}{subsection.4.1}\protected@file@percent }
+\newlabel{subsec:sim}{{IV-A}{6}{Numerical Simulations}{subsection.4.1}{}}
 \newlabel{subsec:sim-setup}{{IV-A.1}{6}{Setup and Configuration}{subsubsection.4.1.1}{}}
 \@writefile{toc}{\contentsline {subsubsection}{\numberline {IV-A.1}Setup and Configuration}{6}{subsubsection.4.1.1}\protected@file@percent }
 \@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces Real-world pushing experiment with execution--planning alignment. \textbf  {Top:} snapshots of two robots pushing obstacles in a \(5{\times }6\,\mathrm  {m}\) workspace with movable objects and fixed boundaries. \textbf  {Bottom:} WCCG overlays with the start face in blue. Planning uses clearance \(W{=}1.0\), start \(\mathbf  {s}^{\texttt  {S}}_{\texttt  {V}}{=}(1.65,1.01)\), and goal \(\mathbf  {s}^{\texttt  {G}}_{\texttt  {V}}{=}(3.4,4.8)\). The evolving graph remains consistent with observed motions, confirming that planned corridors match execution.}}{7}{figure.7}\protected@file@percent }

@@ -22,22 +22,20 @@ with cost $24.10$.
 %==============================================
 \subsection{W--Clearance Connectivity Graph}\label{subsec:wccg}
 
-The feasibility of routing the vehicle depends on whether a corridor of width
-$W$ exists between the start configuration $\mathbf{s}_\texttt{V}^{\texttt{S}}$
-and the goal configuration $\mathbf{s}_\texttt{V}^{\texttt{G}}$. To address
-this question, a \emph{W--Clearance Connectivity Graph} (WCCG) is introduced.
-As shown in Fig.~\ref{fig:wccg}, The WCCG encodes adjacency relations between obstacles under the clearance
-threshold $W$ and supports efficient connectivity queries. Unlike grid maps or
-sampled roadmaps, it is constructed directly from obstacle geometry, avoiding
-discretization errors and ensuring consistent results. This is particularly
-important since clearance queries must be invoked repeatedly during planning.
+The feasibility of routing the vehicle reduces to whether a width-$W$ corridor 
+connects $\mathbf{s}_\texttt{V}^{\texttt{S}}$ and $\mathbf{s}_\texttt{V}^{\texttt{G}}$. 
+We introduce a W--Clearance Connectivity Graph (WCCG; Fig.~\ref{fig:wccg}) 
+that encodes obstacle adjacencies under clearance $W$ and enables fast connectivity queries. 
+Constructed directly from geometry (rather than grids/roadmaps), 
+it avoids discretization error and remains consistent—crucial because connectivity is checked repeatedly 
+during planning.
 
 \subsubsection{Graph Construction}
 The WCCG is built by decomposing each movable obstacle
 $\Omega_m\in\boldsymbol{\Omega}$ into convex components. From each component
 $C$, a centroid node $v_c$ is created. When two components $C_u$ and $C_v$
-have closest points $p_u\in C_u$ and $p_v\in C_v$ with distance smaller than
-$W$, bridge nodes are added at $p_u$ and $p_v$. These bridge nodes are
+have closest points $p_u\in C_u$ and $p_v\in C_v$ with distance less than $W$, 
+bridge nodes are added at $p_u$ and $p_v$. These bridge nodes are
 connected by a bridge--bridge edge, annotated with the corresponding gap width
 $w_{uv}\triangleq\|p_u-p_v\|$, and further linked back to their centroids with
 centroid--bridge edges. Narrow passages with $w_{uv}<W$ are explicitly marked
@@ -76,10 +74,10 @@ $\mathcal{P}^W_\texttt{V}$ is defined as:
 \end{aligned}
 \end{equation}
 where $\mathbb{B}_{W/2}(\cdot)$ denotes a disk of radius $W/2$ centered at the
-argument. They align with~\eqref{eq:wclear} for the external vehicle.
+argument. This aligns with~\eqref{eq:wclear} for the external vehicle.
 
 \subsubsection{Skeleton to Path}
-The {skeleton}~$\Sigma$ as an output of the previous step,
+The skeleton~$\Sigma$, the output of the previous step,
 is an ordered sequence of centroid and bridge nodes connected by frontier
 edges in $\mathcal{G}_W$. This skeleton serves as a compact certificate that
 $\mathbf{s}_\texttt{V}^{\texttt{S}}$ and $\mathbf{s}_\texttt{V}^{\texttt{G}}$
