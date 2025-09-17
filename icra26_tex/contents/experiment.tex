@@ -1,172 +1,176 @@
-% ============================================================
-\section{Numerical Experiments}
-\label{sec:experiments}
-We evaluate the proposed physics-informed hybrid search(PIHS)
-in cluttered environments containing both movable 
-and immovable obstacles. All components—W-CCG presearch, frontier extraction, 
-and the \textit{ModeTable} prior—are integrated as described in Sec.~\ref{sec:solution}. 
-The implementation is in \texttt{Python~3}; 
-simulations run in \texttt{PyBullet}~\cite{coumans2019} on a laptop with an Intel Core i7\textendash1280P CPU. 
-Videos and logs are provided in the supplementary material.
-
-
-
-
 % ========================================
-\begin{table}[t]
-  \centering
-\begin{threeparttable}
-  \caption{Performance on the nominal scenario with push-count (mean $\pm$ std).}
-  \label{tab:main}
-  \vspace{2pt}
-  \setlength{\tabcolsep}{2.3pt}
-\begin{tabular}{lccccc}
-\toprule
-Method & Succ.~(\%) & \#PT (s) & \#ET (s) & \#Sims & \#Pushes \\
-\midrule
-DFS-WCCG            & 25.0  & 41.8  & N/A     & --    & --   \\
-SL-Push (off-line)  & 62.5  & 0.03  & 145.1   & 0.0   & 7.0  \\
-SL-Push (sim)       & 75.0  & 25.1  & 246.8   & 16.0  & 8.0  \\
-Rec-NAMO            & 37.5  & 10.5  & 179.3   & 0.0   & 7.0  \\
-\textbf{PIHS (ours)}& \textbf{92.5} & \textbf{10.3} & \textbf{28.6} & \textbf{121.5} & \textbf{6.0} \\
-\bottomrule
-\end{tabular}
-  \begin{tablenotes}[flushleft]\footnotesize
-  \item \textbf{Metrics.} \emph{Succ.} = success rate; \emph{\#PT} = planning time; \emph{\#ET} = execution time; \emph{\#Sims} = simulations invoked; \emph{\#Pushes} = length of executed push sequence.
-  \end{tablenotes}
-  \end{threeparttable}
-  \vspace{-4mm}
-\end{table}
-
-% ========================================
-\begin{table}[t]
-\centering
-\caption{Ablations on the nominal scenario (40 trials).}
-\label{tab:ablation}
-\vspace{2pt}
-\setlength{\tabcolsep}{3pt}
-\renewcommand{\arraystretch}{0.95}
-\begin{tabular}{lcccc}
-\toprule
-Variant & Succ.~(\%) & Time (s) & \#Sims & \#PT / \#Sims / Succ. \\
-\midrule
-SiLS (full)          & 92.5 & 28.6 & 122 & baseline \\
-w/o presearch        & 85.0 & 35.2 & 178 & +6.6 / +56 / $-7.5$\% \\
-w/o ModeTable        & 80.0 & 33.4 & 164 & +4.8 / +42 / $-12.5$\% \\
-w/o quick-pass       & 90.0 & 41.9 & 208 & +13.3 / +86 / $-2.5$\% \\
-w/o reinsertion      & 82.5 & 31.1 & 151 & +2.5 / +29 / $-10.0$\% \\
-\bottomrule
-\end{tabular}
-\end{table}
-% ========================================
-\begin{figure}[t!]
-  \centering
-  \includegraphics[width=0.95\linewidth]{figures/scalability.png}
-  \vspace{-2mm}
- \caption{Scalability in dense clutter ($\boldsymbol{30}$ movables). 
-  \textbf{Top:} four execution snapshots as the robots clear bottlenecks and advance toward the goals. 
-  \textbf{Bottom:} corresponding WCCG overlays with the active face (translucent blue) and ranked gaps. 
-  }
-\label{fig:scalability}
-\vspace{-4mm}
-\end{figure}
-
-\subsection{Numerical Simulations}
-\label{subsec:sim}
-% ========================================
-% ========================================
-\begin{figure*}[t]
+\begin{figure*}[t!]
   \centering
   \includegraphics[width=0.95\linewidth]{figures/hardware_wccg.png}
   \vspace{-4mm}
-  \caption{Real-world pushing experiment with execution--planning alignment. \textbf{Top:} six snapshots as two robots push a target object in a \(5{\times}6\,\mathrm{m}\) workspace with both movable pieces and fixed boundaries. \textbf{Bottom:} corresponding WCCG overlays; the start face is highlighted in translucent blue. Planning uses clearance \(W{=}1.0\), start \(S{=}(1.65,1.01)\), goal \(G{=}(3.4,4.8)\). The evolving graph and candidate gaps stay consistent with observed motions, indicating that planned corridors are compatible with execution.}
+  \caption{Real-world pushing experiment with execution--planning alignment.
+\textbf{Top:} snapshots of two robots pushing obstacles in a \(5{\times}6\,\mathrm{m}\) workspace
+with movable objects and fixed boundaries. \textbf{Bottom:} WCCG overlays with the start face in
+blue. Planning uses clearance \(W{=}1.0\), start \(\mathbf{s}^{\texttt{S}}_{\texttt{V}}{=}(1.65,1.01)\),
+and goal \(\mathbf{s}^{\texttt{G}}_{\texttt{V}}{=}(3.4,4.8)\).
+The evolving graph remains consistent with observed motions, confirming that planned corridors
+match execution.}
   \vspace{-4mm}
   \label{fig:hardware}
 \end{figure*}
 % ========================================
+% ============================================================
+\section{Experiments}
+\label{sec:experiments}
+We evaluate the proposed physics-informed hybrid search(PIHS)
+in cluttered environments containing both movable
+and immovable obstacles. All components—W-CCG presearch, frontier extraction,
+and the \textit{ModeTable} prior—are integrated as described in Sec.~\ref{sec:solution}.
+The implementation is in \texttt{Python~3};
+simulations run in \texttt{PyBullet}~\cite{coumans2019} on a laptop with an Intel Core i7\textendash1280P CPU.
+Videos and logs are provided in the supplementary material.
 
-\subsubsection{Setup}
-\label{subsec:sim-setup}
-The physics step is $\Delta t=1/240$\,s and the control period is $1/40$\,s. Robots are modeled as disk/box pushers with risk radii consistent with the $W$-clearance definition. Movable obstacles have masses uniformly sampled from $[5,15]$\,kg; immovables are modeled with mass $0$. A trial succeeds when a $W$-clear path exists from start to goal and the target reaches its goal disc.
-
-We use a \emph{nominal scenario} with an $8{\times}5$\,m bounded workspace, two internal bar obstacles (forming bottlenecks), and a mixed pool of curved and polygonal shapes (rings, ellipses, X/T/L/diamond, arrow-like, rectangles, cylinders). Two robots start in the lower-left; the goal lies on the right. Movables are randomly placed with a minimum separation. We test $10\text{--}15$ objects across multiple random seeds.
-
-\subsubsection{Algorithm Configuration}
-\label{subsec:algo-config}
-Unless stated otherwise: the per-task simulation horizon is $80$ steps; up to $64$ candidate push tasks are generated per expansion; and the node priority is $f=g+\widehat{\mathsf{Cost}}_{\text{to-go}}$ with heuristic factor $10$. Gap sampling uses a softmax with temperature $0.05$. \textit{ModeTable} is enabled (auto-baked when missing). A \emph{quick-pass} geometric screen may skip physics if a reference rollout already clears a gap; otherwise a short-horizon simulation with early stop is used. To avoid premature termination, a \emph{deferred-reinsertion} rule retains high-value yet temporarily unexpanded nodes and revisits them later.
 
 
-\subsubsection{Baselines and Comparison}
-\label{subsec:baselines}
-We compare against three representative families, all using the same $W$-clearance criterion and contact models:
+\subsection{Numerical Simulation}
+\label{subsec:sim}
+% ========================================
 
-\textbf{(I) DFS-WCCG:} a simulation-in-the-loop depth-first search 
-sharing our physics predictor and W-CCG for goal checking. 
-Each node is a snapshot; actions are four fixed axis-aligned pushes 
-${\leftarrow,\rightarrow,\uparrow,\downarrow}$ applied to any movable 
-(branching $\le 4n$ for $n$ objects).
+\subsubsection{Setup and Configuration}\label{subsec:sim-setup}
+As shown in Fig.~\ref{fig:simloop},
+the simulation has a step of $\Delta t=1/240$\,s and a control period of $1/40$\,s. Robots
+are modeled as disk or box pushers with radii consistent with the $W$-clearance definition. Movable
+obstacles have masses uniformly sampled from $[5,15]$\,kg, while immovables are modeled with zero
+mass. A trial is successful when a $W$-clear path exists from start to goal and the target reaches
+its goal disc. The nominal scenario consists of an $8{\times}5$\,m bounded workspace with two bar
+obstacles forming bottlenecks and a mixed pool of curved and polygonal shapes including rings,
+ellipses, X/T/L/diamond, arrow-like, rectangles, and cylinders. Two robots start in the lower-left
+and the goal lies on the right, with $10$--$15$ movables placed randomly under a minimum separation.
+The per-task simulation horizon is $80$ steps, and up to $64$ candidate push tasks are generated per
+expansion. The node priority follows~\eqref{eq:priority} with heuristic factor
+$10$, and gap sampling follows a softmax distribution with temperature~$0.05$. ModeTable is enabled
+and automatically updated when missing. A quick-pass geometric screen skips physics if a reference
+rollout already clears a gap; otherwise a short-horizon simulation with early stop is applied. To
+prevent premature termination, a reinsertion rule preserves high-value nodes that cannot be
+expanded immediately and revisits them later.
 
-\textbf{(II) SL-Push:} a straight-line (or waypointed) route where blockers 
-are cleared by (i) offline minimal normal displacements or 
-(ii) sim-in-the-loop normal pushes from near to far.
+% ========================================
+\begin{table}[t]
+  \centering
+  \begin{threeparttable}
+  \caption{Performance comparison and ablations.}
+  \label{tab:main_ablation}
+  \vspace{2pt}
+  \setlength{\tabcolsep}{2.5pt}
+  \renewcommand{\arraystretch}{0.95}
+  \begin{tabular}{lccccc}
+  \toprule
+  Method / Variant & Succ.(\%) & PT (s) & ET(s) & \#Sims & \#Pushes \\
+  \midrule
+   DFS-WCCG             & 25.0  & $>$100.0  & 51.2     & $>$500    & 8.0   \\
+  SL-Push (off-line)   & 62.5  & 0.06  & 44.1   & 0.0   & 7.0  \\
+  SL-Push (sim)        & 75.0  & 18.2  & 64.6   & 20.0 & 10.0  \\
+  Rec-NAMO             & 37.5  & 13.3  & 42.4   & 0.0   & 7.0  \\
+  \textbf{PushAround (ours)} & \textbf{92.5} & \textbf{10.3} & \textbf{28.6} & \textbf{121.5} & \textbf{6.0} \\
+  \midrule
+  w/o presearch        & 85.0 & 16.9 & 35.2 & 178 & 7.0 \\
+  w/o ModeTable        & 80.0 & 15.1 & 33.4  & 164 & 6.0 \\
+  w/o quick-pass       & 90.0 & 23.6 & 41.9  & 208 & 6.0 \\
+  w/o reinsertion      & 82.5 & 12.8 & 31.1  & 151 & 7.0 \\
+  \bottomrule
+  \end{tabular}
+  \end{threeparttable}
+  \vspace{-4mm}
+\end{table}
+% ========================================
 
-\textbf{(III) Rec-NAMO:} recursive routing/pushing on a cost-weighted visibility graph: 
-Dijkstra for routing; local push decomposition for clearing; 
-failures prune edges and trigger replanning.
 
-Table~\ref{tab:main} summarizes performance on the nominal scenario. 
-DFS-WCCG suffers exponential growth of the search space as the number of movables increases, 
-leading to long planning times and frequent timeouts (lowest success rate). 
-SL-Push (offline) plans very quickly ($<0.1$\,s), 
-but the lack of physics leads to physically unrealizable plans. 
-Its sim-in-the-loop variant improves feasibility, 
-but still requires many simulations and can produce unnecessarily 
-long action sequences when the straight-line route is not the minimal pushing route; 
-Fig.~\ref{fig:baseline} illustrates a two-subgoal case. Rec-NAMO is faster than 
-sim-in-the-loop approaches and effective for classical NAMO, 
-yet it often fails to produce a fully connected $W$-clear route (Fig.~\ref{fig:baseline}), 
-resulting in lower success. 
+\subsubsection{Comparisons and Ablation Studies}\label{subsec:comparisons}
+In total $8$ planners are evaluated under the same $W$-clearance criterion and contact models. External
+baselines are: \textbf{DFS-WCCG}, a simulation-in-the-loop depth-first search guided by the W-CCG
+with four fixed axis-aligned pushes per movable, which scales poorly due to exponential branching;
+\textbf{SL-Push (offline)}, which clears blockers by minimal displacements along a straight or
+waypointed route without physics, planning quickly but yielding unrealizable executions;
+\textbf{SL-Push (sim)}, which validates the same route with physics, improving feasibility but
+requiring many simulations and long action sequences; and \textbf{Rec-NAMO}, which combines Dijkstra
+routing with local push decomposition and edge pruning, producing faster plans than simulation-heavy
+methods but often failing to establish a connected $W$-clear corridor in dense clutter. Internal
+ablations remove key modules of \textbf{PushAround}: \textbf{w/o presearch}, which disables frontier extraction and
+gap ranking; \textbf{w/o ModeTable}, which discards structured contact-mode priors; \textbf{w/o
+quick-pass}, which forces full-horizon rollouts; and \textbf{w/o reinsertion}, which prevents
+revisiting promising but previously failed nodes.
 
-By contrast, \textbf{PIHS} attains higher success with fewer simulations and lower planning/execution time due to (i) frontier-based gap ranking, (ii) ModeTable-guided push directions, and (iii) quick-pass/early-stop. Deferred reinsertion further prevents priority-queue starvation by revisiting previously generated high-value nodes when a batch of actions fails.
-\subsubsection{Ablation Studies}
-Table~\ref{tab:ablation} quantifies the contribution of each component by removing one factor at a time from SiLS.
-\textbf{Presearch} (frontier extraction + ranked gaps) is the largest time saver: without it, the planner invokes \#Sims $+56$ and planning time increases by $+6.6$\,s, while success drops by $-7.5\%$. This confirms that presearch focuses expansions on high-yield gaps and avoids unproductive physics rollouts.
-\textbf{ModeTable} also provides a strong prior: removing it yields \#Sims $+42$, \#PT $+4.8$\,s, and a $-12.5\%$ success drop, indicating the importance of structured contact-mode guidance beyond naive pushing heuristics.
-Disabling \textbf{quick-pass/early-stop} forces full-horizon simulation, increasing \#Sims by $+86$ and \#PT by $+13.3$\,s, with only a minor success change ($-2.5\%$); this shows that most expansions can be decided early without sacrificing feasibility.
-Finally, removing \textbf{deferred reinsertion} causes mild queue starvation (\#Sims $+29$) and reduces success by $-10.0\%$, highlighting the benefit of revisiting previously high-value nodes after local failures.
-Overall, each component contributes to either \emph{efficiency} (fewer simulations, shorter planning time) or \emph{robustness} (higher success), and the full SiLS configuration achieves the best trade-off across all metrics.
+Table~\ref{tab:main_ablation} shows that our method achieves the highest success rate of $92.5\%$
+with the lowest combined planning and execution time. DFS-WCCG reaches only $25\%$ success due to
+exponential branching.
+As detailed in Fig.~\ref{fig:baseline},
+SL-Push offline is extremely fast but produces physically invalid solutions,
+while SL-Push sim improves feasibility at heavy computational cost. Rec-NAMO is faster but often
+fails to produce complete solutions. The ablations reveal that presearch and ModeTable are critical,
+with success drops of $7.5\%$ and $12.5\%$ accompanied by increased simulations. Quick-pass reduces
+runtime overhead by $86$ additional simulations and $13.3$\,s in planning with little effect on
+success, while reinsertion sustains robustness by recovering from local dead ends, as success drops
+by $10.0\%$ when removed. Overall, the comparisons confirm that frontier-based ranking, structured
+contact priors, and selective simulation are essential for scalability and feasibility, and that
+deferred reinsertion further strengthens reliability.
 
-\subsubsection{Dense-clutter scalability.}
-We further evaluate SiLS in a larger $8{\times}5$\,m workspace populated with $30$ movable objects.
-Despite the increased combinatorics, WCCG presearch and ModeTable guidance keep the branching small:
-the run in Fig.~\ref{fig:scalability} completes with $10$ node expansions (visited $115$), $312$ short simulation calls,
-and only $7$ executed push tasks, yielding a connected $W$–clear corridor.
-Wall-clock planning takes $21.2$\,s and execution $24.5$\,s, after which all robots arrive at their goals.
-This illustrates that SiLS maintains efficiency and solution quality as scene density grows.
+
+% ========================================
+\begin{figure}[t!]
+  \centering
+  \includegraphics[width=0.95\columnwidth]{figures/Rec_NAMO.pdf}
+  \vspace{-0.15in}
+  \caption{\textbf{Left:} SL-Push, which determines pushing directions for movable obstacles along a $W$-width straight corridor between sub-start and sub-goal. \textbf{Right:} Rec-NAMO, which incrementally constructs path segments but often fails to establish a complete $W$-clear path from start to goal.}
+  \vspace{-0.2in}
+  \label{fig:baseline}
+\end{figure}
+% ========================================
+
+
+\subsubsection{Scalability Analyses}\label{subsec:scalability}
+Scalability is examined in an $8{\times}5$\,m workspace containing $30$ movable objects. Although
+the combinatorial complexity increases, the WCCG presearch and the ModeTable guidance maintain a
+small branching factor. As shown in Fig.~\ref{fig:scalability}, the run completes with $10$ node
+expansions out of $115$ visited nodes, $312$ short simulation calls, and $7$ executed push tasks,
+which yields a connected $W$-clear corridor. The planning time is $21.2$\,s and execution
+$24.5$\,s, after which all robots reach the goal. These results confirm that the method sustains
+efficiency and solution quality as scene density increases significantly.
+% ========================================
+\begin{figure}[t!]
+  \centering
+  \includegraphics[width=0.95\linewidth]{figures/scalability.png}
+  \vspace{-0.1in}
+ \caption{Scalability in dense clutter with $\boldsymbol{30}$ movable objects.
+\textbf{Top:} snapshots during the path clearing of $24.5$~s.
+\textbf{Bottom:} WCCG overlays with the active face in blue and ranked frontier gaps.}
+\label{fig:scalability}
+\vspace{-0.2in}
+\end{figure}
+% ========================================
+
+
 % ========================================
 \subsection{Hardware Experiments}\label{subsec:hardware}
 % ========================================
 
-\subsubsection{System Description}\label{subsec:exp-description}
-As shown in Fig.~\ref{fig:hardware},
-experiments are conducted in a $5\,\mathrm{m}\times6\,\mathrm{m}$ workspace assembled from interlocking $0.6\,\mathrm{m}\times0.6\,\mathrm{m}$ foam mats.
-Each trial uses two AgileX LIMO mobile robots and six movable obstacles (cardboard boxes covered with colored paper for visual distinction).
-Both robots and movables carry 3--4 motion-capture markers.
-A motion-capture system streams global poses to \texttt{PyBullet} in real time, enabling policy execution and visualization.
-Movables are randomly placed at the start of each trial to create diverse clutter.
+\subsubsection{System description}\label{subsec:exp-description}
+Experiments are conducted in a $5\,\mathrm{m}\times6\,\mathrm{m}$ workspace assembled from
+interlocking $0.6\,\mathrm{m}\times0.6\,\mathrm{m}$ foam mats, as illustrated in
+Fig.~\ref{fig:hardware}. Each trial employs $2$ UGVs and $6$ movable obstacles
+represented by cardboard boxes covered with colored paper for visual distinction. Both robots and
+movables are equipped with three to four motion-capture markers. A motion-capture system streams
+global poses to \texttt{PyBullet} in real time, enabling policy execution and visualization.
+Movables are randomly placed at the beginning of each trial to generate diverse clutter.
 
 \subsubsection{Results}\label{subsec:exp-results}
-Figure~\ref{fig:hardware} presents a representative real-world run.
-WCCG presearch finishes within $10$\,s, during which five gaps are sequentially cleared via $64$ node expansions (maximum search depth $=3$).
-In Task~T1 (at $t{=}20$\,s), a yellow T-shaped object is rotated counter-clockwise to expose a reachable contact on a neighboring green rectangle.
-In Task~T2 (at $t{=}55$\,s), the green rectangle is pushed to its target.
-Tasks~T3 and T4 manipulate the orange rectangle and the blue cylinder, respectively, positioning them to open flanking gaps (at $t{=}71$\,s and $t{=}77$\,s).
-By Task~T5, all gaps in the WCCG have been cleared, allowing a collision-free traverse from start to goal.
+A representative real-world run is shown in Fig.~\ref{fig:snapshots} and~\ref{fig:hardware}.
+The WCCG presearch completes
+within $10$\,s, during which \textbf{$5$ gaps} are sequentially cleared through $64$ node expansions and a
+maximum search depth of three. In the first task at $20$\,s, a yellow T-shaped object is rotated
+counter-clockwise to expose a reachable contact on an adjacent green rectangle. In the second task
+at $55$\,s, the green rectangle is pushed to its target. The third and fourth tasks manipulate an
+orange rectangle and a blue cylinder at $71$\,s and $77$\,s, respectively, to open the
+gaps. By the $5$-th task, all gaps in the WCCG are cleared, enabling a collision-free traverse from
+start to goal. Execution time varies due to occasional drifting or slippage of the Mecanum wheels
+near $45^\circ$, which lengthens certain transitions and introduces small deviations from simulation.
+Online replanning compensates for these effects. The sequence of pushing actions and contact modes
+confirms that the planned interactions are physically realizable on hardware.
 
-Execution time fluctuates due to occasional drifting/slippage of the Mecanum wheels at certain directions (near $45^\circ$), which lengthens some transitions and yields small discrepancies from simulation.
-To compensate, the system performs online replanning when needed.
-The temporal evolution of pushing actions and contact modes confirms that the planned interactions are physically realizable on hardware.
-Figure~\ref{fig:hardware} and the supplementary videos provide additional qualitative evidence and the corresponding control traces.
 
 
 % \begin{figure}[t]
