@@ -1,0 +1,44 @@
+Comments to author (Associate Editor)
+=====================================
+
+The paper proposes PushAround, a hybrid planning framework
+that clears navigable paths for a large vehicle by
+coordinating multiple smaller robots to push movable
+obstacles. A geometry-derived WCCG encodes feasible
+passages under vehicle constraints, and low-level pushing
+modes enable multi-robot manipulation. Hardware
+demonstrations show feasibility with up to 30 objects.
+
+While the problem is compelling, the contribution remains
+unclear due to missing formal definitions of key
+components, including how pushing modes are derived from
+contact geometry, how forces are distributed to achieve a
+desired wrench, how robots are assigned to contacts, and
+how mode transitions guarantee collision-free execution.
+These elements are central to collaborative manipulation
+but remain descriptive rather than algorithmic.
+
+The paper also lacks theoretical analysis (e.g.,
+completeness or optimality of the high-level search,
+complexity characterization) and does not provide
+baselines, ablations, or statistical evaluations.
+Generalization claims (e.g., applicability to diverse
+robots) are unsubstantiated due to unstated assumptions
+about robot morphology and capabilities.
+
+
+----------------------------------------
+Comments on Video Attachment:
+
+The video helps understand the proposed method.
+
+Comments to author (Editor)
+================================
+
+Please see the comments from the AE and the Reviewers
+
+
+----------------------------------------
+Comments on Video Attachment:
+
+[None found]

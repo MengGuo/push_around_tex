@@ -1,0 +1,59 @@
+Reviewer 4 of ICRA 2026 submission 4499
+
+Comments to the author
+======================
+
+Thank you for submitting this interesting work. The paper
+proposes PushAround, a new framework that achieves higher
+success rates than existing methods and clearly addresses
+the problem of physics-informed collaborative path
+clearing. The approach demonstrates strong empirical
+performance and has meaningful potential contributions to
+the robotics community. However, several aspects could be
+further refined to enhance the paper’s clarity and
+scientific rigor.
+
+First, the paper lacks a theoretical completeness
+guarantee—that is, a formal discussion of whether the
+algorithm can always find a solution when one exists. This
+is an important aspect for evaluating the reliability and
+generality of the method. Including a theoretical analysis
+or at least discussing the limitations of completeness
+would strengthen the contribution. Furthermore, adding a
+comparison with oracle-level or optimal baseline methods
+would help readers better understand how close the proposed
+approach comes to theoretical upper bounds of performance.
+
+Second, the analysis of computational complexity remains
+mostly qualitative. Beyond statements such as “scales
+nearly linearly,” a more formal discussion using Big-O
+notation or equivalent analytical justification would make
+the scalability claims more convincing and technically
+grounded.
+
+Third, the rationale for selecting hyperparameters is not
+clearly explained. Since these parameters directly affect
+performance, providing a brief justification or a
+sensitivity analysis would improve reproducibility and
+credibility.
+
+Finally, the experimental results do not include standard
+deviation or variance information, making it difficult to
+assess the algorithm’s stability. If multiple trials were
+performed, presenting the results as mean +- standard
+deviation would more clearly convey consistency and
+robustness.
+
+Overall, this paper is technically solid and demonstrates
+strong empirical performance with promising applications in
+collaborative robotics. Addressing the points above would
+further improve its clarity, rigor, and overall impact.
+
+Comments on the Video Attachment
+================================
+
+The supplementary video clearly demonstrates the final
+results of the proposed PushAround framework and
+effectively validates the feasibility of the concept.
+However, a clearer connection to the step-by-step process
+described in the Overall framework woul
