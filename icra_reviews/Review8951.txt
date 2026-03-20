@@ -1,0 +1,117 @@
+Reviewer 3 of ICRA 2026 submission 4499
+
+Comments to the author
+======================
+
+The authors proposed a work that addresses the problem of
+clearing a path for a large vehicle in a cluttered
+environment filled with movable obstacles. With the
+proposed work, the authors tackle two challenges that
+advances the prior work: Manipulation planning problem
+considering the physical dimensions of a robot and
+Collaborative pushing problem. Both challenges are known to
+be complex, thus solving a problem that is a combination of
+the two is an interesting research.
+
+The proposed method, PushAround, is designed to tackle
+coupled problems of high-level obstacle clearing and
+pushing dynamics in the low-level through the following
+approaches. The method first constructs a graph based on
+the geometry of the given obstacles, termed as WCCG. The
+authors propose that because a WCCG is made under the
+constrains of the geometry of the large vehicle, a search
+over the graph guarantees feasible dynamics.
+
+Through experiments in both simulation and real hardware,
+the authors exhibited the computational performance and
+scalability to a large number of objects (30).
+
+While the framework is interesting, the manuscript seems to
+be missing, if not misleading, essential descriptions of
+the method.
+
+Since the goal of the method is to plan collaborative
+obstacle clearing by multiple (small) robots, collaborative
+pushing is an essential part of the work. Section II.C is
+the corresponding description of the problem, but the
+subsection seems rather incomplete. 
+
+- How the admissible set of modes are found from contact
+geometry and friction limits?
+
+- Assuming each robot takes exactly one contact point, how
+does the method assign each contact point to each robot?
+
+- During transition or robots, how is a collision-free path
+found? (with the fact the space is not grid, which
+algorithm?)
+
+- How does a swap of contact points guarantee a resolution
+to a set of colliding paths? Would it be still valid for
+more than two robots?
+
+- The subsection describes a pushing mode, but I failed to
+understand what &#8706;&#937;_m^N refers to. (Specifically,
+what does &#8706; mean here?) 
+
+- What is wrench profile? By 'body-frame force', does it
+mean the net force from some of the contact points? If so,
+how is the pushing force (magnitute, assuming normal to the
+surface) at each contact point found to calculate the
+intended body-frame force? 
+
+- The first sentence seems to be missing another
+sentence/paragraph before it since it is a conclusion that
+'the robots may actively reconfigure' the movable objects. 
+
+In Remark 4, what is 'ModeTable' and how is it defined
+(missing definition)?
+
+Below are parts of the work I wish the authors to clarify:
+- For geometric planning of the large vehicle, does it
+always plan to go through the midpoint of each
+bridge-bridge edge (gap)? If so, would a larger gap be
+making the resulting path longer?
+
+- In the 'Generalization', the authors claim that it can be
+generalized to diverse robots. Are they limited to
+rectangular robots? Can they be bigger than a given movable
+object? Are they limited to holonomic robots? Are they
+limited to have at most one contact point?
+
+- In the Section III.C, how are the 'batch of pushing
+strategies' found before they can be validated using
+simulations?
+
+- In showing scalability, it would be clearer how scalable
+the method is if the results include the scalability trend
+relative to a metric (i.e. as number of object or the size
+of the space increases).
+
+Minor comments,
+
+- In equation (4) and (5), it seems like m_k is supposed to
+be a subscript of a missing &#937;.
+
+- Across the manuscript, the symbol &#960; is termed with
+multiple names. In the problem statement, it is termed as
+'overall schedule', but in Section III.C, &#960; is named
+as a 'partial pushing strategy'.
+
+- Space omit in C. "contact modes,and forces"
+
+- In Fig 5, more detailed description would help readers to
+understand better.
+
+- To help readers to understand better, it would be better
+to state definitions of each term when they first appear
+(i.e. push strategy)
+
+- In Section III.C, are 'push strategy' and 'pushing
+strategy' the same/interchangeable term? 
+
+
+Comments on the Video Attachment
+================================
+
+The video shows great visual demonstrations of the work.
