@@ -1,0 +1,126 @@
+%==============================================
+\subsection{Physics-Informed Hybrid Search}\label{subsec:simloop}
+
+As shown in Fig.~\ref{fig:PIHS},
+the hybrid search couples high-level decisions about blocking gaps with
+low-level feasibility of multi-robot pushing.
+Unlike purely geometric planners,
+this procedure simultaneously determines a sequence of gaps to clear
+and physically-feasible pushing actions, including directions, contact modes,and forces.
+Parallel physics simulation is embedded so that candidate
+push strategies can be evaluated simultaneously at each expansion, and the resulting
+successor states are returned to the search.
+The algorithmic details are summarized in Alg.~\ref{alg:push}
+and explained below.
+
+\subsubsection{Tree and Initialization}
+The search tree $\mathcal{T}$ is composed of nodes
+$\nu\triangleq(\mathbf{s},\pi)$, where $\mathbf{s}$ is the current system
+state of all robots and movables (cf.~\eqref{eq:transition}), and $\pi$ the partial pushing strategy (cf.~\eqref{eq:schedule}).
+Two global functions are
+maintained: $\mathsf{Rank}(\nu)$ stores a ranked list of candidate gaps at this
+node together with their exploration status, derived from~\eqref{eq:pred_cost};
+and $\chi(\nu)$ returns the cumulative execution cost
+from the root to $\nu$.
+The root is initialized as $\nu_0\triangleq(\mathbf{s}_0,\emptyset)$, where $\mathbf{s}_0$ is the initial system state.
+At initialization, $\chi(\nu_0)=0$, and
+$\mathsf{Rank}(\nu_0)$ is constructed by first computing the frontier loop
+$\mathcal{L}_\nu$ associated with~$\mathbf{s}_0$, then extracting the visible
+gaps $\Gamma_{\mathcal{L}_\nu}$, and finally ranking them by their predicted
+cost-to-connect.
+%------------------------------
+\begin{figure}[t!]
+  \centering
+  \includegraphics[width=0.95\linewidth]{figures/PIHS.png}
+  \vspace{-0.15in}
+  \caption{
+\textbf{Top:} Core components of the proposed physics-informed hybrid search;
+\textbf{Bottom:} Sampled push tasks are evaluated via parallel simulation, producing updated states
+for search expansion.}
+    \label{fig:PIHS}
+   \vspace{-4mm}
+\end{figure}
+%------------------------------
+\subsubsection{Node Selection}
+At each iteration, the node with minimum best-first priority is selected from
+the queue. Priority balances realized cost and estimated remaining effort:
+\begin{equation}\label{eq:priority}
+  f(\nu)\triangleq \chi(\nu)+\underset{g\in \textsf{Rank}(\nu)}{\textbf{min}}
+  \widehat{\mathsf{Cost}}(g),
+\end{equation}
+where $\chi(\nu)$ is the cumulative execution cost so far, and the second term
+is the minimum predicted remaining cost among the unexplored gaps of~$\nu$.
+This scoring ensures that nodes are expanded in an order that jointly accounts
+for physical effort already incurred and the most promising future actions.
+
+%==============================
+\begin{figure*}[t!]
+  \centering
+  \includegraphics[width=0.95\linewidth]{figures/sim_exp.png}
+  \vspace{-0.15in}
+\caption{Execution--planning alignment in the main scenario.
+\textbf{Top:} $5$ PyBullet snapshots as $2$ robots push a cylindrical object.
+\textbf{Bottom:} corresponding WCCG overlays with the start face in blue.
+The task moves the object from \(\mathbf{s}^{\texttt{S}}_{\texttt{V}}=(1,4)\) to \(\mathbf{s}^{\texttt{G}}_{\texttt{V}}=(7,2)\).
+In the final state,
+the start face contains \(G\), matching the executed trajectory and confirming success.}
+\vspace{-0.1in}
+\label{fig:simloop}
+\end{figure*}
+% ========================================
+
+% ========================================
+\subsubsection{Node Expansion with Parallel Simulation}
+When a node $\nu$ is selected for expansion, candidate pushing strategies are
+constructed from the ranked gaps in $\mathsf{Rank}(\nu)$. For each selected
+gap $g \in \Gamma_{\mathcal{L}_\nu}$, Sec.~III-C provides a filtered set
+$\Xi_g \subseteq \Xi_m$ and the associated strategies
+$\tau \triangleq (g,v,\boldsymbol{\xi}_m)$ for the adjacent obstacle
+$\Omega_m$. Thus, the expansion priority is determined first by the gap order
+in $\mathsf{Rank}(\nu)$, and then by the mode ranking within $\Xi_g$.
+
+The resulting strategies are evaluated in parallel. Each candidate $\tau$ is
+first checked by a geometric quick-pass and, if it passes, simulated from the
+current state by
+\begin{equation}\label{eq:sim}
+  (\mathbf{s}',\,\delta_{\texttt{T}},\,\delta_{\texttt{J}})
+  \triangleq
+  \mathsf{EvalSim}(\nu,\,\tau),
+\end{equation}
+where $\mathbf{s}'$ is the successor state, $\delta_{\texttt{T}} > 0$ is the
+time cost, and $\delta_{\texttt{J}}$ is the control effort as in
+\eqref{eq:problem}. A successful evaluation yields a child
+$\nu' \triangleq (\mathbf{s}',\pi')$, where $\pi'$ is obtained by appending
+$\tau$ to the current partial schedule $\pi$. The realized incremental cost is
+\[
+  \widehat{\mathsf{C}}(\nu,\tau)
+  \triangleq
+  \delta_{\texttt{T}} + \alpha\,\delta_{\texttt{J}},
+\]
+and the cumulative cost is updated by
+\[
+  \chi(\nu') \triangleq \chi(\nu) + \widehat{\mathsf{C}}(\nu,\tau).
+\]
+Since all candidates in the current batch are simulated concurrently, a single
+expansion can produce multiple validated successors.
+
+\subsubsection{Termination}
+Termination occurs when a node $\nu$ reaches a state $\mathbf{s}$ for which a
+$W$--clear path $\mathcal{P}^W_\texttt{V}$ exists from
+$\mathbf{s}_\texttt{V}^{\texttt{S}}$ to $\mathbf{s}_\texttt{V}^{\texttt{G}}$,
+as certified by~\eqref{eq:wccg_criterion}. In this case, the schedule $\pi$
+stored in $\nu$ constitutes a complete solution to~\eqref{eq:problem}, encoding
+both the sequence of gaps to clear and the physically feasible pushing actions
+that realize them.
+
+\begin{remark}[Parallel Expansion and Mode Reuse]\label{remark:simloop}
+Efficiency of the hybrid search comes from parallel simulation and mode reuse.
+At each expansion, multiple strategies are simulated concurrently, producing
+several validated successors at once. Moreover, the effective modes generated
+in Sec.~\ref{subsec:push}, together with their associated $v$ and rollout outcomes, are
+stored in a persistent ModeTable. For obstacles with similar local geometry,
+these entries can be reused to warm-start online mode generation and reduce
+repeated optimization and physics calls. Deferred expansion further keeps nodes
+with untried candidates in the queue until all promising strategies are
+attempted. \hfill$\blacksquare$
+\end{remark}

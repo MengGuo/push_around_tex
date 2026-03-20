@@ -1,0 +1,59 @@
+%==============================
+\subsection{Overall Analyses}\label{subsec:overall}
+
+\subsubsection{Execution and Online Adaptation}\label{subsec:execute}
+The hybrid search outputs a pushing schedule
+$\pi = \{\tau_1,\cdots,\tau_K\}$, where
+$\tau_k \triangleq (g_k,v_k,\boldsymbol{\xi}_k)$ specifies a target gap, a
+short-horizon obstacle velocity, and a pushing mode. The schedule is executed
+sequentially in a receding-horizon manner. For each $\tau_k$, the robots invoke
+the transition and pushing routine described in Sec.~\ref{subsec:push} to realize the
+corresponding mode $\boldsymbol{\xi}_k$ from the current state.
+
+After each execution, the system state is updated from observation. If the
+current push succeeds, execution advances to $\tau_{k+1}$; otherwise, or if the
+local geometry has changed so that the remaining schedule is no longer valid,
+control is returned to the planner for replanning from the updated state.
+To maintain consistency between planning and execution, the WCCG is rebuilt
+periodically from the current obstacle configuration. Execution terminates once
+a $W$--clear path $\mathcal{P}^W_\texttt{V}$ connects
+$\mathbf{s}_\texttt{V}^{\texttt{S}}$ and
+$\mathbf{s}_\texttt{V}^{\texttt{G}}$.
+
+\begin{remark}
+The $W$--CCG criterion may be conservative near the start or goal. If a
+$W$--clear connection exists but either
+$\mathbb{B}_{W/2}(\mathbf{s}_\texttt{V}^{\texttt{S}})$ or
+$\mathbb{B}_{W/2}(\mathbf{s}_\texttt{V}^{\texttt{G}})$ still intersects
+obstacles, a small set of auxiliary pushes is applied to clear the
+corresponding disk before final execution. \hfill$\blacksquare$
+\end{remark}
+
+
+%----------------------------------------------
+\subsubsection{Computational Complexity}\label{subsubsec:complexity}
+The cost of each node expansion is dominated by simulation of pushing strategies.
+Construction of the WCCG $\mathcal{G}_W$ and the associated connectivity tests scales nearly linearly
+in the number of movable
+obstacles $|\boldsymbol{\Omega}|$, while gap ranking by presearch
+in Sec.~\ref{subsec:gap} is lightweight as it is limited to a small subset
+of frontier gaps. At expansion, only a fraction of the strategies in
+$\mathsf{Rank}(\nu)$ survive the geometric quick-pass and early-stop checks,
+which shortens the horizon of the simulator calls defined by
+$\mathsf{EvalSim}(\cdot)$. Parallel execution of these simulations across multiple
+workers reduces the effective cost nearly linearly until communication overhead
+is reached. Deferred expansion further improves efficiency by distributing the
+evaluation of $\mathsf{Rank}(\nu)$ across iterations, avoiding redundant
+restarts and keeping the priority queue focused on promising frontiers.
+
+
+%----------------------------------------------
+\subsubsection{Generalization}\label{subsec:general}
+The framework admits several extensions:
+(I) \textit{Heterogeneous teams.} Per-robot gain tuning and robot-specific mode
+priors enable cooperation among diverse robots;
+(II) \textit{Concurrent pushing.} Multi-object mode generation and conflict-aware
+transition planning allow multiple obstacles to be pushed simultaneously;
+(III) \textit{Dynamic environments.} Periodic $W$--connectivity checks and
+on-demand replanning handle disturbances such as object drift or unmodeled
+contacts during execution.
