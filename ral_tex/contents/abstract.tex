@@ -3,19 +3,17 @@ The passage of large vehicles in cluttered environments is often blocked by
 movable obstacles, motivating the use of mobile robot teams to proactively
 clear traversable corridors. Existing approaches to Navigation Among Movable
 Obstacles (NAMO) mainly plan abstract sequences of obstacle displacements but
-neglect physical feasibility, overlooking robot dimensions, obstacle mass,
+neglect physical feasibility, i.e., overlooking robot dimensions, obstacle mass,
 contact geometry, and required forces, which often leads to strategies that
 fail in execution. This work introduces {PushAround}, a
 physics-informed framework that guarantees feasible path clearing by coupling
 geometric reasoning with dynamic validation. The core novelty is a hybrid
 search that jointly determines which obstacles to displace and how to push
 them, including contact points, directions, and forces. The framework builds a
-W--Clearance Connectivity Graph (WCCG) to test vehicle passage, ranks frontier gaps to
+w--clearance connectivity graph (WCCG) to test vehicle passage, ranks frontier gaps to
 prioritize obstacle-clearing actions, and incrementally expands feasible plans
-by validating pushing modes. This integration ensures that solutions are both
+by validating potential pushing modes. This integration ensures that solutions are both
 geometrically valid and physically executable. Efficiency is achieved by
-combining compact geometric reasoning with prioritized evaluation, avoiding
-exhaustive simulation and improving scalability.
-Extensive simulations and hardware experiments demonstrate robust success,
-physical validity, and efficiency.
+combining compact geometric reasoning with prioritized evaluation, thus avoiding exhaustive simulation.
+Extensive simulations and hardware experiments demonstrate robustness, efficiency and physical validity.
 \end{abstract}
