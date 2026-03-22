@@ -9,6 +9,11 @@ short-horizon obstacle velocity, and a pushing mode. The schedule is executed
 sequentially in a receding-horizon manner. For each $\tau_k$, the robots invoke
 the transition and pushing routine described in Sec.~\ref{subsec:push} to realize the
 corresponding mode $\boldsymbol{\xi}_k$ from the current state.
+Robots are reassigned by preserving the circular order of contact points along
+$\partial\Omega_m$~\cite{tang2024collaborative}, which reduces path crossings
+when sufficient clearance exists. If nearby obstacles block the reassignment,
+the candidate is rejected during rollout.
+
 
 After each execution, the system state is updated from observation. If the
 current push succeeds, execution advances to $\tau_{k+1}$; otherwise, or if the

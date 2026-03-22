@@ -3,42 +3,42 @@
 
 When the condition in~\eqref{eq:wccg_criterion} fails, the vehicle cannot
 reach~$\mathbf{s}_\texttt{V}^{\texttt{G}}$ from
-$\mathbf{s}_\texttt{V}^{\texttt{S}}$ through a $W$--clear path
+$\mathbf{s}_\texttt{V}^{\texttt{S}}$ through a~$W$--clear path
 $\mathcal{P}^W_\texttt{V}$. In this case, the planner must prioritize
-\emph{blocking gaps} on the reachable frontier of $\mathcal{G}_W$.
+\emph{blocking gaps} on the reachable frontier of~$\mathcal{G}_W$.
 As shown in Fig.~\ref{fig:presearch}, the goal of
 this module is to provide an ordered list of such gaps, ranked by their
 predicted cost to eventually yield a feasible path, which serves
 as a critical guidance for the hybrid search in the sequel.
 
 \subsubsection{Frontier Extraction and Candidate Gaps}
-A BugPlanner query on $\mathcal{G}_W$, given
+A BugPlanner query on~$\mathcal{G}_W$, given
 $(\mathbf{s}_\texttt{V}^{\texttt{S}},\mathbf{s}_\texttt{V}^{\texttt{G}},W)$,
 either confirms connectivity or returns a counter--clockwise frontier loop
 $\mathcal{L}$ that separates the two endpoints. The bridge--bridge edges
-visible on $\mathcal{L}$ form the first--hop candidate set
+visible on~$\mathcal{L}$ form the first--hop candidate set
 $\Gamma_\mathcal{L}\triangleq\{g_1,\cdots,g_K\}$,
-where each $g_k$ is a reachable candidate gap. These candidates are the inputs
+where each~$g_k$ is a reachable candidate gap. These candidates are the inputs
 to the ranking module, while the output will be an ordered list of the same
 set sorted by predicted cost.
 
 \subsubsection{Evaluation for Immediate Cost}
-Each candidate $g\in\Gamma_\mathcal{L}$ is evaluated by combining the
+Each candidate~$g\in\Gamma_\mathcal{L}$ is evaluated by combining the
 cost for the robots to reach the gap and the effort required to widen it.
-Let $\mathbf{s}_{\mathcal{R}}$ be the current robot positions,
-and $\mathbf{o}_g$ as the outside insertion point of gap $g$. The
+Let~$\mathbf{s}_{\mathcal{R}}$ be the current robot positions,
+and~$\mathbf{o}_g$ as the outside insertion point of gap~$g$. The
 resulting one--hop cost is given by:
 \begin{equation}\label{eq:step_cost}
 \mathsf{C}\big(g \mid \mathcal{L}, \mathbf{s}_{\mathcal{R}}\big)
 =\lambda_\texttt{t}\,\mathsf{C}_\texttt{t}\!\left(\mathbf{s}_{\mathcal{R}},\mathbf{o}_g\right)
 +\lambda_\texttt{p}\,\mathsf{C}_\texttt{p}(g),
 \end{equation}
-where $\lambda_\texttt{t},\lambda_\texttt{p}>0$ are weighting factors
+where~$\lambda_\texttt{t},\lambda_\texttt{p}>0$ are weighting factors
 for the transition and pushing costs, respectively;
-function $\mathsf{C}_\texttt{t}(\cdot)$ denotes the collision-free
+function~$\mathsf{C}_\texttt{t}(\cdot)$ denotes the collision-free
 distance between two points;
 and the function~$\mathsf{C}_\texttt{p}(\cdot)$ measures the widening effort,
-which increases when the gap is narrower than $W$,
+which increases when the gap is narrower than~$W$,
 or when the adjacent obstacles are heavier as scaled by the  mass of adjacent movable
 obstacles.
 
@@ -48,32 +48,33 @@ obstacles.
 Furthermore, to prioritize gaps closer to the goal, a heuristic is added to the evaluation,
 i.e.,
 $h(g)=\eta\,\big\|\mathbf{o}(g)-\mathbf{s}_\texttt{V}^{\texttt{G}}\big\|$,
-where $\eta>0$ is a scaling constant. Lastly, a short A$^\star$-style presearch virtually crosses
+with the scaling constant~$\eta>0$.
+Lastly, a short A$^\star$-style presearch crosses
 each candidate gap, recomputes the next frontier, and continues for a limited
-beam width and depth. The predicted cost-to-connect is given by:
+beam width and depth. The \emph{cost-to-connect} is predicted by:
 \begin{equation}\label{eq:pred_cost}
 \widehat{\mathsf{Cost}}(g)\triangleq
 \mathsf{C}\!\big(g \mid \mathcal{L},\mathbf{s}_{\mathcal{R}}\big)
 +\!\!\!\sum_{g'\in\Pi^\star(g)}\!\!\!\big{\{}\mathsf{C}(g' \mid \cdot)+h(g')\big{\}},
 \end{equation}
-where $\Pi^\star(g)$ is the sequence of subsequent gaps discovered after
-virtually crossing $g$;
+where~$\Pi^\star(g)$ is the sequence of subsequent gaps discovered after
+virtually crossing~$g$;
 the dots indicate updated inputs along that rollout;
-and the scalar score $\widehat{\mathsf{Cost}}(g)>0$ for each candidate gap.
+and the scalar score~$\widehat{\mathsf{Cost}}(g)>0$ for each candidate gap.
 Consequently,
 the final output of this module is the ranked list of candidate gaps, i.e.,
 $\textsf{Rank}\big(\Gamma_\mathcal{L}\big)
 \triangleq \textbf{argsort}_{g\in\Gamma_\mathcal{L}}\widehat{\mathsf{Cost}}(g)$,
-which sorts $\Gamma_\mathcal{L}$ in ascending predicted cost. This
+which sorts~$\Gamma_\mathcal{L}$ in ascending predicted cost. This
 ordered set is passed to the hybrid search module, such that only the
 promising gaps are expanded first.
 
-\begin{remark}[Practical Improvement]\label{remark:gap}
+\begin{remark}\label{remark:gap}
 Efficiency of the above ranking procedure can be improved by
 caching frontier loops, storing the transitions
 $(\mathcal{L},g)\mapsto\mathcal{L}'$, and accelerating the edge queries with
-axis-aligned bounding-box culling. With a small beam width and depth
-(typically around $8$), the runtime of ranking remains negligible compared to
+axis-aligned bounding-box culling. With a small beam width and depth,
+the runtime of ranking remains negligible compared to
 the cost of simulation-based validation. \hfill$\blacksquare$
 \end{remark}
 
@@ -87,15 +88,15 @@ the cost of simulation-based validation. \hfill$\blacksquare$
 %% \label{alg:gap-ranking}
 %% \DontPrintSemicolon
 %% \SetKwInOut{Input}{In}\SetKwInOut{Output}{Out}
-%% \Input{$\mathbf{s}^{\texttt{S}}$, $\mathbf{s}^{\texttt{G}}$, WCCG, $\lambda_{\mathrm{trans}}$, $\lambda_{\mathrm{push}}$}
+%% \Input{$\mathbf{s}^{\texttt{S}}$,~$\mathbf{s}^{\texttt{G}}$, WCCG,~$\lambda_{\mathrm{trans}}$,~$\lambda_{\mathrm{push}}$}
 %% \Output{First-hop gaps ranked by predicted cost}
-%% $(\mathcal{L},\texttt{conn})\!\leftarrow\!\texttt{BugFrontier}(\mathbf{s}^{\texttt{S}},\mathbf{s}^{\texttt{G}})$;\;
-%% \If{\texttt{conn}}{\Return $\emptyset$}
-%% $\mathcal{C}\!\leftarrow$ bridge–bridge gaps on $\mathcal{L}$;\;
+%%~$(\mathcal{L},\texttt{conn})\!\leftarrow\!\texttt{BugFrontier}(\mathbf{s}^{\texttt{S}},\mathbf{s}^{\texttt{G}})$;\;
+%% \If{\texttt{conn}}{\Return~$\emptyset$}
+%%~$\mathcal{C}\!\leftarrow$ bridge–bridge gaps on~$\mathcal{L}$;\;
 %% \For{$g\in\mathcal{C}$}{
-%%   $J_1\!\leftarrow\!\lambda_{\mathrm{trans}}\mathsf{C}_{\mathrm{trans}}+\lambda_{\mathrm{push}}\kappa(g)[\max(0,W-w(g))+\delta]$;\;
-%%   $(\texttt{succ},J_{\mathrm{tail}})\!\leftarrow\!\texttt{PresearchAfter}(g)$;\;
-%%   $\widehat{\mathrm{Cost}}(g)\!\leftarrow\!J_1+\big(\texttt{succ}?J_{\mathrm{tail}}:\infty\big)$;\;
+%%  ~$J_1\!\leftarrow\!\lambda_{\mathrm{trans}}\mathsf{C}_{\mathrm{trans}}+\lambda_{\mathrm{push}}\kappa(g)[\max(0,W-w(g))+\delta]$;\;
+%%  ~$(\texttt{succ},J_{\mathrm{tail}})\!\leftarrow\!\texttt{PresearchAfter}(g)$;\;
+%%  ~$\widehat{\mathrm{Cost}}(g)\!\leftarrow\!J_1+\big(\texttt{succ}?J_{\mathrm{tail}}:\infty\big)$;\;
 %% }
-%% \Return $\mathrm{argsort}_{g\in\mathcal{C}}\widehat{\mathrm{Cost}}(g)$ (asc.)\;
+%% \Return~$\mathrm{argsort}_{g\in\mathcal{C}}\widehat{\mathrm{Cost}}(g)$ (asc.)\;
 %% \end{algorithm}
