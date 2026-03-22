@@ -2,54 +2,53 @@
 \subsection{Overall Analyses}\label{subsec:overall}
 
 \subsubsection{Execution and Online Adaptation}\label{subsec:execute}
-The hybrid search outputs a pushing schedule
+The hybrid search returns a pushing schedule
 $\pi = \{\tau_1,\cdots,\tau_K\}$, where
 $\tau_k \triangleq (g_k,v_k,\boldsymbol{\xi}_k)$ specifies a target gap, a
 short-horizon obstacle velocity, and a pushing mode. The schedule is executed
-sequentially in a receding-horizon manner. For each $\tau_k$, the robots invoke
-the transition and pushing routine described in Sec.~\ref{subsec:push} to realize the
-corresponding mode $\boldsymbol{\xi}_k$ from the current state.
-Robots are reassigned by preserving the circular order of contact points along
-$\partial\Omega_m$~\cite{tang2024collaborative}, which reduces path crossings
-when sufficient clearance exists. If nearby obstacles block the reassignment,
-the candidate is rejected during rollout.
-
-
-After each execution, the system state is updated from observation. If the
-current push succeeds, execution advances to $\tau_{k+1}$; otherwise, or if the
-local geometry has changed so that the remaining schedule is no longer valid,
-control is returned to the planner for replanning from the updated state.
-To maintain consistency between planning and execution, the WCCG is rebuilt
-periodically from the current obstacle configuration. Execution terminates once
-a $W$--clear path $\mathcal{P}^W_\texttt{V}$ connects
-$\mathbf{s}_\texttt{V}^{\texttt{S}}$ and
+sequentially in a receding-horizon manner. For each $\tau_k$, the robots move
+to the required contact configurations and apply the corresponding pushing
+routine from the current state as in~\eqref{eq:sim}. During transition, robots
+are reassigned by preserving the circular order of contact points along the
+obstacle boundary~\cite{tang2024collaborative}, which reduces path crossings
+under sufficient clearance. After each push, the system state is updated from
+observation, and execution proceeds to $\tau_{k+1}$ if the action succeeds.
+For consistency with execution, the WCCG is rebuilt periodically from
+the current configuration. Execution terminates once a $W$--clear path
+$\mathcal{P}^W_\texttt{V}$ connects $\mathbf{s}_t$ and
 $\mathbf{s}_\texttt{V}^{\texttt{G}}$.
-
-\begin{remark}
-The $W$--CCG criterion may be conservative near the start or goal. If a
-$W$--clear connection exists but either
-$\mathbb{B}_{W/2}(\mathbf{s}_\texttt{V}^{\texttt{S}})$ or
-$\mathbb{B}_{W/2}(\mathbf{s}_\texttt{V}^{\texttt{G}})$ still intersects
-obstacles, a small set of auxiliary pushes is applied to clear the
-corresponding disk before final execution. \hfill$\blacksquare$
-\end{remark}
+Replanning is triggered if nominal execution cannot continue reliably, e.g., if
+reassignment is blocked by nearby obstacles; if the realized motion deviates
+significantly from the simulated state, the current push fails; or if
+the updated local geometry invalidates the remaining schedule. In such cases,
+execution is aborted and Alg.~\ref{alg:push} is called from the updated state.
 
 
 %----------------------------------------------
 \subsubsection{Computational Complexity}\label{subsubsec:complexity}
-The cost of each node expansion is dominated by simulation of pushing strategies.
-Construction of the WCCG $\mathcal{G}_W$ and the associated connectivity tests scales nearly linearly
-in the number of movable
-obstacles $|\boldsymbol{\Omega}|$, while gap ranking by presearch
-in Sec.~\ref{subsec:gap} is lightweight as it is limited to a small subset
-of frontier gaps. At expansion, only a fraction of the strategies in
-$\mathsf{Rank}(\nu)$ survive the geometric quick-pass and early-stop checks,
-which shortens the horizon of the simulator calls defined by
-$\mathsf{EvalSim}(\cdot)$. Parallel execution of these simulations across multiple
-workers reduces the effective cost nearly linearly until communication overhead
-is reached. Deferred expansion further improves efficiency by distributing the
-evaluation of $\mathsf{Rank}(\nu)$ across iterations, avoiding redundant
-restarts and keeping the priority queue focused on promising frontiers.
+Given~$M$ movable obstacles, let
+$\mathcal{G}_W$ be the current WCCG in~\eqref{eq:wccg},
+$\Gamma_{L_\nu}$ be the visible frontier-gap set at node~$\nu$,
+and let~$\Xi_g$ be the candidate pushing-strategy set for gap~$g$.
+Then one node expansion in Alg.~\ref{alg:push}
+consists of:
+(I) WCCG update and frontier extraction,
+with complexity~$\mathcal{O}(M\log M + |\mathcal{V}| + |\mathcal{E}_c| + |\mathcal{E}_b|)$;
+(II) gap ranking over~$\Gamma_{L_\nu}$,
+with complexity~$\mathcal{O}(|\Gamma_{L_\nu}|\log |\Gamma_{L_\nu}|)$;
+and
+(III) candidate generation and validation over the ranked gaps. If
+$C_{\mathrm{LP}}$ denotes the cost of one sparse LP in mode
+generation,~$T_{\mathrm{sim}}$ the rollout horizon of one
+$\mathsf{EvalSim}(\cdot)$ in~\eqref{eq:sim},~$n_{\texttt{w}}$ the number of parallel
+simulations, and~$\rho_\nu\in[0,1]$ the fraction of validated candidates,
+then the dominant complexity is
+$\mathcal{O}(\sum_{g\in \mathsf{Rank}(\nu)} |\Xi_g|\, C_{\mathrm{LP}}
++\frac{\rho_\nu\, T_{\mathrm{sim}}}{n_{\texttt{w}}}
+\sum_{g\in \mathsf{Rank}(\nu)} |\Xi_g|)$.
+Hence, the overall cost per expansion is dominated by the
+simulation process, while quick-pass, early stopping and parallel
+rollouts can reduce the constant factors in practice.
 
 
 %----------------------------------------------

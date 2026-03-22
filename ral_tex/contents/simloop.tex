@@ -2,33 +2,32 @@
 \subsection{Physics-Informed Hybrid Search}\label{subsec:simloop}
 
 As shown in Fig.~\ref{fig:PIHS},
-the hybrid search couples high-level decisions about blocking gaps with
+the proposed physics-informed hybrid search (PIHS)
+couples high-level decisions about blocking gaps with
 low-level feasibility of multi-robot pushing.
 Unlike purely geometric planners,
 this procedure simultaneously determines a sequence of gaps to clear
-and physically-feasible pushing actions, including directions, contact modes,and forces.
-Parallel physics simulation is embedded so that candidate
-push strategies can be evaluated simultaneously at each expansion, and the resulting
-successor states are returned to the search.
-The algorithmic details are summarized in Alg.~\ref{alg:push}
+and physically-feasible pushing strategies.
+Parallel physics simulation is embedded so that strategies are evaluated simultaneously.
+Algorithmic details are summarized in Alg.~\ref{alg:push}
 and explained below.
 
 \subsubsection{Tree and Initialization}
-The search tree $\mathcal{T}$ is composed of nodes
-$\nu\triangleq(\mathbf{s},\pi)$, where $\mathbf{s}$ is the current system
+The search tree~$\mathcal{T}$ is composed of nodes
+$\nu\triangleq(\mathbf{s},\pi)$, where~$\mathbf{s}$ is the current system
 state of all robots and movables in~\eqref{eq:transition},
-and $\pi$ the partial pushing strategy in~\eqref{eq:problem}.
+and~$\pi$ the partial pushing strategy in~\eqref{eq:problem}.
 Two global functions are
-maintained: $\mathsf{Rank}(\nu)$ stores a ranked list of candidate gaps at this
+maintained:~$\mathsf{Rank}(\nu)$ stores a ranked list of candidate gaps at this
 node together with their exploration status, derived from~\eqref{eq:pred_cost};
-and $\chi(\nu)$ returns the cumulative execution cost
-from the root to $\nu$.
-The root is initialized as $\nu_0\triangleq(\mathbf{s}_0,\emptyset)$,
-where $\mathbf{s}_0$ is the initial system state.
-At initialization, $\chi(\nu_0)=0$, and
+and~$\chi(\nu)$ returns the cumulative execution cost
+from the root to~$\nu$.
+The root is initialized as~$\nu_0\triangleq(\mathbf{s}_0,\emptyset)$,
+where~$\mathbf{s}_0$ is the initial system state.
+At initialization,~$\chi(\nu_0)=0$, and
 $\mathsf{Rank}(\nu_0)$ is constructed by first computing the frontier loop
 $\mathcal{L}_\nu$ associated with~$\mathbf{s}_0$, then extracting the visible
-gaps $\Gamma_{\mathcal{L}_\nu}$, and finally ranking them by their predicted
+gaps~$\Gamma_{\mathcal{L}_\nu}$, and finally ranking them by their predicted
 cost-to-connect.
 
 \subsubsection{Node Selection}
@@ -38,7 +37,7 @@ the queue. Priority balances realized cost and estimated remaining effort:
   f(\nu)\triangleq \chi(\nu)+\underset{g\in \textsf{Rank}(\nu)}{\textbf{min}}
   \widehat{\mathsf{Cost}}(g),
 \end{equation}
-where $\chi(\nu)$ is the cumulative execution cost so far, and the second term
+where~$\chi(\nu)$ is the cumulative execution cost so far, and the second term
 is the minimum predicted remaining cost among the unexplored gaps of~$\nu$.
 This scoring ensures that nodes are expanded in an order that jointly accounts
 for physical effort already incurred and the most promising future actions.
@@ -48,64 +47,31 @@ for physical effort already incurred and the most promising future actions.
 \begin{algorithm}[t!]
 \caption{Physics-Informed Hybrid Search}\label{alg:push}
 \SetAlgoLined
-\KwIn{$\mathbf{s}_0$, $\alpha$, $\mathsf{EvalSim}(\cdot)$, $W$--criterion by~\eqref{eq:wccg_criterion}}
-
+\KwIn{$\mathbf{s}_0$,~$\alpha$,~$\mathsf{EvalSim}(\cdot)$,~$W$--criterion by~\eqref{eq:wccg_criterion}}
 \KwOut{$\pi^\star$}
 \tcc{Initialization}
 $\nu_0\gets(\mathbf{s}_0,\emptyset),\;\chi(\nu_0)=0$\;
-Init $\mathcal{Q}$ by~\eqref{eq:priority}\;
+Init~$\mathcal{Q}$ by~\eqref{eq:priority}\;
 \While{not terminated}{
-  \tcc{Selection}
-  $\nu\gets\mathcal{Q}.\texttt{pop\_min}()$ by~\eqref{eq:priority}\;
-  \tcc{Parallel Expansion}
+ $\nu\gets\mathcal{Q}.\texttt{pop\_min}()$ by~\eqref{eq:priority}\;
   \ForEach{$g\in\mathsf{Rank}(\nu)$}{
     \ForEach{$(\mathbf{v},\boldsymbol{\xi})\in\Xi_g$}{
-    $\tau=(g,\mathbf{v},\boldsymbol{\xi})$\;
-    $(\mathbf{s}',\delta_T,\delta_J)\gets\mathsf{EvalSim}(\nu,\tau)$ by~\eqref{eq:sim}\;
+   $\tau=(g,\mathbf{v},\boldsymbol{\xi})$\;
+   $(\mathbf{s}',\delta_T,\delta_J)\gets\mathsf{EvalSim}(\nu,\tau)$ by~\eqref{eq:sim}\;
     \If{success}{
-      $\nu'\gets(\mathbf{s}',\pi\cup\{\tau\})$\;
-      $\chi(\nu')\gets\chi(\nu)+\delta_\texttt{T}+\alpha\,\delta_\texttt{J}$\;
-      $\mathcal{Q}.\texttt{push}(\nu')$\;
+     $\nu'\gets(\mathbf{s}',\pi\cup\{\tau\})$\;
+     $\chi(\nu')\gets\chi(\nu)+\delta_\texttt{T}+\alpha\,\delta_\texttt{J}$\;
+     $\mathcal{Q}.\texttt{push}(\nu')$\;
       }
     }
   }
-  \tcc{Termination Check}
-  \If{$\mathbf{s}'$ admits $\mathcal{P}^W_{\texttt{V}}$ by~\eqref{eq:wccg_criterion}}{
-    $\pi^\star\gets\pi'$, \textbf{break}\;
+  \If{$\mathbf{s}'$ admits~$\mathcal{P}^W_{\texttt{V}}$ by~\eqref{eq:wccg_criterion}}{
+   ~$\pi^\star\gets\pi'$, \textbf{break}\;
   }
 }
-\Return $\pi^\star$;
+\Return~$\pi^\star$;
 \end{algorithm}
 %==============================================
-
-
-% ========================================
-\subsubsection{Node Expansion with Parallel Simulation}
-Let the selected node be $\nu \triangleq (\mathbf{s},\pi)$. For each ranked gap
-$g \in \mathsf{Rank}(\nu)$, mode optimization by~\eqref{eq:mode-feasibility}
-provides a candidate strategy set
-$\Xi_g \triangleq \{(\mathbf{v},\boldsymbol{\xi})\}$ for the adjacent movable
-obstacle. Thus, expansion is prioritized first by the gap order in
-$\mathsf{Rank}(\nu)$, and then by the candidate ordering within $\Xi_g$.
-Each candidate strategy $(\mathbf{v},\boldsymbol{\xi}) \in \Xi_g$ is first
-checked by a geometric quick-pass and, if it passes, evaluated by the
-short-horizon rollout in~\eqref{eq:sim}. A successful evaluation yields
-$(\mathbf{s}',\delta_{\texttt{T}},\delta_{\texttt{J}})$, from which a child
-node $\nu' \triangleq (\mathbf{s}',\pi')$ is created by appending
-$\tau \triangleq (g,\mathbf{v},\boldsymbol{\xi})$ to the current partial
-schedule $\pi$. The realized incremental cost is
-\[
-  \widehat{\mathsf{C}}(\nu,\tau)
-  \triangleq
-  \delta_{\texttt{T}} + \alpha\,\delta_{\texttt{J}},
-\]
-and the cumulative cost is updated by
-\[
-  \chi(\nu') \triangleq \chi(\nu) + \widehat{\mathsf{C}}(\nu,\tau).
-\]
-Since all candidates in the current batch are evaluated concurrently, a single
-expansion can produce multiple validated successors.
-
 
 %==============================
 \begin{figure*}[t!]
@@ -113,7 +79,7 @@ expansion can produce multiple validated successors.
   \includegraphics[width=0.95\linewidth]{figures/sim_exp.png}
   \vspace{-0.15in}
 \caption{Execution--planning alignment in the main scenario.
-\textbf{Top:} $5$ PyBullet snapshots as $2$ robots push a cylindrical object.
+\textbf{Top:}~$5$ PyBullet snapshots as~$2$ robots push a cylindrical object.
 \textbf{Bottom:} corresponding WCCG overlays with the start face in blue.
 The task moves the object from \(\mathbf{s}^{\texttt{S}}_{\texttt{V}}=(1,4)\) to \(\mathbf{s}^{\texttt{G}}_{\texttt{V}}=(7,2)\).
 In the final state,
@@ -123,23 +89,48 @@ the start face contains \(G\), matching the executed trajectory and confirming s
 \end{figure*}
 % ========================================
 
+% ========================================
+\subsubsection{Node Expansion with Parallel Simulation}
+Let the selected node be~$\nu \triangleq (\mathbf{s},\pi)$. For each ranked gap
+$g \in \mathsf{Rank}(\nu)$, mode optimization by~\eqref{eq:mode-feasibility}
+provides a candidate strategy set
+$\Xi_g \triangleq \{(\mathbf{v},\boldsymbol{\xi})\}$ for the adjacent movable
+obstacle. Thus, expansion is prioritized first by the gap order in
+$\mathsf{Rank}(\nu)$, and then by the candidate ordering within~$\Xi_g$.
+Each candidate strategy~$(\mathbf{v},\boldsymbol{\xi}) \in \Xi_g$ is first
+checked by a geometric quick-pass and, if it passes, evaluated by the
+short-horizon rollout in~\eqref{eq:sim}. A successful evaluation yields
+$(\mathbf{s}',\delta_{\texttt{T}},\delta_{\texttt{J}})$, from which a child
+node~$\nu' \triangleq (\mathbf{s}',\pi')$ is created by appending
+$\tau \triangleq (g,\mathbf{v},\boldsymbol{\xi})$ to the current partial
+schedule~$\pi$.
+The cumulative cost is updated by
+\[
+  \chi(\nu') \triangleq \chi(\nu) + \widehat{\mathsf{C}}(\nu,\tau),
+  \]
+  where~$\widehat{\mathsf{C}}(\nu,\tau)\triangleq
+  \delta_{\texttt{T}} + \alpha\,\delta_{\texttt{J}}$
+is the realized incremental cost.
+Note that all candidates in the current batch are evaluated
+\emph{concurrently in parallel},
+and a single expansion can produce multiple validated successors.
+
+
 \subsubsection{Termination}
-Termination occurs when a node $\nu$ reaches a state $\mathbf{s}$ for which a
-$W$--clear path $\mathcal{P}^W_\texttt{V}$ exists from
-$\mathbf{s}_\texttt{V}^{\texttt{S}}$ to $\mathbf{s}_\texttt{V}^{\texttt{G}}$,
-as certified by~\eqref{eq:wccg_criterion}. In this case, the schedule $\pi$
-stored in $\nu$ constitutes a complete solution to~\eqref{eq:problem}, encoding
-both the sequence of gaps to clear and the physically feasible pushing actions
+Termination occurs when a node~$\nu$ reaches a state~$\mathbf{s}$ for which a
+$W$--clear path~$\mathcal{P}^W_\texttt{V}$ exists from
+$\mathbf{s}_\texttt{V}^{\texttt{S}}$ to~$\mathbf{s}_\texttt{V}^{\texttt{G}}$
+by~\eqref{eq:wccg_criterion}. Thus, the schedule~$\pi$
+stored in~$\nu$ constitutes a complete solution to~\eqref{eq:problem}, encoding
+both the sequence of gaps to clear and the pushing strategies
 that realize them.
 
 \begin{remark}\label{remark:simloop}
-Efficiency of the hybrid search comes from parallel simulation and mode reuse.
-At each expansion, multiple strategies are simulated concurrently, producing
-several validated successors at once. Moreover, the effective modes generated
-in Sec.~\ref{subsec:push}, together with their associated $v$ and rollout outcomes, are
-stored in a persistent ModeTable. For obstacles with similar local geometry,
-these entries can be reused to warm-start online mode generation and reduce
-repeated optimization and physics calls. Deferred expansion further keeps nodes
-with untried candidates in the queue until all promising strategies are
-attempted. \hfill$\blacksquare$
+Efficiency of the hybrid search above owes to parallel simulation
+and mode reuse. At each expansion,
+multiple strategies are evaluated concurrently, producing several successors at
+once. Moreover, effective strategy entries from~\eqref{eq:mode-feasibility} are
+stored in a persistent table of pushing modes (ModeTable),
+which can be reused for obstacles with similar local
+geometry, reducing repeated optimization and physics simulation. \hfill$\blacksquare$
 \end{remark}

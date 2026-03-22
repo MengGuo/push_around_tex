@@ -77,7 +77,7 @@ $(\mathbf{v},\boldsymbol{\xi})\in\Xi_g$, a short-horizon rollout evaluates the
 transition in~\eqref{eq:transition} under the selected mode. A strategy is
 accepted only if the robots reach the pre-contact poses, avoid collision,
 maintain stable contact, and induce obstacle motion that enlarges~$g$. The
-simulation returns
+simulation returns:
 \begin{equation}
   (\mathbf{s}',\,\delta_{\texttt{T}},\,\delta_{\texttt{J}})
   \triangleq
@@ -86,6 +86,7 @@ simulation returns
 \end{equation}
 where~$\mathbf{s}'$ is the successor state,~$\delta_{\texttt{T}}>0$ is the
 time cost, and~$\delta_{\texttt{J}}$ is the control effort.
+\todo{add a figure above?}
 
 %------------------------------
 \begin{figure}[t!]
