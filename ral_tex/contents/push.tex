@@ -1,124 +1,102 @@
 %==============================================
 \subsection{Pushing Mode Generation and Evaluation}\label{subsec:push}
-
-For a selected frontier gap $g$ and its adjacent movable obstacle $\Omega_m$,
-this subsection constructs candidate pushing strategies
-$\tau \triangleq (g,v,\boldsymbol{\xi}_m)$ for subsequent search. The inputs are
-$g$, $\Omega_m$, and a desired obstacle velocity $v \in \mathbb{R}^3$; the
-output is a filtered set of candidate modes
-$\Xi_g \subseteq \Xi_m$ together with their associated strategies $\tau$.
-
-%==============================================
-\subsubsection{Candidate mode generation}
-Given $g$ and $\Omega_m$, the reachable part of $\partial\Omega_m$ is
-discretized into boundary samples. A sample is retained only if its pre-contact
-robot pose lies in $W_x(t)$ and preserves pairwise robot clearance. Ordered
-contact tuples $\mathcal{C}_m$ are then formed from the retained samples, where
-the ordering determines the robot-to-contact assignment. Following the sparse
-generation scheme in \cite{tang2024collaborative,tang2025pushingbots}, modes
-are screened in the body frame rather than exhaustively enumerated.
-
-For $c_i \in \mathcal{C}_m$, let
-$f_i \triangleq f_i^\perp n_i + f_i^\parallel t_i$, with
-$0 \leq f_i^\perp \leq f_{i,\max}$ and
-$|f_i^\parallel| \leq \mu_c f_i^\perp$. These contact constraints induce the
-body-wrench set $Q^{\mathrm{B}}_{\boldsymbol{\xi}_m}$, and the corresponding
-optimizer returns $\mathbf{u}_m$, yielding the candidate mode
-$\boldsymbol{\xi}_m \triangleq (\mathcal{C}_m,\mathbf{u}_m)$.
+For a selected frontier gap~$g$, this subsection constructs a set of candidate
+pushing strategies
+$\Xi_g \triangleq \{(\mathbf{v},\boldsymbol{\xi})\}$,
+where~$\mathbf{v} \triangleq (v_x,v_y,\omega)\in\mathbb{R}^3$ is a
+short-horizon pushing direction for the movable obstacle adjacent to~$g$, and
+$\boldsymbol{\xi}\triangleq(\mathcal{C},\mathbf{u})$ is the associated pushing
+mode in~\eqref{eq:transition}. It consists of three steps:
+direction sampling, pushing mode generation and evaluation.
 
 %==============================================
-\subsubsection{Multi-directional feasibility evaluation}
-Let $v^{\mathrm{B}}$ denote $v$ expressed in the body frame of $\Omega_m$.
-Given a sampled mode $\boldsymbol{\xi}_m$, its quasi-static force-feasibility is
-measured by
-\begin{equation}
-  J_{\mathrm{F}}(\boldsymbol{\xi}_m,v^{\mathrm{B}})
-  \triangleq
-  \min_{q^{\mathrm{B}} \in Q^{\mathrm{B}}_{\boldsymbol{\xi}_m}}
-  \| q^{\mathrm{B}} + \eta_m(v^{\mathrm{B}}) \|_1,
-  \label{eq:pusharound_JF}
+\subsubsection{Pushing Direction Sampling}
+Let~$\Omega_m$ denote one of the two movable obstacles adjacent to~$g$. For
+each such obstacle, a small set of candidate body velocities
+$\{\mathbf{v}_m^k\}_{k=1}^{K_m}$ is sampled with a bias toward enlarging the gap~$g$,
+while a small number of angular components are included to account for local geometry.
+These directions reflect the candidate pushing intents for the obstacles adjacent
+to gap~$g$.
+
+%==============================================
+\subsubsection{Pushing Mode Generation}
+For each sampled direction~$\mathbf{v}_m^k$ and obstacle~$\Omega_m$, the
+quality of a candidate mode is measured in the body frame. Let
+$\mathbf{v}_m^{k,\mathrm{B}} \in \mathbb{R}^3$ denote~$\mathbf{v}_m^k$
+expressed in the body frame of~$\Omega_m$. For a mode~$\boldsymbol{\xi}$,
+define the primary and multi-directional feasibility losses by:
+\begin{equation}\label{eq:mode-feasibility}
+\begin{aligned}
+  \mathrm{J}_{\texttt{F}}^m
+  (\boldsymbol{\xi},\mathbf{v}_m^{k,\mathrm{B}})
+  &\triangleq
+  \underset{\mathbf{q}_{m,\boldsymbol{\xi}} \in
+  \mathrm{Q}_{m,\boldsymbol{\xi}}}{\textbf{min}}
+  \left\|
+  \mathbf{q}_{m,\boldsymbol{\xi}} +
+  Q_\mu^m(\mathbf{v}_m^{k,\mathrm{B}})
+  \right\|_1,\\
+  \mathrm{J}_{\texttt{MF}}^m
+  (\boldsymbol{\xi},\mathbf{v}_m^{k,\mathrm{B}})
+  &\triangleq
+  \sum_{\mathbf{v}_d \in \mathcal{D}} w_d \cdot
+  \mathrm{J}_{\texttt{F}}^m(\boldsymbol{\xi},\mathbf{v}_d);
+\end{aligned}
 \end{equation}
-where $\eta_m(v^{\mathrm{B}})$ is the quasi-static friction wrench of
-$\Omega_m$. Thus,
-$J_{\mathrm{F}}(\boldsymbol{\xi}_m,v^{\mathrm{B}})=0$ is necessary for
-quasi-static feasibility in direction $v^{\mathrm{B}}$.
+where~$\mathbf{q}_{m,\boldsymbol{\xi}} \in \mathbb{R}^3$ is the generalized
+body wrench induced by mode~$\boldsymbol{\xi}$;
+$\mathrm{Q}_{m,\boldsymbol{\xi}} \subseteq \mathbb{R}^3$ is the corresponding
+set of admissible body wrenches under the contact and friction constraints;
+$Q_\mu^m(\mathbf{v}_m^{k,\mathrm{B}}) \in \mathbb{R}^3$ denotes the
+quasi-static friction wrench of~$\Omega_m$ at direction~$\mathbf{v}_m^{k,\mathrm{B}}$;
+$\mathcal{D} \subset \mathbb{R}^3$ is a finite
+set of basis velocities containing the desired direction;
+and~$w_d > 0$ is the
+weight associated with~$\mathbf{v}_d \in \mathcal{D}$. Thus,
+small~$\mathrm{J}_{\texttt{F}}^m(\boldsymbol{\xi},\mathbf{v}_m^{k,\mathrm{B}})$ is
+necessary for force feasibility, while small
+$\mathrm{J}_{\texttt{MF}}^m$ indicates a robust mode.
+Accordingly, the associated mode
+$\boldsymbol{\xi}_m^k \triangleq (\mathcal{C}_m^k,\mathbf{u}_m^k)$ is generated
+by sparse optimization over the reachable part of~$\partial\Omega_m$. The
+reachable boundary is discretized into candidate contacts, and a sparse linear
+program (LP) is solved to minimize
+$\mathrm{J}_{\texttt{MF}}^m(\boldsymbol{\xi},\mathbf{v}_m^{k,\mathrm{B}})$
+under the local friction and wrench constraints.
+Detailed derivations are omitted here for brevity,
+and referred to~\cite{tang2024collaborative,tang2025pushingbots}.
+The resulting nonzero contacts provide~$\mathcal{C}_m^k$, and the corresponding forces
+yield~$\mathbf{u}_m^k$. Only the best few
+pairs~$(\mathbf{v}_m^k,\boldsymbol{\xi}_m^k)$ are retained and collected
+into~$\Xi_g$.
 
-To account for nearby corrective motions, the mode is further evaluated in a
-small set of auxiliary body-frame directions
-$\{v^{\mathrm{B}}_{[d]}\}_{d=1}^{6}$ centered at $v^{\mathrm{B}}$, as in
-\cite{tang2024collaborative,tang2025pushingbots}. The resulting score is
+%==============================================
+\subsubsection{Pushing Strategy Evaluation}
+For a current state~$\mathbf{s}$ and a candidate strategy
+$(\mathbf{v},\boldsymbol{\xi})\in\Xi_g$, a short-horizon rollout evaluates the
+transition in~\eqref{eq:transition} under the selected mode. A strategy is
+accepted only if the robots reach the pre-contact poses, avoid collision,
+maintain stable contact, and induce obstacle motion that enlarges~$g$. The
+simulation returns
 \begin{equation}
-  J_{\mathrm{MF}}(\boldsymbol{\xi}_m,v^{\mathrm{B}})
+  (\mathbf{s}',\,\delta_{\texttt{T}},\,\delta_{\texttt{J}})
   \triangleq
-  \sum_{d=1}^{6} w_d
-  J_{\mathrm{F}}(\boldsymbol{\xi}_m,v^{\mathrm{B}}_{[d]}),
-  \label{eq:pusharound_JMF}
+  \mathsf{EvalSim}\big(\mathbf{s},\,(g,\mathbf{v},\boldsymbol{\xi})\big),
+  \label{eq:sim}
 \end{equation}
-where $w_d > 0$ are fixed weights. Smaller
-$J_{\mathrm{MF}}(\boldsymbol{\xi}_m,v^{\mathrm{B}})$ indicates better support
-for both the desired motion and nearby corrections. For each gap $g$, only the
-best few modes are retained as $\Xi_g \subseteq \Xi_m$.
+where~$\mathbf{s}'$ is the successor state,~$\delta_{\texttt{T}}>0$ is the
+time cost, and~$\delta_{\texttt{J}}$ is the control effort.
 
-%==============================================
-\subsubsection{Practical evaluation and mode execution}
-The quasi-static test above is necessary but not sufficient. Therefore, each
-retained pair $(v,\boldsymbol{\xi}_m)$ is further validated by a short-horizon
-rollout under the low-level controller. A mode is accepted only if the robots
-can reach the corresponding pre-contact poses, avoid collision during
-transition and pushing, maintain stable contact, and induce an obstacle motion
-consistent with widening the selected gap $g$. Among the accepted modes for the
-same gap, the one with the smallest
-$J_{\mathrm{MF}}(\boldsymbol{\xi}_m,v^{\mathrm{B}})$ defines the candidate
-strategy $\tau \triangleq (g,v,\boldsymbol{\xi}_m)$.
-
-During execution, $v$ is integrated over a short horizon to generate a local
-reference for $\Omega_m$, and $\mathcal{C}_m$ is mapped to per-robot contact
-references tracked by velocity control. If contact is lost, the transition
-times out, or the realized motion deviates from the intended gap-opening
-effect, the current mode is terminated and replanning is triggered.
-
-\begin{remark}
-During mode transition, robots are reassigned to the new ordered tuple
-$\mathcal{C}_m$ by preserving the circular order of contact points along
-$\partial\Omega_m$, following the ordering-based switching idea
-in~\cite{tang2024collaborative}. This reduces path crossings and often avoids
-robot--robot collisions when the obstacle boundary has sufficient clearance.
-If nearby obstacles block the transition, the candidate mode is rejected during
-practical validation.
-\end{remark}
-
-
-
-%==============================================
-\begin{algorithm}[t!]
-\caption{Physics-Informed Hybrid Search}\label{alg:push}
-\SetAlgoLined
-\KwIn{$\mathbf{s}_0$, $\alpha$, $\mathsf{EvalSim}(\cdot)$, $W$--criterion by~\eqref{eq:wccg_criterion}}
-
-\KwOut{$\pi^\star$}
-\tcc{Initialization}
-$\nu_0\gets(\mathbf{s}_0,\emptyset),\;\chi(\nu_0)=0$\;
-Init $\mathcal{Q}$ by~\eqref{eq:priority}\;
-\While{not terminated}{
-  \tcc{Selection}
-  $\nu\gets\mathcal{Q}.\texttt{pop\_min}()$ by~\eqref{eq:priority}\;
-  \tcc{Parallel Expansion}
-  \ForEach{$g\in\mathsf{Rank}(\nu)$}{
-    \ForEach{$(\mathbf{v},\boldsymbol{\xi})\in\Xi_g$}{
-    $\tau=(g,\mathbf{v},\boldsymbol{\xi})$\;
-    $(\mathbf{s}',\delta_T,\delta_J)\gets\mathsf{EvalSim}(\nu,\tau)$ by~\eqref{eq:sim}\;
-    \If{success}{
-      $\nu'\gets(\mathbf{s}',\pi\cup\{\tau\})$\;
-      $\chi(\nu')\gets\chi(\nu)+\delta_\texttt{T}+\alpha\,\delta_\texttt{J}$\;
-      $\mathcal{Q}.\texttt{push}(\nu')$\;
-      }
-    }
-  }
-  \tcc{Termination Check}
-  \If{$\mathbf{s}'$ admits $\mathcal{P}^W_{\texttt{V}}$ by~\eqref{eq:wccg_criterion}}{
-    $\pi^\star\gets\pi'$, \textbf{break}\;
-  }
-}
-\Return $\pi^\star$;
-\end{algorithm}
-%==============================================
+%------------------------------
+\begin{figure}[t!]
+  \centering
+  \includegraphics[width=0.95\linewidth]{figures/PIHS.png}
+  \vspace{-0.15in}
+  \caption{
+\textbf{Top:} Core components of the proposed physics-informed hybrid search;
+\textbf{Bottom:} Sampled push tasks are evaluated via parallel simulation, producing updated states
+for search expansion.}
+    \label{fig:PIHS}
+   \vspace{-4mm}
+\end{figure}
+%------------------------------
