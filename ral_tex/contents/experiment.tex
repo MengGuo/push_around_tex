@@ -1,23 +1,7 @@
-% ========================================
-\begin{figure*}[t!]
-  \centering
-  \includegraphics[width=0.95\linewidth]{figures/hardware_wccg.png}
-  \vspace{-4mm}
-  \caption{Real-world pushing experiment with execution--planning alignment.
-\textbf{Top:} snapshots of two robots pushing obstacles in a \(5{\times}6\,\mathrm{m}\) workspace
-with movable objects and fixed boundaries. \textbf{Bottom:} WCCG overlays with the start face in
-blue. Planning uses clearance \(W{=}1.0\), start \(\mathbf{s}^{\texttt{S}}_{\texttt{V}}{=}(1.65,1.01)\),
-and goal \(\mathbf{s}^{\texttt{G}}_{\texttt{V}}{=}(3.4,4.8)\).
-The evolving graph remains consistent with observed motions, confirming that planned corridors
-match execution.}
-  \vspace{-4mm}
-  \label{fig:hardware}
-\end{figure*}
-% ========================================
 % ============================================================
 \section{Experiments}
 \label{sec:experiments}
-We evaluate the proposed physics-informed hybrid search (PIHS)
+We evaluate the proposed PIHS algorithm
 in cluttered environments containing both movable
 and immovable obstacles. All components—WCCG presearch, frontier extraction,
 and the \textit{ModeTable} prior—are integrated as described in Sec.~\ref{sec:solution}.
@@ -178,10 +162,19 @@ confirms that the planned interactions are physically realizable on hardware.
 
 
 
-% \begin{figure}[t]
-%   \centering
-%   \includegraphics[width=\linewidth]{figures/hardware_snap.png}
-%   \vspace{-2mm}
-%   \caption{\textbf{Top:} two consecutive snapshots illustrating a chain push: R1 pushes an object, which then moves a neighbor. \textbf{Bottom:} velocity commands for both robots (\(v_x,v_y,\omega\)); the contact moment aligns with a brief rise in translational speed and differential angular commands.}
-%   \label{fig:hardware_snap}
-% \end{figure}
+% ========================================
+\begin{figure*}[t!]
+  \centering
+  \includegraphics[width=0.95\linewidth]{figures/hardware_wccg.png}
+  \vspace{-4mm}
+  \caption{Real-world pushing experiment with execution--planning alignment.
+\textbf{Top:} snapshots of two robots pushing obstacles in a \(5{\times}6\,\mathrm{m}\) workspace
+with movable objects and fixed boundaries. \textbf{Bottom:} WCCG overlays with the start face in
+blue. Planning uses clearance \(W{=}1.0\), start \(\mathbf{s}^{\texttt{S}}_{\texttt{V}}{=}(1.65,1.01)\),
+and goal \(\mathbf{s}^{\texttt{G}}_{\texttt{V}}{=}(3.4,4.8)\).
+The evolving graph remains consistent with observed motions, confirming that planned corridors
+match execution.}
+  \vspace{-4mm}
+  \label{fig:hardware}
+\end{figure*}
+% ========================================
