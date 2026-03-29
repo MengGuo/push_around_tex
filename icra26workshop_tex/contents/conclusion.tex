@@ -1,6 +1,6 @@
 \section{Conclusion and Outlook}
 \label{sec:conclusion}
 
-We presented \emph{frontier gaps} as a structured interface between width-aware clearance reasoning and contact-feasible multi-robot pushing. In the proposed formulation, the WCCG identifies the reachable bottlenecks that currently block progress, each selected gap is converted into a compact set of contact candidates, and physics-informed search validates only the most promising gap-opening interventions. This interface allows cluttered path clearing to be treated as a single planning problem that links bottleneck selection to executable multi-robot action generation.
+We presented \emph{frontier gaps} as a structured interface for cluttered path clearing, connecting width-aware bottleneck reasoning to executable multi-robot intervention. This formulation enables the planner to focus physical validation on a small set of promising gap-opening actions, supporting reliable corridor construction in both simulation and representative hardware execution.
 
 The current system still depends on sufficiently accurate state estimation and remains sensitive to drift, wheel slippage, and contact variability during real execution. Future work will extend this formulation to settings with limited visibility, uncertain object masses, and tighter coupling between estimation, replanning, and contact execution.
