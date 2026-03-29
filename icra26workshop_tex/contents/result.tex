@@ -41,31 +41,31 @@ rather than a fully connected $W$-clear passage from start to goal. Taken
 together, these comparisons support the need to couple frontier-gap-guided
 bottleneck reasoning with contact-feasible action generation.
 
-The ablation study further clarifies which parts of the proposed formulation
-support this performance. Removing \texttt{presearch} reduces success from
-92.5\% to 85.0\% and increases the number of simulations, suggesting that
-frontier-gap-guided prioritization helps reduce unnecessary validation and
-focus computation on useful bottlenecks. Removing \texttt{ModeTable} reduces
-success further to 80.0\%, again with higher planning cost and more
-simulation calls, indicating that structured reuse of contact modes improves
-planning efficiency while helping preserve executable action generation under
-the same task setting. Together, these ablations support both sides of the
-proposed interface: frontier-gap-guided bottleneck prioritization on the
-representation side, and structured reuse of contact-feasible action
-templates on the execution side.
+The ablation study further clarifies which components of the proposed
+formulation drive the observed performance. Removing \texttt{presearch}
+reduces success from 92.5\% to 85.0\% while increasing planning time and the
+number of simulation calls, supporting that frontier-gap-guided
+prioritization helps reduce unnecessary validation and focus computation on
+useful bottlenecks. Removing \texttt{ModeTable} further reduces success to
+80.0\%, again with higher planning cost and more simulation calls, suggesting
+that structured reuse of contact-conditioned action templates improves search
+efficiency in the same task setting. Together, these ablations indicate that
+the full method benefits from both bottleneck-aware prioritization before
+simulation and structured reuse when converting selected bottlenecks into
+physically testable action candidates.
 
 \subsection{Hardware Execution}
 \label{subsec:hardware}
-
-
-% To verify that the frontier-gap-guided interventions remain valid beyond simulation, we deploy the method on a real two-robot platform in cluttered corridor-construction tasks. Each hardware trial is conducted in a $5\times6\,\mathrm{m}$ workspace and uses $2$ UGVs together with $6$ movable obstacles. Both robots and movables are tracked by motion-capture markers, and the observed poses are streamed to PyBullet for online execution and visualization. Movables are randomly placed at the beginning of each trial to generate diverse clutter. A representative execution is shown in Fig.~\ref{fig:hardware}. Starting from an initially blocked scene, the robots sequentially open a series of frontier gaps until a $W$-clear corridor emerges from start to goal.
-
-To verify that the frontier-gap-guided interventions remain valid beyond
-simulation, we deploy the method on a real two-robot platform in cluttered
-corridor-construction tasks. Each trial is conducted in a $5 \times 6$\,m
-workspace with 2 UGVs and 6 movable obstacles. The scene state is observed
-online through motion capture and used to update execution as well as the
+To verify that the frontier-gap-guided interventions remain
+valid beyond simulation, we deploy the method on a real two-
+robot platform in cluttered corridor-construction tasks. Each
+trial is conducted in a $5\times6\,\mathrm{m}$ workspace with $2$ UGVs and $6$
+movable obstacles. The scene state is observed online through
+motion capture and used to update execution as well as the
 current WCCG throughout the task.
+
+% To verify that the frontier-gap-guided interventions remain valid beyond simulation, we deploy the method on a real two-robot platform in cluttered corridor-construction tasks. Each hardware trial is conducted in a $5\times6\,\mathrm{m}$ workspace and uses $2$ UGVs together with $6$ movable obstacles. Both robots and movables are tracked by motion-capture markers, and the observed poses are streamed to PyBullet for online execution and visualization. Movables are randomly placed at the beginning of each trial to generate diverse clutter.
+
 
 A representative execution is shown in Fig.~\ref{fig:hardware}. Starting from
 an initially blocked scene, the robots sequentially open frontier gaps until a
@@ -74,10 +74,10 @@ WCCG is rebuilt from the observed scene configuration, so the planner
 continues reasoning over the currently reachable bottlenecks rather than
 following a fixed open-loop obstacle-removal sequence. This is important in hardware because small motion deviations can invalidate a purely geometric plan, whereas the updated graph keeps the intervention logic aligned with the evolving scene.
 
-Overall, the hardware experiments support both sides of the proposed
-interface. On the representation side, the updated WCCG continues to expose
-the relevant frontier gaps as the scene evolves. On the execution side, the validated gap-opening actions remain executable in the representative hardware runs. Together, these results show that frontier gaps remain a useful
-interface between clearance reasoning and contact-feasible multi-robot
-pushing in representative real-world executions.
-
+Overall, the representative hardware runs show that frontier-gap-guided
+planning remains aligned with real execution as the scene evolves. The
+updated WCCG continues to reflect the currently reachable bottlenecks, while
+the validated gap-opening actions remain executable under real multi-robot
+interaction. These results support planning--execution alignment for the
+proposed formulation in representative real-world executions.
 
