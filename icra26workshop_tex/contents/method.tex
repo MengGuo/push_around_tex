@@ -1,0 +1,217 @@
+\section{Method}
+\label{sec:method}
+The proposed method is organized around a structured interface between scene-level clearance reasoning and contact-feasible multi-robot execution. Given a start--goal query for a large vehicle in a cluttered environment, it first uses a width-aware representation to test whether a $W$-clear corridor already exists. If passage is blocked, the representation returns a small set of reachable \emph{frontier gaps} that define the current bottlenecks for progress. These bottlenecks are then converted into compact multi-robot intervention queries and selectively validated through physics-informed search. The overall pipeline is shown in Fig.~\ref{fig:overall}.
+
+% \subsection{Clearance Representation and Frontier Gaps}\label{subsec:wccg}
+% We represent the scene with a \emph{$W$-clearance connectivity graph} (WCCG), whose main role is to expose the actionable output needed for path clearing. Rather than recovering a detailed geometric path at every step, the WCCG is used to answer three questions: whether a $W$-clear corridor already exists, which frontier is currently reachable if it does not, and which candidate bottlenecks are exposed on that frontier. The graph is constructed from obstacle geometry in a width-aware manner, using centroid and bridge relations to encode narrow passages and their local widths (Fig.~\ref{fig:presearch}).
+
+% After graph construction, we perform a width-constrained connectivity query between the vehicle start and goal. If the two lie in the same $W$-clear connected region, no clearing action is needed. Otherwise, the query returns the current reachable \emph{frontier loop}, and the bridge--bridge edges enumerated on that loop define the candidate \emph{frontier gaps}, i.e., the first-hop set of reachable bottlenecks considered for further evaluation. These gaps form the interface from representation to candidate intervention generation: instead of reasoning globally over all obstacles, the method focuses only on the reachable bottlenecks that currently limit progress.
+
+% Importantly, frontier gaps are not generic local heuristics or arbitrary narrow passages. They are the first reachable bottlenecks exposed by the width-aware connectivity query, and therefore define the planner's actionable interface to contact-level reasoning. To prioritize them, each candidate gap is assigned a lightweight geometric score that estimates its downstream utility. The score combines the robots' transition cost to the gap, the estimated effort required to widen it, and a short presearch that predicts the cost of subsequent gap crossings toward the goal. The resulting ranking allows later stages to evaluate only the most promising bottlenecks first. Because this ranking is substantially cheaper than simulation-based validation, it serves as an efficient geometric filter before contact candidate generation and physical evaluation (Fig.~\ref{fig:presearch}).
+
+\subsection{Clearance Representation and Frontier Gaps}
+\label{subsec:wccg}
+
+We represent the scene with a \emph{$W$-clearance connectivity graph}
+(WCCG), whose role is not to recover a detailed geometric path at every
+step, but to expose the actionable output needed for path clearing.
+The graph is constructed directly from obstacle geometry in a width-aware
+manner. In particular, it uses centroid nodes to represent obstacle
+components and bridge relations to represent local inter-obstacle passages.
+The resulting graph is
+\begin{equation}
+\mathcal{G}_W \triangleq (\mathcal{V}, \mathcal{E}_c \cup \mathcal{E}_b),
+\end{equation}
+where $\mathcal{V}$ contains centroid and bridge nodes,
+$\mathcal{E}_c$ denotes centroid--bridge edges, and
+$\mathcal{E}_b$ denotes bridge--bridge edges. Each bridge edge is annotated
+with a local width $w_{uv}$, defined by the distance between the associated
+closest points on the two neighboring components. This makes $\mathcal{G}_W$
+a compact width-aware representation of where the scene is already traversable
+and where narrow passages arise.
+
+Given the vehicle start and goal, we perform a width-constrained connectivity
+query on $\mathcal{G}_W$. If the two lie in the same $W$-clear connected
+face, then a feasible corridor already exists and no clearing action is
+needed. Otherwise, the query returns the current reachable \emph{frontier
+loop} $\mathcal{L}$ that separates the two sides under the width constraint.
+The bridge--bridge edges visible on $\mathcal{L}$ define the first-hop set
+of reachable bottlenecks,
+\begin{equation}
+\Gamma_{\mathcal{L}} \triangleq \{g_1, \ldots, g_K\},
+\end{equation}
+where each $g_k$ is a candidate \emph{frontier gap} exposed by the current
+clearance query.
+
+These frontier gaps are the key interface produced by the representation.
+They are not arbitrary narrow passages or generic local heuristics, but the
+first reachable bottlenecks identified by the width-aware connectivity test.
+As a result, subsequent stages do not generate contact actions over the full
+scene. Instead, they operate only on $\Gamma_{\mathcal{L}}$, converting
+these scene-level clearance bottlenecks into compact contact-feasible
+intervention queries for multi-robot pushing.
+\begin{figure*}[t!]
+  \centering
+  \includegraphics[width=0.95\linewidth]{figures/presearch.png}% or {presearch.pdf}
+  \vspace{-0.15in}
+\caption{Illustration of frontier-gap ranking.
+Each panel shows the WCCG with the current reachable face (light blue).
+From the frontier loop, candidate bridge--bridge gaps are enumerated, assigned local first-hop priorities (blue), and refined by short presearch over downstream gap-crossing sequences (red).
+\textbf{Left}: swapping start and goal in the same map produces symmetric ranked sequences.
+\textbf{Right}: the same ranking procedure scales to a denser scene with about 30 obstacles.}
+  \label{fig:presearch}
+   \vspace{-4mm}
+\end{figure*}
+
+\subsection{Contact-Feasible Pushing Candidates}
+\label{subsec:modes}
+
+For a frontier gap $g \in \Gamma_L$ under consideration, the next question is whether this reachable
+bottleneck can be enlarged through executable multi-robot interaction. The role
+of this stage is therefore not to solve a fully general manipulation problem,
+but to convert a scene-level clearance bottleneck into a small set of
+\emph{contact-feasible intervention queries}.
+
+For the movable obstacles adjacent to $g$, we sample a small set of
+short-horizon obstacle motion intents,
+\begin{equation}
+\mathbf{v} \in \mathbb{R}^3,
+\end{equation}
+biased toward enlarging the target gap while allowing limited rotational
+components to account for local geometry. For each sampled intent, we
+instantiate an associated pushing mode
+\begin{equation}
+\boldsymbol{\xi} \triangleq (\mathcal{C}, \mathbf{u}),
+\end{equation}
+
+where $\mathcal{C}$ denotes the robot--object contact configuration and
+$\mathbf{u}$ the associated contact wrench parameters. Each retained candidate
+therefore takes the form $(g,\mathbf{v},\boldsymbol{\xi})$, and the candidate
+set induced by gap $g$ is denoted by $\Xi_g$.
+
+This candidate generation is deliberately gap-conditioned. Instead of searching
+over arbitrary contact actions in the full scene, the method only considers
+obstacle motions and contact configurations that are relevant to the selected
+frontier gap. For each sampled intent, the corresponding mode is generated by a
+sparse constrained optimization over reachable boundary contacts, under local
+friction and wrench feasibility constraints. In this way, each candidate mode
+is explicitly tied to a desired gap-enlarging obstacle motion rather than being
+hand-crafted or sampled without task context. In implementation, efficiency is
+further improved through a persistent \emph{ModeTable}, which caches effective
+mode entries and reuses them across obstacles with similar local geometry.
+
+A candidate is retained only if it passes short-horizon physical validation.
+Specifically, the robots must be able to reach the proposed pre-contact poses,
+avoid collision during approach and pushing, maintain stable contact, and
+induce obstacle motion that actually enlarges the target gap. This validation is
+performed through a short-horizon rollout,
+\begin{equation}
+(\mathbf{s}', \delta_{\texttt{T}}, \delta_{\texttt{J}})
+\triangleq
+\mathsf{EvalSim}\bigl(\mathbf{s}, (g,\mathbf{v},\boldsymbol{\xi})\bigr),
+\end{equation}
+which returns the successor state, time cost, and control effort. As a result,
+this stage does not merely propose plausible pushes; it filters the reachable
+frontier gaps into a compact set of physically testable multi-robot
+interventions for the hybrid search.
+\subsection{Selective Validation in Hybrid Search}
+\label{subsec:pihs}
+
+The representation and contact layers above are coupled through a
+\emph{physics-informed hybrid search} (PIHS). Rather than exhaustively
+simulating all obstacles or all contact actions, PIHS incrementally validates
+only those interventions induced by the currently reachable frontier gaps.
+Each search node is defined as
+\begin{equation}
+\nu \triangleq (s,\pi),
+\end{equation}
+where $s$ is the current system state and $\pi$ stores the partial sequence of
+previously validated gap-opening actions.
+
+At a given node, the method first updates the WCCG and checks whether a
+$W$-clear connection from start to goal already exists. If so, the search
+terminates and returns the schedule stored in $\pi$. Otherwise, the current
+state induces a reachable frontier loop $\mathcal{L}$ and the associated
+candidate frontier gaps $\Gamma_{\mathcal{L}}$. These gaps are ranked by a
+lightweight geometric score,
+\begin{equation}
+\mathrm{score}(g)
+=
+C_{\mathrm{trans}}(g)
++
+C_{\mathrm{wide}}(g)
++
+C_{\mathrm{pre}}(g),
+\end{equation}
+where $C_{\mathrm{trans}}(g)$ denotes the robots' transition cost to the gap,
+$C_{\mathrm{wide}}(g)$ the estimated effort required to widen it, and
+$C_{\mathrm{pre}}(g)$ a short presearch estimate of downstream gap-crossing
+cost toward the goal. The node priority is then defined by
+\begin{equation}
+f(\nu)
+=
+\chi(\nu)
++
+\min_{g \in \Gamma_{\mathcal{L}}}\mathrm{score}(g),
+\end{equation}
+where $\chi(\nu)$ is the cumulative realized cost of the partial schedule.
+This ranking acts as a geometric filter before any contact-level simulation is
+invoked, so that validation is focused on the most promising reachable
+bottlenecks.
+
+For each highly ranked gap $g$, the method calls the gap-conditioned candidate
+generator from Sec.~\ref{subsec:modes} to obtain a compact candidate set $\Xi_g$. Each
+candidate action $\tau \triangleq (g,\mathbf{v},\boldsymbol{\xi})$ is then
+evaluated by the short-horizon rollout defined in Sec.~\ref{subsec:modes}. Only
+candidates that remain collision-free, maintain valid contact, and
+effectively enlarge the target gap are accepted. Successful rollouts produce
+validated successor states, append the corresponding action to the partial
+schedule, and are inserted for further expansion. Candidate batches can also
+be validated in parallel.
+
+PIHS is therefore selective in three senses: the WCCG restricts attention to
+reachable bottlenecks, gap ranking prioritizes which bottlenecks to test
+first, and gap-conditioned candidate generation together with short-horizon
+simulation validates only those interventions worth expanding. Repeating this
+loop incrementally yields a corridor-construction schedule that specifies
+which gaps to open and how to open them. Once a validated successor restores
+$W$-clear connectivity between the start and goal, the accumulated schedule
+$\pi$ defines the final solution.
+
+\begin{table}[t]
+  \centering
+  \begin{threeparttable}
+  \caption{Performance comparison and ablations.}
+  \label{tab:main_ablation}
+  \setlength{\tabcolsep}{2.7pt}
+  \renewcommand{\arraystretch}{0.95}
+  \begin{tabular}{lccccc}
+  \toprule
+  Method / Variant & Succ.(\%) & PT (s) & ET (s) & \#Sims & \#Pushes \\
+  \midrule
+   DFS-WCCG             & 25.0  & $>$100.0  & 51.2     & $>$500    & 8.0   \\
+  SL-Push               & 75.0  & 18.2  & 64.6   & 20.0 & 10.0  \\
+  Rec-NAMO             & 37.5  & 13.3  & 42.4   & 0.0   & 7.0  \\
+  \textbf{FG-Interface (ours)} & \textbf{92.5} & \textbf{10.3} & \textbf{28.6} & \textbf{121.5} & \textbf{6.0} \\
+  \midrule
+  w/o presearch        & 85.0 & 16.9 & 35.2 & 178 & 7.0 \\
+  w/o ModeTable        & 80.0 & 15.1 & 33.4  & 164 & 6.0 \\
+  \bottomrule
+  \end{tabular}
+  \end{threeparttable}
+\end{table}
+
+
+% ========================================
+\begin{figure*}[t!]
+  \centering
+  \includegraphics[width=0.95\linewidth]{figures/hardware_wccg.png}
+  \vspace{-4mm}
+\caption{Real-world pushing experiment with execution--planning alignment.
+\textbf{Top:} snapshots of two robots sequentially opening gaps in a cluttered workspace.
+\textbf{Bottom:} corresponding WCCG overlays, with the current reachable face shown in blue.
+As the scene evolves, the updated graph remains aligned with the observed object motions and supports continued frontier-gap-guided intervention.}
+  \vspace{-4mm}
+  \label{fig:hardware}
+\end{figure*}
+% ========================================

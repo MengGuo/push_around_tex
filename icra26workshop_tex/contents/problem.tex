@@ -1,0 +1,7 @@
+\section{Problem Description}\label{sec:problem}
+We consider a bounded planar workspace containing \emph{immovable structures}, a set of \emph{movable obstacles}, and a small team of robots operating cooperatively. Rather than simply navigating through the scene, the robots actively reconfigure it by pushing selected obstacles. Their goal is to enable an \emph{external vehicle} to travel from a start location to a goal location through a sufficiently wide corridor. Formally, a solution is valid only if there exists a path for the vehicle whose clearance is no smaller than $W$. This requirement defines the task at the level of \emph{corridor existence}, rather than robot-only reachability.
+
+A key distinction from classical clearance planning is that a clearing action is not treated as an abstract obstacle displacement. Instead, each action is represented as a \emph{pushing mode}, which specifies robot-to-contact assignments, contact locations on obstacle boundaries, and the applied forces or body wrench used to induce motion. The resulting planning problem is therefore hybrid in nature: the system must decide \emph{which blocked gap or obstacle to clear} at the discrete level, while simultaneously determining \emph{how to realize that action through contact-feasible pushing} at the continuous level. Collaborative path clearing is thus a contact-rich decision problem, not a purely geometric graph-search problem.
+%==============================================
+%==============================
+
