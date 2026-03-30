@@ -1,83 +1,139 @@
+
 \section{Results and Discussion}
 \label{sec:results}
 
 We evaluate the proposed formulation in cluttered multi-obstacle clearing
-tasks with three objectives: to compare its performance against representative
-baselines, to assess the contribution of frontier-gap-guided prioritization
-and structured contact generation through ablations, and to verify that the
-validated interventions remain executable on hardware.
+tasks with three objectives: to compare it against representative baselines,
+to assess the contribution of frontier-gap-guided prioritization and
+structured contact reuse through ablations, and to verify that the validated
+interventions remain executable on hardware.
+
+
+%==============================
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.95\linewidth]{figures/sim_exp_1col.png}
+  \vspace{-0.15in}
+\caption{Representative simulation run with planning--execution alignment.
+\textbf{Top:} PyBullet snapshots of corridor opening by two robots.
+\textbf{Bottom:} corresponding WCCG overlays with the start face shown in blue.}
+\vspace{-0.1in}
+\label{fig:simloop}
+\end{figure}
+% ========================================
+
 
 \subsection{Quantitative Evidence}
 \label{subsec:quantitative}
 
-All numerical experiments are implemented in Python3 and PyBullet\cite{coumans2019}. The simulation uses a step of $\Delta t=1/240\,\mathrm{s}$ and a control period of $1/40\,\mathrm{s}$. The nominal scenario is an $8\times5\,\mathrm{m}$ bounded workspace in which two robots must clear a passage for the external vehicle through scenes containing $10$--$15$ movable obstacles placed randomly under a minimum separation. Movable obstacles have masses uniformly sampled from $[5,15]\,\mathrm{kg}$, while immovable structures are modeled with zero mass. A trial is counted as successful when a $W$-clear path exists from start to goal and the target reaches its goal disk. For fairness, all baselines are evaluated under the same $W$-clearance criterion and contact model; for the proposed method, each task rollout uses a horizon of $80$ simulation steps, and up to $64$ candidate push tasks are generated per expansion.
+All numerical experiments are implemented in Python3 and
+PyBullet~\cite{coumans2019}. As shown in Fig.~\ref{fig:simloop}, the nominal setting uses an $8 \times 5$\,m
+bounded workspace in which two robots must clear a passage for an external
+vehicle through scenes containing 10--15 randomly placed movable obstacles. A
+trial is counted as successful when a $W$-clear path exists from start to
+goal and the target reaches its goal disk. All baselines are evaluated under
+the same $W$-clearance criterion and contact model.
 
-% All numerical experiments are implemented in Python3 and PyBullet\cite{coumans2019}. The
-% nominal setting uses an $8 \times 5$\,m bounded workspace in which two robots
-% must clear a passage for an external vehicle through scenes containing 10--15
-% randomly placed movable obstacles. A trial is counted as successful when a
-% $W$-clear path exists from start to goal and the target reaches its goal
-% disk. For fairness, all baselines are evaluated under the same $W$-clearance
-% criterion and contact model.
+% ========================================
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=0.95\linewidth]{figures/scalability.png}
+  \vspace{-0.1in}
+ \caption{Scalability in dense clutter with $\boldsymbol{30}$ movable objects.
+\textbf{Top:} snapshots during the path clearing of $24.5$~s.
+\textbf{Bottom:} WCCG overlays with the active face in blue and ranked frontier gaps.}
+\label{fig:scalability}
+\vspace{-0.2in}
+\end{figure}
+% ========================================
 
-Table~\ref{tab:main_ablation} summarizes the main quantitative results. We
-compare the proposed method against three representative baselines:
-\emph{DFS-WCCG}, a simulation-in-the-loop depth-first search guided by the
-WCCG with four fixed axis-aligned pushes for each movable obstacle;
-\emph{SL-Push}, which follows a straight or waypointed corridor from start to
-goal, clears the obstacles intersecting that route, and then validates those
-route-induced pushes with physics; and \emph{Rec-NAMO}, a representative
-traditional NAMO baseline that incrementally improves local traversability
-but often fails to establish a complete $W$-clear corridor for the large
-vehicle. Across the evaluated scenes, the proposed method achieves the
-highest success rate at 92.5\% while also maintaining the lowest combined
-planning and execution time among the successful planners. In contrast,
-\emph{DFS-WCCG} succeeds in only 25.0\% of cases because graph-guided
-branching quickly becomes intractable. \emph{SL-Push} improves physical
-feasibility relative to route-only clearing, but it requires many simulation
-calls and longer action sequences. \emph{Rec-NAMO} is faster than
-simulation-heavy alternatives, yet it often produces only partial progress
-rather than a fully connected $W$-clear passage from start to goal. Taken
-together, these comparisons support the need to couple frontier-gap-guided
-bottleneck reasoning with contact-feasible action generation.
+Table~\ref{tab:main_ablation} summarizes the main results. We compare the
+proposed method against three representative baselines: \emph{DFS-WCCG}, a
+simulation-in-the-loop depth-first search with fixed pushes; \emph{SL-Push},
+which clears obstacles along a route and validates the induced pushes with
+physics; and \emph{Rec-NAMO}, a traditional NAMO-style baseline that improves
+local traversability incrementally. Across the evaluated scenes, the proposed
+method achieves the highest success rate at 92.5\% while also giving the
+lowest combined planning and execution time among the successful planners.
+\emph{DFS-WCCG} suffers from rapid branching growth, \emph{SL-Push} requires
+longer action sequences and more validation, and \emph{Rec-NAMO} often makes
+only partial progress without establishing a complete $W$-clear corridor.
+Overall, the comparison supports coupling frontier-gap-guided bottleneck
+reasoning with contact-feasible action generation.
 
-The ablation study further clarifies which components of the proposed
-formulation drive the observed performance. Removing \texttt{presearch}
-reduces success from 92.5\% to 85.0\% while increasing planning time and the
-number of simulation calls, supporting that frontier-gap-guided
-prioritization helps reduce unnecessary validation and focus computation on
-useful bottlenecks. Removing \texttt{ModeTable} further reduces success to
-80.0\%, again with higher planning cost and more simulation calls, suggesting
-that structured reuse of contact-conditioned action templates improves search
-efficiency in the same task setting. Together, these ablations indicate that
-the full method benefits from both bottleneck-aware prioritization before
-simulation and structured reuse when converting selected bottlenecks into
-physically testable action candidates.
+The ablation study clarifies which parts of the formulation drive this
+performance. Removing \texttt{presearch} reduces success from 92.5\% to 85.0\%
+while increasing planning time and simulation calls, indicating that
+frontier-gap-guided prioritization helps avoid unnecessary validation and
+focus computation on useful bottlenecks. Removing \texttt{ModeTable} further
+reduces success to 80.0\%, again with higher planning cost and more
+simulation calls, suggesting that structured reuse of contact-conditioned
+action templates improves search efficiency in the same task setting.
+Together, these ablations support that the full method benefits from both
+bottleneck-aware prioritization before simulation and structured reuse when
+converting selected bottlenecks into physically testable action candidates.
+
+Lastly, we examine a denser clutter setting in an $8\times5$\,m workspace
+with $30$ movable obstacles. Despite the increased scene density, the method
+maintains a compact branching factor: in Fig.~\ref{fig:scalability}, it
+completes the task with $10$ node expansions out of $115$ visited nodes,
+$312$ short simulation calls, and $7$ executed push tasks, yielding a
+connected $W$-clear corridor. The planning and execution times are
+$21.2$\,s and $24.5$\,s, respectively.
+
+%==============================================
+\begin{table}[b]
+  \centering
+  \begin{threeparttable}
+  \caption{Performance comparison and ablations.}
+  \label{tab:main_ablation}
+  \setlength{\tabcolsep}{2.7pt}
+  \renewcommand{\arraystretch}{0.95}
+  \begin{tabular}{lccccc}
+  \toprule
+  Method / Variant & Succ.(\%) & PT (s) & ET (s) & \#Sims & \#Pushes \\
+  \midrule
+   DFS-WCCG             & 25.0  & $>$100.0  & 51.2     & $>$500    & 8.0   \\
+  SL-Push               & 75.0  & 18.2  & 64.6   & 20.0 & 10.0  \\
+  Rec-NAMO             & 37.5  & 13.3  & 42.4   & 0.0   & 7.0  \\
+  \textbf{FG-Interface (ours)} & \textbf{92.5} & \textbf{10.3} & \textbf{28.6} & \textbf{121.5} & \textbf{6.0} \\
+  \midrule
+  w/o presearch        & 85.0 & 16.9 & 35.2 & 178 & 7.0 \\
+  w/o ModeTable        & 80.0 & 15.1 & 33.4  & 164 & 6.0 \\
+  \bottomrule
+  \end{tabular}
+  \end{threeparttable}
+\end{table}
+%==============================================
+
 
 \subsection{Hardware Execution}
 \label{subsec:hardware}
-To verify that the frontier-gap-guided interventions remain
-valid beyond simulation, we deploy the method on a real two-
-robot platform in cluttered corridor-construction tasks. Each
-trial is conducted in a $5\times6\,\mathrm{m}$ workspace with $2$ UGVs and $6$
-movable obstacles. The scene state is observed online through
-motion capture and used to update execution as well as the
-current WCCG throughout the task.
 
-% To verify that the frontier-gap-guided interventions remain valid beyond simulation, we deploy the method on a real two-robot platform in cluttered corridor-construction tasks. Each hardware trial is conducted in a $5\times6\,\mathrm{m}$ workspace and uses $2$ UGVs together with $6$ movable obstacles. Both robots and movables are tracked by motion-capture markers, and the observed poses are streamed to PyBullet for online execution and visualization. Movables are randomly placed at the beginning of each trial to generate diverse clutter.
-
-
-A representative execution is shown in Fig.~\ref{fig:hardware}. Starting from
-an initially blocked scene, the robots sequentially open frontier gaps until a
-$W$-clear corridor emerges from start to goal. As obstacles are displaced, the
-WCCG is rebuilt from the observed scene configuration, so the planner
-continues reasoning over the currently reachable bottlenecks rather than
-following a fixed open-loop obstacle-removal sequence. This is important in hardware because small motion deviations can invalidate a purely geometric plan, whereas the updated graph keeps the intervention logic aligned with the evolving scene.
-
-Overall, the representative hardware runs show that frontier-gap-guided
-planning remains aligned with real execution as the scene evolves. The
-updated WCCG continues to reflect the currently reachable bottlenecks, while
+To verify that the frontier-gap-guided interventions remain valid beyond
+simulation, we deploy the method on a real two-robot platform in cluttered
+corridor-construction tasks. Each trial is conducted in a $5\times6$\,m
+workspace with $2$ UGVs and $6$ movable obstacles, whose observed poses are
+streamed online for execution and visualization. As shown in
+Fig.~\ref{fig:hardware}, the robots sequentially open frontier gaps until a
+$W$-clear corridor emerges from start to goal. Throughout execution, the WCCG
+is rebuilt from the observed scene configuration, so the planner continues
+reasoning over the currently reachable bottlenecks rather than following a
+fixed open-loop obstacle-removal sequence. The representative runs therefore
+show that the updated WCCG remains aligned with the evolving scene and that
 the validated gap-opening actions remain executable under real multi-robot
-interaction. These results support planning--execution alignment for the
-proposed formulation in representative real-world executions.
+interaction.
 
+
+% ========================================
+\begin{figure}[t!]
+  \centering
+  \includegraphics[width=0.95\linewidth]{figures/hardware_wccg_1col.png}
+  \vspace{-4mm}
+\caption{Representative hardware execution with planning--execution alignment.
+\textbf{Top:} snapshots of two robots sequentially opening frontier gaps in a cluttered workspace.
+\textbf{Bottom:} corresponding WCCG overlays with the current reachable face shown in blue.}
+  \vspace{-4mm}
+  \label{fig:hardware}
+\end{figure}
+% ========================================
