@@ -1,3 +1,19 @@
 \begin{abstract}
-Cluttered path clearing is not only about detecting blockages, but about deciding which width-constrained bottlenecks are worth intervening on and whether they can be opened through executable multi-robot interactions. Existing Navigation Among Movable Obstacles (NAMO) methods mainly reason about obstacle rearrangement at an abstract geometric level, while collaborative pushing methods focus on local contact execution without explicit guidance for multi-obstacle corridor construction. We present frontier gaps as a structured interface that connects these levels by converting reachable clearance bottlenecks into compact, contact-feasible intervention queries. A W-clearance connectivity graph (WCCG) determines whether a traversable corridor already exists and, when it does not, exposes the reachable frontier gaps that block progress. For each selected gap, only gap-conditioned pushing candidates are generated for adjacent movable obstacles, and short-horizon physical simulation selectively validates these induced interventions. Building on this interface, a physics-informed hybrid search prioritizes the most promising candidates. Simulation and hardware results support that frontier-gap-guided planning improves path-clearing reliability while remaining consistent with real multi-robot execution.
+Cluttered path clearing requires more than detecting blockages. It requires
+selecting interventions that can enlarge a width-constrained corridor through
+executable multi-robot interaction. Existing Navigation Among Movable Obstacles
+methods mainly reason about obstacle rearrangement at an abstract geometric
+level, whereas collaborative pushing methods emphasize local contact execution
+without explicit guidance for multi-obstacle corridor construction. This paper
+presents a physics-informed corridor hybrid search, abbreviated PICHS, for
+collaborative path clearing. The search uses a W-clearance connectivity graph,
+abbreviated WCCG, to determine whether a traversable corridor already exists
+and, when it does not, to expose the reachable bottlenecks that limit progress.
+For each selected bottleneck, only gap-conditioned pushing candidates are
+generated for adjacent movable obstacles, and short-horizon physical
+simulation selectively validates the induced interventions. In this
+formulation, frontier gaps serve as an internal search interface rather than
+as the primary algorithmic emphasis. Simulation and hardware results support
+that PICHS improves path-clearing reliability while remaining consistent with
+real multi-robot execution.
 \end{abstract}

@@ -1,236 +1,256 @@
 \section{Method}
 \label{sec:method}
-The proposed formulation is organized around a structured interface between scene-level clearance reasoning and contact-feasible multi-robot execution. Given a start--goal query for a large vehicle in a cluttered environment, it first uses a width-aware representation to test whether a $W$-clear corridor already exists. If passage is blocked, the representation returns a small set of reachable \emph{frontier gaps} that define the current bottlenecks for progress. These bottlenecks are then converted into compact multi-robot intervention queries and selectively validated through physics-informed search. The overall pipeline is shown in Fig.~\ref{fig:overall}.
 
-% \subsection{Clearance Representation and Frontier Gaps}\label{subsec:wccg}
-% We represent the scene with a \emph{$W$-clearance connectivity graph} (WCCG), whose main role is to expose the actionable output needed for path clearing. Rather than recovering a detailed geometric path at every step, the WCCG is used to answer three questions: whether a $W$-clear corridor already exists, which frontier is currently reachable if it does not, and which candidate bottlenecks are exposed on that frontier. The graph is constructed from obstacle geometry in a width-aware manner, using centroid and bridge relations to encode narrow passages and their local widths (Fig.~\ref{fig:presearch}).
+PICHS links scene-level clearance reasoning to contact-feasible multi-robot
+execution. Given a start--goal query for a large vehicle in clutter, PICHS
+first tests whether a~$W$-clear corridor already exists. If passage is
+blocked, it identifies reachable bottlenecks, generates local pushing
+modes only for those bottlenecks, and validates selected interventions
+through simulation. The overall pipeline is shown in
+Fig.~\ref{fig:overall}.
 
-% After graph construction, we perform a width-constrained connectivity query between the vehicle start and goal. If the two lie in the same $W$-clear connected region, no clearing action is needed. Otherwise, the query returns the current reachable \emph{frontier loop}, and the bridge--bridge edges enumerated on that loop define the candidate \emph{frontier gaps}, i.e., the first-hop set of reachable bottlenecks considered for further evaluation. These gaps form the interface from representation to candidate intervention generation: instead of reasoning globally over all obstacles, the method focuses only on the reachable bottlenecks that currently limit progress.
-
-% Importantly, frontier gaps are not generic local heuristics or arbitrary narrow passages. They are the first reachable bottlenecks exposed by the width-aware connectivity query, and therefore define the planner's actionable interface to contact-level reasoning. To prioritize them, each candidate gap is assigned a lightweight geometric score that estimates its downstream utility. The score combines the robots' transition cost to the gap, the estimated effort required to widen it, and a short presearch that predicts the cost of subsequent gap crossings toward the goal. The resulting ranking allows later stages to evaluate only the most promising bottlenecks first. Because this ranking is substantially cheaper than simulation-based validation, it serves as an efficient geometric filter before contact candidate generation and physical evaluation (Fig.~\ref{fig:presearch}).
-
-\subsection{Clearance Representation and Frontier Gaps}
+\subsection{WCCG Representation and Reachable Bottlenecks}
 \label{subsec:frontier}
 
-We represent the scene with a W-clearance connectivity graph (WCCG), whose role
-is not to recover a detailed geometric path at every step, but to expose the
-actionable output needed for path clearing. The graph is constructed directly
-from obstacle geometry in a width-aware manner. In particular, it uses centroid
-nodes to represent obstacle components and bridge relations to represent local
-inter-obstacle passages. The resulting graph is
-\begin{equation}
-\mathcal{G}_W \triangleq (\mathcal{V}, \mathcal{E}_c \cup \mathcal{E}_b),
-\end{equation}
-where $\mathcal{V}$ contains centroid and bridge nodes, $\mathcal{E}_c$ denotes centroid--bridge
-edges, and $\mathcal{E}_b$ denotes bridge--bridge edges. Each bridge edge is annotated
-with a local width $w_{uv}$, defined by the distance between the associated
-closest points on the two neighboring components. This makes $\mathcal{G}_W$ a compact
-width-aware representation of where the scene is already traversable and where
-narrow passages arise.
+The scene is represented by a~$W$-clearance connectivity graph, abbreviated
+WCCG, whose role is to expose the search-relevant clearance structure without
+recovering a detailed geometric path at every step. The graph is constructed
+directly from obstacle geometry in a width-aware manner. Centroid nodes encode
+obstacle components, and bridge relations encode local inter-obstacle
+passages. The resulting graph is defined as
+$\mathcal{G}_W \triangleq (\mathcal{V}, \mathcal{E}_c \cup \mathcal{E}_b)$,
+where~$\mathcal{V}$ contains centroid and bridge nodes,
+$\mathcal{E}_c$ denotes centroid--bridge edges, and
+$\mathcal{E}_b$ denotes bridge--bridge edges. Each bridge edge is annotated
+with a local width~$w_{uv}$, defined by the distance between the associated
+closest points on the two neighboring components. This makes~$\mathcal{G}_W$
+a compact representation of where the scene is already traversable and where
+narrow passages arise. In particular, the WCCG does not attempt to enumerate
+all possible obstacle rearrangements. Its role is to expose the small subset
+of bottlenecks that currently determines whether a~$W$-clear corridor can be
+formed.
 
-Given the vehicle start and goal, we perform a width-constrained connectivity
-query on $\mathcal{G}_W$. If the two lie in the same $W$-clear connected face, then a
-feasible corridor already exists and no clearing action is needed. Equivalently,
-the WCCG answers the following compact connectivity criterion:
+Given the vehicle start and goal, a width-constrained connectivity query is
+performed on~$\mathcal{G}_W$. If the two lie in the same~$W$-clear connected
+face, then a feasible corridor already exists and no clearing action is
+needed, i.e.,
 \begin{equation}\label{eq:wccg-criterion}
-  \big{(}\mathbf{s}_\texttt{V}^{\texttt{S}},\mathbf{s}_\texttt{V}^{\texttt{G}}
-  \; \text{belong to the same face of}\; \mathcal{G}_W\big{)},
+\{\mathbf{s}_{\mathrm{V}}^{\mathrm{S}},\;
+\mathbf{s}_{\mathrm{V}}^{\mathrm{G}}\}
+\emph{ belong to the same face of } \mathcal{G}_W,
 \end{equation}
-If this criterion fails, the query returns the current reachable frontier loop
-$\mathcal{L}$ that separates the two sides under the width constraint. The
-bridge--bridge edges visible on $\mathcal{L}$ define the first-hop set of
-reachable bottlenecks,
-\begin{equation}
-\Gamma_{\mathcal{L}} \triangleq \{g_1, \ldots, g_K\},
-\end{equation}
-where each $g_k$ is a candidate frontier gap exposed by the current clearance
-query.
+which states that the start and goal of the large vehicle are already
+connected through the same width-feasible free-space region.
+If~\eqref{eq:wccg-criterion} does not hold, the query returns the current
+reachable frontier loop~$\mathcal{L}$ that separates the two sides under the
+width constraint. The bridge--bridge edges visible on~$\mathcal{L}$ define
+the first-hop set of reachable bottlenecks,
+$\Gamma_{\mathcal{L}} \triangleq \{g_1, \cdots, g_K\}$, where each~$g_k$ is a
+candidate gap exposed by the current clearance query.
+In PICHS, these frontier gaps are an internal search interface rather than the
+primary methodological contribution. Their role is to translate the global
+clearance query into a compact local decision set. More precisely, each
+$g \in \Gamma_{\mathcal{L}}$ identifies a reachable place where a small
+increase in local clearance may change the global connectivity outcome.
+Subsequent stages therefore do not generate contact actions over the full
+scene. Instead, they operate only on~$\Gamma_{\mathcal{L}}$, which converts
+scene-level bottlenecks into compact contact-feasible queries for
+multi-robot pushing.
 
-These frontier gaps are the key interface produced by the representation. They
-are not arbitrary narrow passages or generic local heuristics, but the first
-reachable bottlenecks identified by the width-aware connectivity test. As a
-result, subsequent stages do not generate contact actions over the full scene.
-Instead, they operate only on $\Gamma_{\mathcal{L}}$, converting these
-scene-level clearance bottlenecks into compact contact-feasible intervention
-queries for multi-robot pushing.
-
-\subsection{Contact-Feasible Pushing Candidates}
+\subsection{Gap-Conditioned Pushing Mode Generation}
 \label{subsec:modes}
 
-For a frontier gap $g \in \Gamma_L$ under consideration, the next question is
-whether this reachable bottleneck can be enlarged through executable
-multi-robot interaction. The role of this stage is therefore not to solve a
-fully general manipulation problem, but to convert a scene-level clearance
-bottleneck into a small set of \emph{contact-feasible intervention queries}.
+For a frontier gap~$g \in \Gamma_{\mathcal{L}}$ under consideration, the next
+question is whether this reachable bottleneck can be enlarged through
+executable multi-robot interaction. The role of this stage is therefore not to
+solve a fully general manipulation problem, but to convert a scene-level
+clearance bottleneck into a small set of contact-feasible intervention
+queries.
 
-Let $\Omega_m$ denote one of the movable obstacles adjacent to $g$. For each
-such obstacle, we sample a small set of short-horizon obstacle motion intents
-$\{\mathbf{v}_m^k\}_{k=1}^{K_m}$, where
-$\mathbf{v}_m^k \triangleq (v_x,v_y,\omega)\in\mathbb{R}^3$, biased toward
-local gap-opening directions while allowing a small number of rotational
-components to account for local geometry. These sampled directions define the
-candidate pushing intents for the obstacles adjacent to $g$.
+Let~$\Omega_m$ denote one of the movable obstacles adjacent to~$g$. For each
+such obstacle, a small set of short-horizon obstacle motion intents
+$\{\mathbf{v}_m^k\}_{k=1}^{K_m}$ is sampled, where
+$\mathbf{v}_m^k \triangleq (v_x, v_y, \omega) \in \mathbb{R}^3$. The sampled
+directions are biased toward local gap-opening motions while allowing some
+rotational components to account for local geometry. This bias is important.
+It steers the candidate set toward motions that are likely to widen the
+selected bottleneck, while still preserving enough directional variation to
+capture cases in which rotation or oblique contact produces a better opening
+effect than pure translation. These sampled directions are the candidate
+pushing intents for the obstacles adjacent to~$g$.
 
-For each sampled direction $\mathbf{v}_m^k$, we then generate an associated
-pushing mode $\boldsymbol{\xi}\triangleq(\mathcal{C},\mathbf{u})$, where
+For each sampled direction~$\mathbf{v}_m^k$, an associated pushing mode
+$\boldsymbol{\xi} \triangleq (\mathcal{C}, \mathbf{u})$ is generated, where
 $\mathcal{C}$ denotes the robot--object contact configuration and
-$\mathbf{u}$ the associated contact wrench parameters. Let
-$\mathbf{v}_m^{k,\mathrm{B}}\in\mathbb{R}^3$ denote $\mathbf{v}_m^k$
-expressed in the body frame of $\Omega_m$. The quality of a candidate mode is
-measured by the primary and multi-directional feasibility losses
+$\mathbf{u}$ denotes the associated contact wrench parameters. Let
+$\mathbf{v}_m^{k,\mathrm{B}} \in \mathbb{R}^3$ denote~$\mathbf{v}_m^k$
+expressed in the body frame of~$\Omega_m$. This body-frame representation
+makes the feasibility score depend on the local contact geometry of the object
+rather than on the global scene orientation. A pushing mode is evaluated by
+the primary and multi-directional feasibility losses
 \begin{equation}
 \label{eq:mode-feasibility}
 \begin{aligned}
-\mathrm{J}_{\texttt{F}}^m
-(\boldsymbol{\xi},\mathbf{v}_m^{k,\mathrm{B}})
+\mathrm{J}_{\mathrm{F}}^m
+(\boldsymbol{\xi}, \mathbf{v}_m^{k,\mathrm{B}})
 &\triangleq
-\underset{\mathbf{q}_{m,\boldsymbol{\xi}} \in
-\mathrm{Q}_{m,\boldsymbol{\xi}}}{\textbf{min}}
+\min_{\mathbf{q}_{m,\boldsymbol{\xi}} \in
+\mathrm{Q}_{m,\boldsymbol{\xi}}}
 \left\|
 \mathbf{q}_{m,\boldsymbol{\xi}} +
 Q_\mu^m(\mathbf{v}_m^{k,\mathrm{B}})
-\right\|_1,\\
-\mathrm{J}_{\texttt{MF}}^m
-(\boldsymbol{\xi},\mathbf{v}_m^{k,\mathrm{B}})
+\right\|_1, \\
+\mathrm{J}_{\mathrm{MF}}^m
+(\boldsymbol{\xi}, \mathbf{v}_m^{k,\mathrm{B}})
 &\triangleq
 \sum_{\mathbf{v}_d \in \mathcal{D}} w_d \cdot
-\mathrm{J}_{\texttt{F}}^m(\boldsymbol{\xi},\mathbf{v}_d),
+\mathrm{J}_{\mathrm{F}}^m(\boldsymbol{\xi}, \mathbf{v}_d),
 \end{aligned}
 \end{equation}
-where $\mathbf{q}_{m,\boldsymbol{\xi}} \in \mathbb{R}^3$ is the body wrench
-induced by mode $\boldsymbol{\xi}$,
+where~$\mathbf{q}_{m,\boldsymbol{\xi}} \in \mathbb{R}^3$ is a feasible body
+wrench induced by mode~$\boldsymbol{\xi}$,
 $\mathrm{Q}_{m,\boldsymbol{\xi}} \subseteq \mathbb{R}^3$ is the corresponding
 admissible wrench set under local contact and friction constraints,
 $Q_\mu^m(\mathbf{v}_m^{k,\mathrm{B}})$ is the quasi-static friction wrench of
-$\Omega_m$ along $\mathbf{v}_m^{k,\mathrm{B}}$, and
-$\mathcal{D}$ with weights $w_d$ augments the desired direction by a small set
-of neighboring basis velocities. Small $\mathrm{J}_{\texttt{F}}^m$ is
-necessary for force feasibility, while small $\mathrm{J}_{\texttt{MF}}^m$
-indicates a more robust mode. Accordingly, the associated mode
-$\boldsymbol{\xi}_m^k \triangleq (\mathcal{C}_m^k,\mathbf{u}_m^k)$ is obtained
-by sparse constrained optimization over reachable contacts on
-$\partial\Omega_m$, minimizing
-$\mathrm{J}_{\texttt{MF}}^m(\boldsymbol{\xi},\mathbf{v}_m^{k,\mathrm{B}})$
+$\Omega_m$ along~$\mathbf{v}_m^{k,\mathrm{B}}$, and~$\mathcal{D}$ with weights
+$w_d$ augments the desired direction by neighboring basis velocities.
+Similar measures are also adopted
+in~\cite{tang2024collaborative,tang2025pushingbots}.
+Small~$\mathrm{J}_{\mathrm{F}}^m$ is necessary for force feasibility, whereas
+small~$\mathrm{J}_{\mathrm{MF}}^m$ indicates a mode that remains effective
+under small directional perturbations.
+Accordingly, the associated mode
+is obtained by sparse constrained optimization over reachable contacts on
+$\partial \Omega_m$ and is defined as
+$\boldsymbol{\xi}_m^k \triangleq (\mathcal{C}_m^k, \mathbf{u}_m^k)$. The
+optimization minimizes
+$\mathrm{J}_{\mathrm{MF}}^m(\boldsymbol{\xi}, \mathbf{v}_m^{k,\mathrm{B}})$
 under local friction and wrench constraints. Only the best few pairs
-$(\mathbf{v}_m^k,\boldsymbol{\xi}_m^k)$ are retained, while a persistent
+$(\mathbf{v}_m^k, \boldsymbol{\xi}_m^k)$ are retained, while a persistent
 \emph{ModeTable} reuses effective entries across similar local geometries.
-Each retained candidate therefore takes the form
-$(g,\mathbf{v},\boldsymbol{\xi})$, and the gap-induced candidate set is
-denoted by $\Xi_g$.
+This reuse reduces repeated contact optimization for geometrically similar
+local arrangements and keeps the candidate set compact. Each retained pushing
+candidate therefore takes the form~$(g, \mathbf{v}, \boldsymbol{\xi})$, and
+the gap-induced candidate set is denoted by~$\Xi_g$.
 
-A candidate is retained only if it passes short-horizon physical validation.
-Specifically, the robots must be able to reach the proposed pre-contact poses,
+A candidate pushing mode is retained only if it passes short-horizon physical
+validation. The robots must be able to reach the proposed pre-contact poses,
 avoid collision during approach and pushing, maintain stable contact, and
-induce obstacle motion that actually enlarges the target gap. This validation is
-performed through a short-horizon rollout,
+induce obstacle motion that actually enlarges the target gap. This validation
+is performed by the short-horizon rollout
 \begin{equation}
 \label{eq:sim}
-(\mathbf{s}', \delta_{\texttt{T}}, \delta_{\texttt{J}})
+(\mathbf{s}', \delta_T, \delta_J)
 \triangleq
-\mathsf{EvalSim}\bigl(\mathbf{s}, (g,\mathbf{v},\boldsymbol{\xi})\bigr),
+\mathsf{EvalSim}\bigl(\mathbf{s}, (g, \mathbf{v}, \boldsymbol{\xi})\bigr),
 \end{equation}
-which returns the successor state, time cost, and control effort. As a result,
-this stage does not enumerate contact actions over the full scene; it converts
-the reachable frontier gap into a compact set of physically testable
-multi-robot interventions for the hybrid search.
+which returns the successor state, time cost, and control effort. The
+validation step is important because low analytical feasibility loss alone
+does not guarantee executable multi-robot behavior in dense clutter. This
+stage therefore does not enumerate contact actions over the full scene.
+Instead, it converts each reachable bottleneck into a compact set of
+physically testable multi-robot interventions for the search.
 
-%==============================================
 \begin{figure}[t!]
   \centering
-  \includegraphics[width=0.98\linewidth]{figures/presearch_1col.png}% or {presearch.pdf}
+  \includegraphics[width=0.98\linewidth]{figures/presearch_1col.png}
   \vspace{-0.15in}
-\caption{
-Frontier-gap ranking under swapped start--goal queries in the same scene.
-Each panel shows the WCCG with the current reachable face in light blue.
-Candidate gaps on the frontier loop are ranked by local priority (blue) and
-refined by short presearch (red), yielding symmetric sequences under the
-reversed query.
-}
+  \caption{
+    Ranked reachable bottlenecks under swapped start--goal queries in the same
+    scene. Each panel shows the WCCG with the current reachable face in light
+    blue. Candidate gaps on the frontier loop are ranked by local priority in
+    blue and refined by short presearch in red.
+  }
   \label{fig:presearch}
-   \vspace{-4mm}
+  \vspace{-4mm}
 \end{figure}
-%==============================================
 
-\subsection{Selective Validation in Hybrid Search}
-\label{subsec:pihs}
-At node $\nu$, the method first checks whether the current state satisfies the
+\subsection{Selective Expansion in PICHS}
+\label{subsec:pichs}
+
+At node~$\nu$, PICHS first checks whether the current state satisfies the
 connectivity criterion in~\eqref{eq:wccg-criterion}. If not, the updated WCCG
-induces a reachable frontier loop $\mathcal{L}_\nu$ and the associated
-candidate gaps $\Gamma_{\mathcal{L}_\nu}$. As illustrated in
+induces a reachable frontier loop~$\mathcal{L}_\nu$ and the associated
+candidate gaps~$\Gamma_{\mathcal{L}_\nu}$. As illustrated in
 Fig.~\ref{fig:presearch}, these gaps are ranked by the predicted
 cost-to-connect
 \begin{equation}
 \label{eq:gap-score}
 \widehat{\mathsf{Cost}}(g)
 \triangleq
-\mathsf{C}(g \mid \mathcal{L}_\nu,\mathbf{s}_{\mathcal{R}})
+\mathsf{C}(g \mid \mathcal{L}_\nu, \mathbf{s}_{\mathcal{R}})
 +
 \mathsf{C}_{\mathrm{pre}}(g),
 \end{equation}
-where $\mathsf{C}(g \mid \mathcal{L}_\nu,\mathbf{s}_{\mathcal{R}})$ combines
+where~$\mathsf{C}(g \mid \mathcal{L}_\nu, \mathbf{s}_{\mathcal{R}})$ combines
 the robots' transition cost to the gap and the estimated effort required to
-widen it, and $\mathsf{C}_{\mathrm{pre}}(g)$ is a short presearch estimate of
-downstream gap-crossing cost toward the goal. The ranked list is
-\begin{equation}
-\label{eq:gap-rank}
-\mathsf{Rank}(\nu)
+widen it, and~$\mathsf{C}_{\mathrm{pre}}(g)$ is a short presearch estimate of
+downstream gap-crossing cost toward the goal. The first term therefore
+captures how expensive the candidate is to activate from the current state,
+whereas the second term estimates whether opening that gap is likely to
+improve progress toward a full corridor.
+The ranked list is defined by
+$\mathsf{Rank}(\nu)
 \triangleq
 \operatorname{argsort}_{g \in \Gamma_{\mathcal{L}_\nu}}
-\widehat{\mathsf{Cost}}(g),
-\end{equation}
-and the node priority is
-\begin{equation}
-\label{eq:node-priority}
+\widehat{\mathsf{Cost}}(g)$,
+and the node priority is defined by
+$\label{eq:node-priority}
 f(\nu)
-=
+\triangleq
 \chi(\nu)
 +
-\min_{g \in \mathsf{Rank}(\nu)} \widehat{\mathsf{Cost}}(g),
-\end{equation}
-which balances realized cost and predicted remaining effort.
-Algorithm~\ref{alg:pihs} summarizes the resulting selective expansion loop.
+\min_{g \in \mathsf{Rank}(\nu)} \widehat{\mathsf{Cost}}(g)$,
+where~$\chi(\nu)$ is the realized path cost accumulated from the root to node
+$\nu$. Equation~\eqref{eq:node-priority} therefore balances what has already
+been spent against the best currently predicted remaining cost. This balance
+encourages PICHS to prefer nodes that are both physically promising and
+globally efficient. Alg.~\ref{alg:pichs} summarizes the resulting selective
+expansion loop.
 
-%==============================================
 \begin{algorithm}[t!]
-\caption{Selective Validation in Physics-Informed Hybrid Search}
-\label{alg:pihs}
+\caption{Selective Expansion in PICHS}
+\label{alg:pichs}
 \SetAlgoLined
-\KwIn{$\mathbf{s}_0$, $\alpha$, $\mathsf{EvalSim}(\cdot)$}
+\KwIn{$\mathbf{s}_0$,~$\alpha$,~$\mathsf{EvalSim}(\cdot)$}
 \KwOut{$\pi^\star$}
-$\nu_0\gets(\mathbf{s}_0,\emptyset),\;\chi(\nu_0)=0$\;
-Initialize $\mathcal{Q}$ by~\eqref{eq:node-priority}\;
-\While{$\mathcal{Q}\neq\emptyset$}{
-  $\nu=(\mathbf{s},\pi)\gets\mathcal{Q}.\texttt{pop\_min}()$\;
+$\nu_0 \gets (\mathbf{s}_0, \emptyset),\; \chi(\nu_0) = 0$\;
+Initialize~$\mathcal{Q}$ by~\eqref{eq:node-priority}\;
+\While{$\mathcal{Q} \neq \emptyset$}{
+ $\nu = (\mathbf{s}, \pi) \gets \mathcal{Q}.\texttt{pop\_min}()$\;
   \If{$\mathbf{s}$ satisfies~\eqref{eq:wccg-criterion}}{
-    $\pi^\star\gets\pi$, \textbf{break}\;
+   $\pi^\star \gets \pi$, \textbf{break}\;
   }
-  Update the WCCG and construct $\mathsf{Rank}(\nu)$\;
-  \ForEach{$g\in\mathsf{Rank}(\nu)$}{
-    Generate $\Xi_g$\;
-    \ForEach{$(\mathbf{v},\boldsymbol{\xi})\in\Xi_g$}{
-      $\tau\gets(g,\mathbf{v},\boldsymbol{\xi})$\;
-      $(\mathbf{s}',\delta_{\texttt{T}},\delta_{\texttt{J}})
-      \gets\mathsf{EvalSim}(\mathbf{s},\tau)$\;
+  Update the WCCG and construct~$\mathsf{Rank}(\nu)$\;
+  \ForEach{$g \in \mathsf{Rank}(\nu)$}{
+    Generate~$\Xi_g$\;
+    \ForEach{$(\mathbf{v}, \boldsymbol{\xi}) \in \Xi_g$}{
+     $\tau \triangleq (g, \mathbf{v}, \boldsymbol{\xi})$\;
+     $(\mathbf{s}', \delta_T, \delta_J)
+      \gets \mathsf{EvalSim}(\mathbf{s}, \tau)$\;
       \If{success}{
-        $\nu'\gets(\mathbf{s}',\pi\cup\{\tau\})$\;
-        $\chi(\nu')\gets\chi(\nu)+\delta_{\texttt{T}}+\alpha\,\delta_{\texttt{J}}$\;
-        $\mathcal{Q}.\texttt{push}(\nu')$\;
+       $\nu' \gets (\mathbf{s}', \pi \cup \{\tau\})$\;
+       $\chi(\nu') \gets
+        \chi(\nu) + \delta_T + \alpha \, \delta_J$\;
+       $\mathcal{Q}.\texttt{push}(\nu')$\;
       }
     }
   }
 }
 \Return{$\pi^\star$}\;
 \end{algorithm}
-%==============================================
 
-For each ranked gap $g \in \mathsf{Rank}(\nu)$, the search calls the
-gap-conditioned candidate generator in Sec.~\ref{subsec:modes}. There,
-constrained mode generation guided by~\eqref{eq:mode-feasibility} produces a
-compact candidate set $\Xi_g$, and each candidate
-$\tau \triangleq (g,\mathbf{v},\boldsymbol{\xi})$ is evaluated by the
-short-horizon rollout in~\eqref{eq:sim}. PIHS is therefore selective in three
-senses: the WCCG restricts attention to reachable bottlenecks, gap ranking
-prioritizes which bottlenecks to test first, and candidate generation together
-with short-horizon simulation validates only those interventions worth
-expanding. Repeating this loop yields a corridor-construction schedule that
+For each ranked gap~$g \in \mathsf{Rank}(\nu)$, PICHS calls the gap-conditioned
+mode generator in Sec.~\ref{subsec:modes}. There, constrained mode
+generation guided by~\eqref{eq:mode-feasibility} produces a compact
+set~$\Xi_g$, and each candidate
+$\tau \triangleq (g, \mathbf{v}, \boldsymbol{\xi})$ is evaluated by the
+short-horizon rollout in~\eqref{eq:sim}. PICHS is selective in three senses.
+The WCCG restricts to reachable bottlenecks. Gap ranking prioritizes
+which bottlenecks to test first. Candidate generation together with
+short-horizon simulation validates only those interventions worth expanding.
+This selectivity is the main reason PICHS remains tractable in dense
+clutter. It reduces the branching factor before simulation, and it reserves
+physics evaluation for actions that are  relevant to corridor
+construction. Repeating this loop yields a clearing schedule that
 specifies which gaps to open and how to open them.

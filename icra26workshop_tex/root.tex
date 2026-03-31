@@ -1,22 +1,17 @@
-\documentclass[letterpaper, 10pt, journal]{IEEEtran}  % Comment this line out if you need a4paper
-%\documentclass[a4paper, 10pt, conference]{ieeeconf}% Use this line for a4 paper
+\documentclass[letterpaper, 10pt, journal]{IEEEtran}
+%
+% Comment this line out if you need a4paper.
+%
+%\documentclass[a4paper, 10pt, conference]{ieeeconf}
 
-                                                          % you want to use the \thanks command
-
-
-%In case you encounter the following error:
-%Error 1010 The PDF file may be corrupt (unable to open PDF file) OR
-%Error 1000 An error occurred while parsing a contents stream. Unable to analyze the PDF file.
-%This is a known problem with pdfLaTeX conversion filter. The file cannot be opened with acrobat reader
-%Please use one of the alternatives below to circumvent this error by uncommenting one or the other
+% In case you encounter the following error:
+% Error 1010 The PDF file may be corrupt, or
+% Error 1000 An error occurred while parsing a contents stream.
+% This is a known problem with the pdfLaTeX conversion filter.
+% Please use one of the alternatives below by uncommenting one line.
 %\pdfobjcompresslevel=0
 %\pdfminorversion=4
 
-% See the \addtolength command later in the file to balance the column lengths
-% on the last page of the document
-
-% numbers option provides compact numerical references in the text.
-% \usepackage{natbib}
 \let\proof\relax
 \let\endproof\relax
 \usepackage{amsthm}
@@ -25,6 +20,7 @@
 \usepackage[bookmarks=true]{hyperref}
 \usepackage{xcolor}
 \usepackage{hyperref}
+\hypersetup{hidelinks}
 \usepackage{amsmath, amssymb}
 \usepackage{amsfonts}
 \usepackage{graphicx}
@@ -45,9 +41,6 @@
 \usetikzlibrary{arrows.meta,positioning,fit}
 \usetikzlibrary{calc}
 
-%%============================
-%%============================
-
 \newtheorem{theorem}{Theorem}
 \newtheorem{proposition}{Proposition}
 \newtheorem{lemma}[theorem]{Lemma}
@@ -65,28 +58,18 @@
 \newcommand{\question}[1]{\textcolor{orange}{Q: #1}}
 \newcommand{\change}[1]{\textcolor{black}{#1}}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%
-
-
-% \title{\LARGE \bf
-%   PushAround: Collaborative Path Clearing via \\
-%   Physics-Informed Hybrid Search
-% }
-
 \title{\LARGE \bf
-  Frontier Gaps as an Interface Between Clearance Reasoning  \\
-  and Contact-Feasible Multi-Robot Pushing
-
+  Collaborative Path Clearing via\\
+  Physics-Informed Corridor Hybrid Search
 }
 
 % \author{Zili Tang$^1$, Zhongyuan Li$^1$,
-%   Zhishao Qiao$^1$ and Meng Guo$^1$ %<-this % stops a space
+%   Zhishao Qiao$^1$ and Meng Guo$^1$
 %   \thanks{The authors are with: $^1$the College of Engineering,
 %     Peking University, China;
 %     This work was supported by the National Natural Science Foundation
-%     of China (NSFC) under grants 62203017, T2121002, U2241214.
-%     Contact: {\tt\small meng.guo@pku.edu.cn}.}% <-this % stops a space
+%     of China under grants 62203017, T2121002, U2241214.
+%     Contact: {\tt\small meng.guo@pku.edu.cn}.}
 % }
 
 \begin{document}
@@ -94,24 +77,12 @@
 \thispagestyle{empty}
 \pagestyle{empty}
 
-
-%%========================================
-
-
-%%========================================
 \input{contents/abstract.tex}
-%%========================================
 \input{contents/introduction.tex}
-%%========================================
 \input{contents/method.tex}
-%%========================================
 \input{contents/result.tex}
-%%========================================
 \input{contents/conclusion.tex}
-%%========================================
 
-
-%========================================
 \bibliographystyle{IEEEtran}
 \bibliography{contents/references}
 
