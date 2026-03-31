@@ -1,19 +1,20 @@
 \begin{abstract}
-Cluttered path clearing requires more than detecting blockages. It requires
-selecting interventions that can enlarge a width-constrained corridor through
-executable multi-robot interaction. Existing Navigation Among Movable Obstacles
-methods mainly reason about obstacle rearrangement at an abstract geometric
-level, whereas collaborative pushing methods emphasize local contact execution
-without explicit guidance for multi-obstacle corridor construction. This paper
-presents a physics-informed corridor hybrid search, abbreviated PICHS, for
-collaborative path clearing. The search uses a W-clearance connectivity graph,
-abbreviated WCCG, to determine whether a traversable corridor already exists
-and, when it does not, to expose the reachable bottlenecks that limit progress.
-For each selected bottleneck, only gap-conditioned pushing candidates are
-generated for adjacent movable obstacles, and short-horizon physical
-simulation selectively validates the induced interventions. In this
-formulation, frontier gaps serve as an internal search interface rather than
-as the primary algorithmic emphasis. Simulation and hardware results support
-that PICHS improves path-clearing reliability while remaining consistent with
-real multi-robot execution.
+Contact-rich path clearing in cluttered environments requires 
+more than detecting blocked routes: it requires selecting interventions 
+that can reliably enlarge a width-constrained corridor through executable 
+multi-robot physical interaction. Existing Navigation Among Movable Obstacles(NAMO) methods 
+typically reason about obstacle rearrangement at an abstract geometric level, 
+while collaborative pushing methods focus on local contact execution without explicitly 
+addressing how local interactions should be chosen to produce global corridor connectivity. 
+We present a physics-informed corridor search framework, PICHS, 
+for contact-feasible collaborative path clearing. 
+PICHS uses a W-clearance connectivity graph (WCCG) to determine whether a traversable corridor already exists and, 
+when it does not, to expose the reachable bottlenecks that currently limit progress. 
+For each selected bottleneck, the method generates only gap-conditioned pushing candidates 
+for adjacent movable obstacles and uses short-horizon physical simulation to validate 
+whether the induced multi-robot interactions are executable and corridor-improving. 
+This tightly couples scene-level bottleneck selection with contact-feasible action generation, 
+reducing unnecessary branching while preserving consistency with real physical execution. 
+Simulation and hardware results show that PICHS improves path-clearing reliability in dense clutter 
+and provides a practical interface between global clearance reasoning and contact-rich multi-robot control.
 \end{abstract}
