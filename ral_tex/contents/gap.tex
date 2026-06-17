@@ -1,102 +1,64 @@
 %==============================================
-\subsection{Ranking of Potential Blocking Gaps}\label{subsec:gap}
+\subsection{WCCG-guided Gap Sequencing}\label{subsec:gap}
 
-When the condition in~\eqref{eq:wccg_criterion} fails, the vehicle cannot
-reach~$\mathbf{s}_\texttt{V}^{\texttt{G}}$ from
-$\mathbf{s}_\texttt{V}^{\texttt{S}}$ through a~$W$--clear path
-$\mathcal{P}^W_\texttt{V}$. In this case, the planner must prioritize
-\emph{blocking gaps} on the reachable frontier of~$\mathcal{G}_W$.
-As shown in Fig.~\ref{fig:presearch}, the goal of
-this module is to provide an ordered list of such gaps, ranked by their
-predicted cost to eventually yield a feasible path, which serves
-as a critical guidance for the hybrid search in the sequel.
+When the WCCG clearance certificate in~\eqref{eq:wccg_criterion} is not
+satisfied, the planner must decide which narrow gap should be cleared first.
+Passing all frontier gaps to the physics-informed hybrid search~(PIHS) would
+create many unnecessary pushing tasks and simulation rollouts. Gap sequencing is
+a lightweight WCCG-level lookahead that ranks frontier gaps before any contact
+mode or physical rollout is generated.
 
-\subsubsection{Frontier Extraction and Candidate Gaps}
-A BugPlanner query on~$\mathcal{G}_W$, given
-$(\mathbf{s}_\texttt{V}^{\texttt{S}},\mathbf{s}_\texttt{V}^{\texttt{G}},W)$,
-either confirms connectivity or returns a counter--clockwise frontier loop
-$\mathcal{L}$ that separates the two endpoints. The bridge--bridge edges
-visible on~$\mathcal{L}$ form the first--hop candidate set
-$\Gamma_\mathcal{L}\triangleq\{g_1,\cdots,g_K\}$,
-where each~$g_k$ is a reachable candidate gap. These candidates are the inputs
-to the ranking module, while the output will be an ordered list of the same
-set sorted by predicted cost.
+\subsubsection{Search state and expansion}
+A WCCG tracing query from a current source~$S_\ell$ toward the goal~$G$ either
+reaches~$G$ or returns a frontier loop~$\Gamma_\ell$. The bridge--bridge edges
+on~$\Gamma_\ell$ are candidate portal gaps. A sequencing node stores only a
+partial gap sequence~$\mathbf{g}_{1:\ell}\triangleq(g_1,\cdots,g_\ell)$ and
+the current tracing source~$S_\ell$; it does not include contact points, robot
+motions, or object trajectories. Expanding a node selects one portal gap on the
+current frontier loop, moves the tracing source to the opposite side of that
+gap, and invokes the WCCG tracing query again. Nodes are expanded in a
+best-first manner with a fixed beam width and maximum sequence length.
 
-\subsubsection{Evaluation for Immediate Cost}
-Each candidate~$g\in\Gamma_\mathcal{L}$ is evaluated by combining the
-cost for the robots to reach the gap and the effort required to widen it.
-Let~$\mathbf{s}_{\mathcal{R}}$ be the current robot positions,
-and~$\mathbf{o}_g$ as the outside insertion point of gap~$g$. The
-resulting one--hop cost is given by:
-\begin{equation}\label{eq:step_cost}
-\mathsf{C}\big(g \mid \mathcal{L}, \mathbf{s}_{\mathcal{R}}\big)
-=\lambda_\texttt{t}\,\mathsf{C}_\texttt{t}\!\left(\mathbf{s}_{\mathcal{R}},\mathbf{o}_g\right)
-+\lambda_\texttt{p}\,\mathsf{C}_\texttt{p}(g),
+\subsubsection{Transition cost}
+The cost of opening a portal gap is estimated by a recursive geometric
+clearing computation. For each side of a gap, adjacent movable objects are
+tested as possible clearing objects, and the estimate accounts for the required
+opening displacement, object mass, friction, and recursively detected blockers
+along the swept motion. This gives $\mathsf{C}_{\mathrm{gp}}(g,\mathbf{s})$ for
+opening gap~$g$ at state~$\mathbf{s}$. When consecutive gaps can be improved by
+compatible motions of the same movable object, their sequence cost is corrected
+to avoid double-counting the same clearing action. Candidate gaps are expanded
+in increasing order of this estimated clearing cost, with a weak goal-distance
+tie breaker based on $\|\mathbf{p}_g-\mathbf{s}_{\texttt{V}}^{\texttt{G}}\|$,
+where~$\mathbf{p}_g$ is the representative point of~$g$.
+
+\subsubsection{Output and PIHS interface}
+A completed sequencing node is one whose last WCCG tracing query reaches~$G$.
+Let~$\mathfrak{G}(S,G)$ denote the completed sequences visited under the search
+budget. The W-clearance cost-to-go estimate is
+\begin{equation}\label{eq:state_c2g}
+\widehat{\mathsf{J}}_{\mathrm{clr}}(\mathbf{s})\triangleq{}
+\min_{\mathbf{g}\in\mathfrak{G}(S,G)}
+\sum_{\ell=1}^{L}
+\mathsf{C}_{\mathrm{gp}}(g_{\ell},\mathbf{s}_{\ell}),
 \end{equation}
-where~$\lambda_\texttt{t},\lambda_\texttt{p}>0$ are weighting factors
-for the transition and pushing costs, respectively;
-function~$\mathsf{C}_\texttt{t}(\cdot)$ denotes the collision-free
-distance between two points;
-and the function~$\mathsf{C}_\texttt{p}(\cdot)$ measures the widening effort,
-which increases when the gap is narrower than~$W$,
-or when the adjacent obstacles are heavier as scaled by the  mass of adjacent movable
-obstacles.
+If the WCCG clearance
+certificate in~\eqref{eq:wccg_criterion} already succeeds, then
+$\widehat{\mathsf{J}}_{\mathrm{clr}}(\mathbf{s})=0$.
+The resulting gap sequence is not a physical plan because it has not specified
+contact modes or been validated by simulation. Only the first portal gap of the
+best sequence is passed to the task sampler. PIHS then generates concrete
+pushing candidates for this gap and validates them through contact-mode
+generation and short-horizon physics rollout. The remaining gaps are
+reconsidered after the accepted rollout updates the WCCG.
 
-
-
-\subsubsection{Long-term Cost w.r.t. Goal}
-Furthermore, to prioritize gaps closer to the goal, a heuristic is added to the evaluation,
-i.e.,
-$h(g)=\eta\,\big\|\mathbf{o}(g)-\mathbf{s}_\texttt{V}^{\texttt{G}}\big\|$,
-with the scaling constant~$\eta>0$.
-Lastly, a short A$^\star$-style presearch crosses
-each candidate gap, recomputes the next frontier, and continues for a limited
-beam width and depth. The \emph{cost-to-connect} is predicted by:
-\begin{equation}\label{eq:pred_cost}
-\widehat{\mathsf{Cost}}(g)\triangleq
-\mathsf{C}\!\big(g \mid \mathcal{L},\mathbf{s}_{\mathcal{R}}\big)
-+\!\!\!\sum_{g'\in\Pi^\star(g)}\!\!\!\big{\{}\mathsf{C}(g' \mid \cdot)+h(g')\big{\}},
-\end{equation}
-where~$\Pi^\star(g)$ is the sequence of subsequent gaps discovered after
-virtually crossing~$g$;
-the dots indicate updated inputs along that rollout;
-and the scalar score~$\widehat{\mathsf{Cost}}(g)>0$ for each candidate gap.
-Consequently,
-the final output of this module is the ranked list of candidate gaps, i.e.,
-$\textsf{Rank}\big(\Gamma_\mathcal{L}\big)
-\triangleq \textbf{argsort}_{g\in\Gamma_\mathcal{L}}\widehat{\mathsf{Cost}}(g)$,
-which sorts~$\Gamma_\mathcal{L}$ in ascending predicted cost. This
-ordered set is passed to the hybrid search module, such that only the
-promising gaps are expanded first.
-
-\begin{remark}\label{remark:gap}
-Efficiency of the above ranking procedure can be improved by
-caching frontier loops, storing the transitions
-$(\mathcal{L},g)\mapsto\mathcal{L}'$, and accelerating the edge queries with
-axis-aligned bounding-box culling. With a small beam width and depth,
-the runtime of ranking remains negligible compared to
-the cost of simulation-based validation. \hfill$\blacksquare$
+\begin{remark} 
+Unlike path-first recursive clearing methods that commit to a geometric path 
+and then remove obstacles from that path, 
+the proposed planner first searches over WCCG-induced gap sequences. 
+Each sequence represents a topological clearance alternative and is scored 
+by the estimated difficulty of opening its blocking gaps. 
+A lightweight reference polyline is derived only after a sequence is selected, 
+and is used to bias local push-task generation rather than 
+define a fixed corridor to be cleared. \hfill $\blacksquare$ 
 \end{remark}
-
-
-
-
-%% %------------------------------
-%% \begin{algorithm}[t]
-%% \small
-%% \caption{Frontier Presearch for Gap Ranking (compact)}
-%% \label{alg:gap-ranking}
-%% \DontPrintSemicolon
-%% \SetKwInOut{Input}{In}\SetKwInOut{Output}{Out}
-%% \Input{$\mathbf{s}^{\texttt{S}}$,~$\mathbf{s}^{\texttt{G}}$, WCCG,~$\lambda_{\mathrm{trans}}$,~$\lambda_{\mathrm{push}}$}
-%% \Output{First-hop gaps ranked by predicted cost}
-%%~$(\mathcal{L},\texttt{conn})\!\leftarrow\!\texttt{BugFrontier}(\mathbf{s}^{\texttt{S}},\mathbf{s}^{\texttt{G}})$;\;
-%% \If{\texttt{conn}}{\Return~$\emptyset$}
-%%~$\mathcal{C}\!\leftarrow$ bridge–bridge gaps on~$\mathcal{L}$;\;
-%% \For{$g\in\mathcal{C}$}{
-%%  ~$J_1\!\leftarrow\!\lambda_{\mathrm{trans}}\mathsf{C}_{\mathrm{trans}}+\lambda_{\mathrm{push}}\kappa(g)[\max(0,W-w(g))+\delta]$;\;
-%%  ~$(\texttt{succ},J_{\mathrm{tail}})\!\leftarrow\!\texttt{PresearchAfter}(g)$;\;
-%%  ~$\widehat{\mathrm{Cost}}(g)\!\leftarrow\!J_1+\big(\texttt{succ}?J_{\mathrm{tail}}:\infty\big)$;\;
-%% }
-%% \Return~$\mathrm{argsort}_{g\in\mathcal{C}}\widehat{\mathrm{Cost}}(g)$ (asc.)\;
-%% \end{algorithm}

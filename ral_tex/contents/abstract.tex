@@ -1,19 +1,21 @@
 \begin{abstract}
 The passage of large vehicles in cluttered environments is often blocked by
-movable obstacles, motivating the use of mobile robot teams to proactively
-clear traversable corridors. Existing approaches to Navigation Among Movable
-Obstacles (NAMO) mainly plan abstract sequences of obstacle displacements but
-neglect physical feasibility, i.e., overlooking robot dimensions, obstacle mass,
-contact geometry, and required forces, which often leads to strategies that
-fail in execution. This work introduces {PushAround}, a
-physics-informed framework that guarantees feasible path clearing by coupling
-geometric reasoning with dynamic validation. The core novelty is a hybrid
-search that jointly determines which obstacles to displace and how to push
-them, including contact points, directions, and forces. The framework builds a
-W--clearance connectivity graph (WCCG) to test vehicle passage, ranks frontier gaps to
-prioritize obstacle-clearing actions, and incrementally expands feasible plans
-by validating potential pushing modes. This integration ensures that solutions are both
-geometrically valid and physically executable. Efficiency is achieved by
-combining compact geometric reasoning with prioritized evaluation, thus avoiding exhaustive simulation.
-Extensive simulations and hardware experiments demonstrate robustness, efficiency and physical validity.
+movable obstacles, motivating mobile robot teams to proactively clear
+traversable corridors. Existing Navigation Among Movable Obstacles (NAMO)
+approaches mainly plan abstract obstacle-displacement sequences, but often
+neglect physical feasibility, including robot dimensions, obstacle mass,
+contact geometry, and required pushing forces. This abstraction can produce
+plans that are geometrically valid but physically unrealizable. This work
+introduces PushAround, a physics-informed framework that couples geometric
+corridor reasoning with simulation-validated collaborative pushing. The method
+builds a W--clearance connectivity graph (WCCG) for fast passage tests,
+extracts and ranks reachable frontier gaps, and expands a search tree whose
+node value combines the predicted cost-to-go with the progress induced by the
+latest validated push. Candidate push tasks are generated from local clearance
+requirements, contact-mode priors, velocity deduplication, and short-horizon
+parallel simulation. Thus, computation is focused on pushes that are likely to
+improve WCCG connectivity, while each accepted action remains executable under
+robot, object, and contact constraints. Simulations, density-scaling tests, and
+hardware experiments demonstrate robust corridor construction in dense clutter
+and physically consistent multi-robot execution.
 \end{abstract}

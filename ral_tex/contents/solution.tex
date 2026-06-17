@@ -1,20 +1,18 @@
 % %% ========================================
 \section{Proposed Solution}\label{sec:solution}
 
-The PushAround framework enables collaborative multi-robot pushing with physical
-feasibility. As shown in Fig.~\ref{fig:overall},
-it first constructs a W-Clearance Connectivity Graph as described in
-Sec.~\ref{subsec:wccg}, which captures workspace connectivity and identifies
-blocking gaps. A gap-ranking strategy in Sec.~\ref{subsec:gap} then prioritizes
-obstacle-clearing actions.
-The key component of mode generation and evaluation is described in Sec.~\ref{subsec:push}.
-These parts are adopted in a simulation-in-the-loop hybrid search in Sec.~\ref{subsec:simloop}.
-This search expands a configuration-space
-tree and validates pushes by parallel simulation. The overall flow and possible
-extensions are summarized in Sec.~\ref{subsec:overall}.
-
-
-
+The PushAround framework enables collaborative multi-robot path clearing with
+physics-informed feasibility checks. As shown in Fig.~\ref{fig:overall}, it
+first constructs a W--Clearance Connectivity Graph in Sec.~\ref{subsec:wccg} to
+capture width-constrained workspace connectivity and identify blocking frontier
+gaps. Section~\ref{subsec:gap} runs bounded WCCG presearch and selects the next
+blocking gap by predicted connection cost. Section~\ref{subsec:push} generates
+local push tasks from clearance-driven
+velocity sampling, contact-mode optimization, quick-pass filtering, and
+short-horizon simulation. Section~\ref{subsec:simloop} integrates these modules
+into the implementation-aligned hybrid search, where node selection follows the
+predicted cost-to-go minus validated push effect. Execution and complexity are
+summarized in Sec.~\ref{subsec:overall}.
 
 % %% ========================================
 \input{contents/wccg.tex}
@@ -26,4 +24,4 @@ extensions are summarized in Sec.~\ref{subsec:overall}.
 \input{contents/simloop.tex}
 % %%========================================
 \input{contents/overall.tex}
-% %%========================================
+% %%==============================
