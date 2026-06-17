@@ -1,75 +1,139 @@
 %==============================================
 \subsection{Physics-Informed Hybrid Search}\label{subsec:simloop}
 
-As shown in Fig.~\ref{fig:PIHS},
-the proposed physics-informed hybrid search (PIHS)
-couples high-level decisions about blocking gaps with
-low-level feasibility of multi-robot pushing.
-Unlike purely geometric planners,
-this procedure simultaneously determines a sequence of gaps to clear
-and physically-feasible pushing strategies.
-Parallel physics simulation is embedded so that strategies are evaluated simultaneously.
-Algorithmic details are summarized in Alg.~\ref{alg:push}
-and explained below.
+As shown in Fig.~\ref{fig:PIHS}, the proposed physics-informed hybrid search
+(PIHS) couples WCCG-guided gap sequencing, recursive push-task generation,
+contact-mode optimization, and short-horizon physics rollout. A search node is a
+simulated system snapshot. Push tasks label the edges of the search tree: a task
+selected at a snapshot is evaluated by physics simulation and produces one or
+more successor snapshots. Auxiliary records, including the parent pointer,
+the incoming push task, the gap-sequencing cache, the accumulated push effect,
+and the accumulated execution cost, are stored only for queue ordering and
+solution reconstruction. Thus, WCCG proposes clearance opportunities through
+selected portal gaps, while all node transitions are generated and validated by
+physics simulation.
 
-\subsubsection{Tree and Initialization}
-The search tree~$\mathcal{T}$ is composed of nodes
-$\nu\triangleq(\mathbf{s},\pi)$, where~$\mathbf{s}$ is the current system
-state of all robots and movables in~\eqref{eq:transition},
-and~$\pi$ the partial pushing strategy in~\eqref{eq:problem}.
-Two global functions are
-maintained:~$\mathsf{Rank}(\nu)$ stores a ranked list of candidate gaps at this
-node together with their exploration status, derived from~\eqref{eq:pred_cost};
-and~$\chi(\nu)$ returns the cumulative execution cost
-from the root to~$\nu$.
-The root is initialized as~$\nu_0\triangleq(\mathbf{s}_0,\emptyset)$,
-where~$\mathbf{s}_0$ is the initial system state.
-At initialization,~$\chi(\nu_0)=0$, and
-$\mathsf{Rank}(\nu_0)$ is constructed by first computing the frontier loop
-$\mathcal{L}_\nu$ associated with~$\mathbf{s}_0$, then extracting the visible
-gaps~$\Gamma_{\mathcal{L}_\nu}$, and finally ranking them by their predicted
-cost-to-connect.
+\subsubsection{Tree Initialization and Node Value}
+The search tree~$\mathcal{T}$ contains snapshot nodes indexed by~$\nu$, each
+associated with a full system state~$\mathbf{s}_\nu$ in~\eqref{eq:transition}.
+For a non-root node, let~$\nu^-$ be its parent and~$\tau_\nu$ be the incoming
+push task that generates~$\mathbf{s}_\nu$ from~$\mathbf{s}_{\nu^-}$ through the
+simulation evaluation in~\eqref{eq:sim}. The accepted task sequence is not part
+of the node state; it is recovered by tracing the incoming edge labels from a
+terminal node back to the root.
 
-\subsubsection{Node Selection}
-At each iteration, the node with minimum best-first priority is selected from
-the queue. Priority balances realized cost and estimated remaining effort:
-\begin{equation}\label{eq:priority}
-  f(\nu)\triangleq \chi(\nu)+\underset{g\in \textsf{Rank}(\nu)}{\textbf{min}}
-  \widehat{\mathsf{Cost}}(g),
+For the simulated edge~$\nu^-\xrightarrow{\tau_\nu}\nu$, the accumulated
+push-effect score is updated by
+\begin{equation}\label{eq:push_effect}
+\begin{aligned}
+\mathsf{E}(\nu)
+&\triangleq
+\min\{\mathsf{E}_{\max},
+\mathsf{E}(\nu^-)+\Delta\mathsf{E}(\nu^-,\nu)\},\\
+\Delta\mathsf{E}(\nu^-,\nu)
+&\triangleq
+\Delta\mathsf{E}_{\mathrm{obs}}(\mathbf{s}_{\nu^-},\mathbf{s}_{\nu})\\
+&\quad
++b_g\mathbb{I}\{d_g^-\le W+\epsilon<d_g\}
++\gamma_g(d_g-d_g^-),
+\end{aligned}
 \end{equation}
-where~$\chi(\nu)$ is the cumulative execution cost so far, and the second term
-is the minimum predicted remaining cost among the unexplored gaps of~$\nu$.
-This scoring ensures that nodes are expanded in an order that jointly accounts
-for physical effort already incurred and the most promising future actions.
+where~$\mathsf{E}_{\max}$ is a finite cap, which can be set to~$\infty$ when
+no clipping is used. The term
+$\Delta\mathsf{E}_{\mathrm{obs}}(\mathbf{s}_{\nu^-},\mathbf{s}_{\nu})$
+measures the weighted change of object poses between the parent and child
+snapshots. The quantities~$d_g^-$ and~$d_g$ are the selected gap widths before
+and after the rollout, while~$b_g,\gamma_g\ge0$ reward first opening the gap
+beyond~$W+\epsilon$ and further enlarging it. For endpoint-clearance tasks,
+the gap-width terms in~\eqref{eq:push_effect} are omitted. This score is only a
+search heuristic; physical validity is still decided by the rollout checks
+in~\eqref{eq:sim}.
 
+The accumulated execution cost along the same branch is updated by
+\begin{equation}\label{eq:exec_cost}
+\begin{aligned}
+\mathsf{C}(\nu)
+&\triangleq
+\mathsf{C}(\nu^-)+\Delta\mathsf{C}(\nu^-,\nu),\\
+\Delta\mathsf{C}(\nu^-,\nu)
+&\triangleq
+T_{\mathrm{roll}}(\nu^-,\nu)
++\lambda_{\mathrm{tr}}\widehat{C}_{\mathrm{tr}}(\tau_\nu;\mathbf{s}_{\nu^-}),
+\end{aligned}
+\end{equation}
+where~$T_{\mathrm{roll}}$ is the rollout duration or the corresponding number of
+control steps, and~$\widehat{C}_{\mathrm{tr}}$ estimates the robot-transfer
+cost for reaching the contact configuration of~$\tau_\nu$. The open queue uses
+\begin{equation}\label{eq:node_value}
+f(\nu)\triangleq
+\overline{\mathsf{J}}_{\mathrm{clr}}(\mathbf{s}_\nu)
++(1-\beta)\overline{\mathsf{C}}(\nu)
+-\beta\overline{\mathsf{E}}(\nu),
+\end{equation}
+where~$\overline{\mathsf{J}}_{\mathrm{clr}}$ is the normalized W-clearance
+cost-to-go estimate from~\eqref{eq:state_c2g}, while
+$\overline{\mathsf{C}}$ and~$\overline{\mathsf{E}}$ are normalized branch cost
+and push-effect scores. The parameter~$\beta\in[0,1]$ controls the search
+bias: large~$\beta$ favors aggressive feasibility search in dense scenes,
+whereas small~$\beta$ gives higher priority to low-cost strategies once
+feasible passages are easier to find. Duplicate quantized snapshots are
+filtered by keeping the shallowest occurrence.
+
+\subsubsection{Expansion by Lazy Recursive Task Batches}
+At each iteration, the node with minimum~\eqref{eq:node_value} is popped and
+WCCG-guided gap sequencing is run on its snapshot~$\mathbf{s}_\nu$. If the WCCG
+clearance certificate in~\eqref{eq:wccg_criterion} already succeeds, the task
+sequence reconstructed from the root to~$\nu$ is returned. If an endpoint is
+blocked, endpoint-clearance tasks are sampled by treating the blocked endpoint
+as a virtual obstacle. Otherwise, the first portal gap of the best gap sequence
+is selected. The task sampler first emits direct pushing tasks for the selected
+gap. If these rollouts break the target gap, improve the WCCG clearance
+estimate, or exceed the lazy-progress threshold, recursive expansion is skipped.
+Recursive blocker-clearing tasks are released only when the direct batch makes
+no sufficient progress, or immediately when the same target gap is revisited and
+eager direct-plus-recursive sampling is triggered. Each accepted rollout creates
+a child snapshot node labeled by the push task that generated it. Successful
+children are sorted by~\eqref{eq:node_value}, limited by the per-expansion child
+budget, and inserted into an open queue capped by a fixed maximum size.
 
 %==============================================
 \begin{algorithm}[t!]
 \caption{Physics-Informed Hybrid Search}\label{alg:push}
 \SetAlgoLined
-\KwIn{$\mathbf{s}_0$,~$\alpha$,~$\mathsf{EvalSim}(\cdot)$,~$W$--criterion by~\eqref{eq:wccg_criterion}}
-\KwOut{$\pi^\star$}
-\tcc{Initialization}
-$\nu_0\gets(\mathbf{s}_0,\emptyset),\;\chi(\nu_0)=0$\;
-Init~$\mathcal{Q}$ by~\eqref{eq:priority}\;
-\While{not terminated}{
- $\nu\gets\mathcal{Q}.\texttt{pop\_min}()$ by~\eqref{eq:priority}\;
-  \ForEach{$g\in\mathsf{Rank}(\nu)$}{
-    \ForEach{$(\mathbf{v},\boldsymbol{\xi})\in\Xi_g$}{
-   $\tau=(g,\mathbf{v},\boldsymbol{\xi})$\;
-   $(\mathbf{s}',\delta_T,\delta_J)\gets\mathsf{EvalSim}(\nu,\tau)$ by~\eqref{eq:sim}\;
-    \If{success}{
-     $\nu'\gets(\mathbf{s}',\pi\cup\{\tau\})$\;
-     $\chi(\nu')\gets\chi(\nu)+\delta_\texttt{T}+\alpha\,\delta_\texttt{J}$\;
-     $\mathcal{Q}.\texttt{push}(\nu')$\;
-      }
+\KwIn{$\mathbf{s}_0$, clearance~$W$, child budget~$B$, greediness~$\beta$,
+simulator~$\mathsf{EvalSim}$}
+\KwOut{push-task sequence~$\pi^\star$}
+create root node~$\nu_0$ with~$\mathbf{s}_{\nu_0}\gets\mathbf{s}_0$,
+$\mathsf{E}(\nu_0)\gets0$, $\mathsf{C}(\nu_0)\gets0$,
+$\mathcal{Q}\gets\{\nu_0\}$\;
+\While{$\mathcal{Q}\neq\emptyset$}{
+  $\nu\gets\mathcal{Q}.\texttt{pop\_min}()$ by~\eqref{eq:node_value}\;
+  $\mathcal{R}_{\nu}\gets\texttt{GapSequencing}(\mathbf{s}_{\nu})$\;
+  \If{$\mathbf{s}_{\nu}$ satisfies~\eqref{eq:wccg_criterion}}{
+    \Return~$\texttt{TraceTasks}(\nu)$\;
+  }
+  \eIf{an endpoint is blocked in $\mathcal{R}_{\nu}$}{
+    $\mathcal{B}\gets\texttt{SampleEndpointTasks}(\mathbf{s}_{\nu},B)$\;
+    $\mathcal{C}\gets\texttt{EvalBatch}(\mathcal{B},\mathbf{s}_{\nu})$\;
+  }{
+    $g^\star\gets\texttt{FirstGap}(\mathcal{R}_{\nu})$\;
+    $\mathcal{B}_{\mathrm{d}}\gets\texttt{SampleDirectTasks}(g^\star,B)$\;
+    $\mathcal{C}\gets\texttt{EvalBatch}(\mathcal{B}_{\mathrm{d}},\mathbf{s}_{\nu})$\;
+    \If{$\mathcal{C}$ yields no lazy progress}{
+      $\mathcal{B}_{\mathrm{r}}\gets\texttt{SampleRecursiveTasks}(g^\star,B)$\;
+      $\mathcal{C}\gets\mathcal{C}\cup
+      \texttt{EvalBatch}(\mathcal{B}_{\mathrm{r}},\mathbf{s}_{\nu})$\;
     }
   }
-  \If{$\mathbf{s}'$ admits~$\mathcal{P}^W_{\texttt{V}}$ by~\eqref{eq:wccg_criterion}}{
-   ~$\pi^\star\gets\pi'$, \textbf{break}\;
+  \ForEach{$(\tau,\mathbf{s}',\rho)\in\mathcal{C}$}{
+    create child node~$\nu'$ with~$\mathbf{s}_{\nu'}\gets\mathbf{s}'$,
+    parent~$\nu$, and incoming task~$\tau$\;
+    update~$\mathsf{E}(\nu')$, $\mathsf{C}(\nu')$, and~$f(\nu')$\;
+    $\mathcal{Q}.\texttt{push}(\nu')$\;
   }
+  trim duplicate snapshots and cap~$\mathcal{Q}$\;
 }
-\Return~$\pi^\star$;
+\Return~failure\;
 \end{algorithm}
 %==============================================
 
@@ -81,56 +145,23 @@ Init~$\mathcal{Q}$ by~\eqref{eq:priority}\;
 \caption{Execution--planning alignment in the main scenario.
 \textbf{Top:}~$5$ PyBullet snapshots as~$2$ robots push a cylindrical object.
 \textbf{Bottom:} corresponding WCCG overlays with the start face in blue.
-The task moves the object from \(\mathbf{s}^{\texttt{S}}_{\texttt{V}}=(1,4)\) to \(\mathbf{s}^{\texttt{G}}_{\texttt{V}}=(7,2)\).
-In the final state,
-the start face contains \(G\), matching the executed trajectory and confirming success.}
+The task moves the object from
+\(\mathbf{s}^{\texttt{S}}_{\texttt{V}}=(1,4)\) to
+\(\mathbf{s}^{\texttt{G}}_{\texttt{V}}=(7,2)\).
+In the final state, the start face contains~$G$, matching the executed
+trajectory and confirming success.}
 \vspace{-0.1in}
 \label{fig:simloop}
 \end{figure*}
 % ========================================
 
-% ========================================
-\subsubsection{Node Expansion with Parallel Simulation}
-Let the selected node be~$\nu \triangleq (\mathbf{s},\pi)$. For each ranked gap
-$g \in \mathsf{Rank}(\nu)$, mode optimization by~\eqref{eq:mode-feasibility}
-provides a candidate strategy set
-$\Xi_g \triangleq \{(\mathbf{v},\boldsymbol{\xi})\}$ for the adjacent movable
-obstacle. Thus, expansion is prioritized first by the gap order in
-$\mathsf{Rank}(\nu)$, and then by the candidate ordering within~$\Xi_g$.
-Each candidate strategy~$(\mathbf{v},\boldsymbol{\xi}) \in \Xi_g$ is first
-checked by a geometric quick-pass and, if it passes, evaluated by the
-short-horizon rollout in~\eqref{eq:sim}. A successful evaluation yields
-$(\mathbf{s}',\delta_{\texttt{T}},\delta_{\texttt{J}})$, from which a child
-node~$\nu' \triangleq (\mathbf{s}',\pi')$ is created by appending
-$\tau \triangleq (g,\mathbf{v},\boldsymbol{\xi})$ to the current partial
-schedule~$\pi$.
-The cumulative cost is updated by
-\[
-  \chi(\nu') \triangleq \chi(\nu) + \widehat{\mathsf{C}}(\nu,\tau),
-  \]
-  where~$\widehat{\mathsf{C}}(\nu,\tau)\triangleq
-  \delta_{\texttt{T}} + \alpha\,\delta_{\texttt{J}}$
-is the realized incremental cost.
-Note that all candidates in the current batch are evaluated
-\emph{concurrently in parallel},
-and a single expansion can produce multiple validated successors.
-
-
-\subsubsection{Termination}
-Termination occurs when a node~$\nu$ reaches a state~$\mathbf{s}$ for which a
-$W$--clear path~$\mathcal{P}^W_\texttt{V}$ exists from
-$\mathbf{s}_\texttt{V}^{\texttt{S}}$ to~$\mathbf{s}_\texttt{V}^{\texttt{G}}$
-by~\eqref{eq:wccg_criterion}. Thus, the schedule~$\pi$
-stored in~$\nu$ constitutes a complete solution to~\eqref{eq:problem}, encoding
-both the sequence of gaps to clear and the pushing strategies
-that realize them.
-
-\begin{remark}\label{remark:simloop}
-Efficiency of the hybrid search above owes to parallel simulation
-and mode reuse. At each expansion,
-multiple strategies are evaluated concurrently, producing several successors at
-once. Moreover, effective strategy entries from~\eqref{eq:mode-feasibility} are
-stored in a persistent table of pushing modes (ModeTable),
-which can be reused for obstacles with similar local
-geometry, reducing repeated optimization and physics simulation. \hfill$\blacksquare$
-\end{remark}
+\subsubsection{Termination and Replanning}
+Termination occurs when a popped node~$\nu$ reaches a snapshot~$\mathbf{s}_\nu$
+for which the WCCG clearance certificate in~\eqref{eq:wccg_criterion} succeeds.
+The solution~$\pi^\star$ is obtained by tracing the incoming push-task labels
+from~$\nu$ to the root, and constitutes a complete solution
+to~\eqref{eq:problem}. During execution, the WCCG, the gap-sequencing cache,
+and reusable ModeTable entries are updated after each accepted task. If object
+drift, transition blockage, or contact loss invalidates the remaining prefix,
+the search is restarted from the observed snapshot while preserving failed task
+signatures and reusable mode entries.

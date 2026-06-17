@@ -1,0 +1,162 @@
+[
+    {
+        "label": "annotations",
+        "importPath": "__future__",
+        "description": "__future__",
+        "isExtraImport": true,
+        "detail": "__future__",
+        "documentation": {}
+    },
+    {
+        "label": "Path",
+        "importPath": "pathlib",
+        "description": "pathlib",
+        "isExtraImport": true,
+        "detail": "pathlib",
+        "documentation": {}
+    },
+    {
+        "label": "math",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "math",
+        "description": "math",
+        "detail": "math",
+        "documentation": {}
+    },
+    {
+        "label": "numpy",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "numpy",
+        "description": "numpy",
+        "detail": "numpy",
+        "documentation": {}
+    },
+    {
+        "label": "pandas",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "pandas",
+        "description": "pandas",
+        "detail": "pandas",
+        "documentation": {}
+    },
+    {
+        "label": "matplotlib",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "matplotlib",
+        "description": "matplotlib",
+        "detail": "matplotlib",
+        "documentation": {}
+    },
+    {
+        "label": "matplotlib.pyplot",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "matplotlib.pyplot",
+        "description": "matplotlib.pyplot",
+        "detail": "matplotlib.pyplot",
+        "documentation": {}
+    },
+    {
+        "label": "summarize",
+        "kind": 2,
+        "importPath": "ral_tex.scripts.plot_density_scaling",
+        "description": "ral_tex.scripts.plot_density_scaling",
+        "peekOfCode": "def summarize(raw: pd.DataFrame) -> pd.DataFrame:\n    df = raw.copy()\n    if KEEP_COUNTS is not None:\n        df = df[df[\"obstacle_count\"].isin(KEEP_COUNTS)].copy()\n    for col in [\"success\", \"planning_time\", \"trial_timeout_sec\", \"obstacle_count\"]:\n        df[col] = _safe_numeric(df[col])\n    rows = []\n    for (variant, label, n), group in df.groupby([\"policy_variant\", \"policy_label\", \"obstacle_count\"], sort=False):\n        success = group[\"success\"].fillna(0).to_numpy(float) > 0.5\n        capped = _cap_unsuccessful(",
+        "detail": "ral_tex.scripts.plot_density_scaling",
+        "documentation": {}
+    },
+    {
+        "label": "make_plot",
+        "kind": 2,
+        "importPath": "ral_tex.scripts.plot_density_scaling",
+        "description": "ral_tex.scripts.plot_density_scaling",
+        "peekOfCode": "def make_plot(summary: pd.DataFrame) -> None:\n    plt.rcParams.update({\n        \"font.family\": \"serif\",\n        \"font.serif\": [\"Times New Roman\", \"Times\", \"Nimbus Roman\", \"DejaVu Serif\"],\n        \"mathtext.fontset\": \"dejavuserif\",\n        \"axes.labelsize\": 7.2,\n        \"xtick.labelsize\": 6.4,\n        \"ytick.labelsize\": 6.4,\n        \"legend.fontsize\": 5.8,\n        \"pdf.fonttype\": 42,",
+        "detail": "ral_tex.scripts.plot_density_scaling",
+        "documentation": {}
+    },
+    {
+        "label": "main",
+        "kind": 2,
+        "importPath": "ral_tex.scripts.plot_density_scaling",
+        "description": "ral_tex.scripts.plot_density_scaling",
+        "peekOfCode": "def main() -> None:\n    raw = pd.read_csv(RAW)\n    summary = summarize(raw)\n    SUMMARY.parent.mkdir(parents=True, exist_ok=True)\n    summary.to_csv(SUMMARY, index=False)\n    make_plot(summary)\nif __name__ == \"__main__\":\n    main()",
+        "detail": "ral_tex.scripts.plot_density_scaling",
+        "documentation": {}
+    },
+    {
+        "label": "ROOT",
+        "kind": 5,
+        "importPath": "ral_tex.scripts.plot_density_scaling",
+        "description": "ral_tex.scripts.plot_density_scaling",
+        "peekOfCode": "ROOT = Path(__file__).resolve().parents[1]\nRAW = ROOT / \"data\" / \"raw_results_all.csv\"\nSUMMARY = ROOT / \"data\" / \"density_scaling_summary.csv\"\nOUT_PDF = ROOT / \"figures\" / \"density_scaling_curve.pdf\"\nOUT_PNG = ROOT / \"figures\" / \"density_scaling_curve.png\"\nPOLICY_ORDER = [\"ours\", \"ours_no_recursive\", \"slpush\", \"dfs\", \"recursive\"]\nLABELS = {\n    \"ours\": \"Ours\",\n    \"ours_no_recursive\": \"Ours w/o recursive\",\n    \"slpush\": \"SLPush\",",
+        "detail": "ral_tex.scripts.plot_density_scaling",
+        "documentation": {}
+    },
+    {
+        "label": "RAW",
+        "kind": 5,
+        "importPath": "ral_tex.scripts.plot_density_scaling",
+        "description": "ral_tex.scripts.plot_density_scaling",
+        "peekOfCode": "RAW = ROOT / \"data\" / \"raw_results_all.csv\"\nSUMMARY = ROOT / \"data\" / \"density_scaling_summary.csv\"\nOUT_PDF = ROOT / \"figures\" / \"density_scaling_curve.pdf\"\nOUT_PNG = ROOT / \"figures\" / \"density_scaling_curve.png\"\nPOLICY_ORDER = [\"ours\", \"ours_no_recursive\", \"slpush\", \"dfs\", \"recursive\"]\nLABELS = {\n    \"ours\": \"Ours\",\n    \"ours_no_recursive\": \"Ours w/o recursive\",\n    \"slpush\": \"SLPush\",\n    \"dfs\": \"DFS\",",
+        "detail": "ral_tex.scripts.plot_density_scaling",
+        "documentation": {}
+    },
+    {
+        "label": "SUMMARY",
+        "kind": 5,
+        "importPath": "ral_tex.scripts.plot_density_scaling",
+        "description": "ral_tex.scripts.plot_density_scaling",
+        "peekOfCode": "SUMMARY = ROOT / \"data\" / \"density_scaling_summary.csv\"\nOUT_PDF = ROOT / \"figures\" / \"density_scaling_curve.pdf\"\nOUT_PNG = ROOT / \"figures\" / \"density_scaling_curve.png\"\nPOLICY_ORDER = [\"ours\", \"ours_no_recursive\", \"slpush\", \"dfs\", \"recursive\"]\nLABELS = {\n    \"ours\": \"Ours\",\n    \"ours_no_recursive\": \"Ours w/o recursive\",\n    \"slpush\": \"SLPush\",\n    \"dfs\": \"DFS\",\n    \"recursive\": \"Recursive\",",
+        "detail": "ral_tex.scripts.plot_density_scaling",
+        "documentation": {}
+    },
+    {
+        "label": "OUT_PDF",
+        "kind": 5,
+        "importPath": "ral_tex.scripts.plot_density_scaling",
+        "description": "ral_tex.scripts.plot_density_scaling",
+        "peekOfCode": "OUT_PDF = ROOT / \"figures\" / \"density_scaling_curve.pdf\"\nOUT_PNG = ROOT / \"figures\" / \"density_scaling_curve.png\"\nPOLICY_ORDER = [\"ours\", \"ours_no_recursive\", \"slpush\", \"dfs\", \"recursive\"]\nLABELS = {\n    \"ours\": \"Ours\",\n    \"ours_no_recursive\": \"Ours w/o recursive\",\n    \"slpush\": \"SLPush\",\n    \"dfs\": \"DFS\",\n    \"recursive\": \"Recursive\",\n}",
+        "detail": "ral_tex.scripts.plot_density_scaling",
+        "documentation": {}
+    },
+    {
+        "label": "OUT_PNG",
+        "kind": 5,
+        "importPath": "ral_tex.scripts.plot_density_scaling",
+        "description": "ral_tex.scripts.plot_density_scaling",
+        "peekOfCode": "OUT_PNG = ROOT / \"figures\" / \"density_scaling_curve.png\"\nPOLICY_ORDER = [\"ours\", \"ours_no_recursive\", \"slpush\", \"dfs\", \"recursive\"]\nLABELS = {\n    \"ours\": \"Ours\",\n    \"ours_no_recursive\": \"Ours w/o recursive\",\n    \"slpush\": \"SLPush\",\n    \"dfs\": \"DFS\",\n    \"recursive\": \"Recursive\",\n}\n# Set this to a subset such as [15, 20, 25, 35, 40, 45] if one density is later",
+        "detail": "ral_tex.scripts.plot_density_scaling",
+        "documentation": {}
+    },
+    {
+        "label": "POLICY_ORDER",
+        "kind": 5,
+        "importPath": "ral_tex.scripts.plot_density_scaling",
+        "description": "ral_tex.scripts.plot_density_scaling",
+        "peekOfCode": "POLICY_ORDER = [\"ours\", \"ours_no_recursive\", \"slpush\", \"dfs\", \"recursive\"]\nLABELS = {\n    \"ours\": \"Ours\",\n    \"ours_no_recursive\": \"Ours w/o recursive\",\n    \"slpush\": \"SLPush\",\n    \"dfs\": \"DFS\",\n    \"recursive\": \"Recursive\",\n}\n# Set this to a subset such as [15, 20, 25, 35, 40, 45] if one density is later\n# removed from the paper. None keeps all densities in the raw CSV.",
+        "detail": "ral_tex.scripts.plot_density_scaling",
+        "documentation": {}
+    },
+    {
+        "label": "LABELS",
+        "kind": 5,
+        "importPath": "ral_tex.scripts.plot_density_scaling",
+        "description": "ral_tex.scripts.plot_density_scaling",
+        "peekOfCode": "LABELS = {\n    \"ours\": \"Ours\",\n    \"ours_no_recursive\": \"Ours w/o recursive\",\n    \"slpush\": \"SLPush\",\n    \"dfs\": \"DFS\",\n    \"recursive\": \"Recursive\",\n}\n# Set this to a subset such as [15, 20, 25, 35, 40, 45] if one density is later\n# removed from the paper. None keeps all densities in the raw CSV.\nKEEP_COUNTS = None",
+        "detail": "ral_tex.scripts.plot_density_scaling",
+        "documentation": {}
+    },
+    {
+        "label": "KEEP_COUNTS",
+        "kind": 5,
+        "importPath": "ral_tex.scripts.plot_density_scaling",
+        "description": "ral_tex.scripts.plot_density_scaling",
+        "peekOfCode": "KEEP_COUNTS = None\ndef _safe_numeric(series: pd.Series) -> pd.Series:\n    return pd.to_numeric(series, errors=\"coerce\")\ndef _trial_timeout_caps(group: pd.DataFrame) -> np.ndarray:\n    caps = _safe_numeric(group.get(\"trial_timeout_sec\", pd.Series(np.nan, index=group.index))).to_numpy(float)\n    finite = caps[np.isfinite(caps) & (caps > 0)]\n    fallback = float(np.nanmax(finite)) if finite.size else float(\"nan\")\n    if math.isfinite(fallback):\n        caps = np.where(np.isfinite(caps) & (caps > 0), caps, fallback)\n    return caps",
+        "detail": "ral_tex.scripts.plot_density_scaling",
+        "documentation": {}
+    }
+]

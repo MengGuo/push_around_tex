@@ -1,92 +1,113 @@
 %==============================================
-\subsection{Pushing Mode Generation and Evaluation}\label{subsec:push}
-For a selected frontier gap~$g$, this subsection constructs a set of candidate
-pushing strategies
-$\Xi_g \triangleq \{(\mathbf{v},\boldsymbol{\xi})\}$,
-where~$\mathbf{v} \triangleq (v_x,v_y,\omega)\in\mathbb{R}^3$ is a
-short-horizon pushing direction for the movable obstacle adjacent to~$g$, and
-$\boldsymbol{\xi}\triangleq(\mathcal{C},\mathbf{u})$ is the associated pushing
-mode in~\eqref{eq:transition}. It consists of three steps:
-direction sampling, pushing mode generation and evaluation.
+\subsection{Local Push-Task Generation and Evaluation}\label{subsec:push}
 
-%==============================================
-\subsubsection{Pushing Direction Sampling}
-Let~$\Omega_m$ denote one of the two movable obstacles adjacent to~$g$. For
-each such obstacle, a small set of candidate body velocities
-$\{\mathbf{v}_m^k\}_{k=1}^{K_m}$ is sampled with a bias toward enlarging the gap~$g$,
-while a small number of angular components are included to account for local geometry.
-These directions reflect the candidate pushing intents for the obstacles adjacent
-to gap~$g$.
+For the selected portal gap~$g$, PIHS generates a bounded set of local push
+proposals and validates them by short-horizon simulation. A geometric proposal
+is denoted by $\tau_{\mathrm{geo}}\triangleq(g,m,\mathbf{v})$, where~$m$ is
+the pushed movable obstacle and~$\mathbf{v}$ is a short-horizon object velocity.
+Contact-mode optimization later augments it with a multi-robot contact mode
+$\boldsymbol{\xi}$ to form a simulated push task. Task generation is therefore
+only a geometric proposal mechanism; accepted state transitions are always
+produced by physics rollouts.
 
-%==============================================
-\subsubsection{Pushing Mode Generation}
-For each sampled direction~$\mathbf{v}_m^k$ and obstacle~$\Omega_m$, the
-quality of a candidate mode is measured in the body frame. Let
-$\mathbf{v}_m^{k,\mathrm{B}} \in \mathbb{R}^3$ denote~$\mathbf{v}_m^k$
-expressed in the body frame of~$\Omega_m$. For a mode~$\boldsymbol{\xi}$,
-define the primary and multi-directional feasibility losses by:
+Each side of~$g$ is first treated as an independent full-opening option. For a
+side object~$m$, the nominal required displacement is chosen to make the gap
+width exceed~$W$, up to a small safety margin. The cheaper side is sampled first,
+while the other side is kept as a bounded backup when the preferred side is
+blocked or produces insufficient progress.
+
+\subsubsection{Recursive Push-Task Generation}
+
+Task generation is organized into direct pushing and recursive pushing. The
+former tries to move a gap-side obstacle directly; the latter creates auxiliary
+clearing tasks for movable blockers found along the swept motion. To keep these
+local motions aligned with the high-level clearance route, a lightweight
+reference polyline is constructed by connecting the start, the centers of
+previously opened gaps, the centers of the downstream gap sequence, and the
+goal. This polyline is not used as a vehicle path and is not required to be
+collision-free. It only provides a corridor orientation for biasing pushes away
+from both the already cleared passage and the remaining gaps to be opened.
+
+\textbf{Direct pushing.}
+For a selected side object, the nominal linear direction is sampled as a
+randomized convex combination of two directions: one that increases the current
+gap width, and one that moves the object away from the reference polyline. The
+latter term discourages pushing obstacles back into the cleared passage or
+toward downstream gaps. Around the sampled nominal direction~$\bar{\mathbf{d}}$,
+a small grid over linear-direction jitter and angular velocity is evaluated,
+\begin{equation}\label{eq:jitter_sampling}
+\mathcal{V}_{m}(\bar{\mathbf{d}})\triangleq
+\{(v_m R(\theta)\bar{\mathbf{d}},\omega)
+\mid \theta\in\Theta_g,\;\omega\in\Omega_g\},
+\end{equation}
+where~$v_m$ is a nominal object speed, $\Theta_g$ is a finite jitter-angle set,
+and~$\Omega_g$ is a bounded angular-velocity grid. Each candidate velocity is
+geometrically propagated until the gap width exceeds~$W$ or a maximum local
+horizon is reached. Candidate directions are ranked by pushing feasibility and
+by the intrusion of the swept region into surrounding obstacles. This favors
+motions that can open the gap while preserving a cleaner local workspace for
+later rollouts.
+
+\textbf{Recursive pushing.}
+If the direct swept region intersects movable blockers, recursive tasks are
+generated for those blockers. For a blocker, the nominal direction combines a
+component moving it away from the swept region and a component moving it away
+from the same reference polyline. The local grid in~\eqref{eq:jitter_sampling}
+is then reused, but the local goal is to move the blocker out of the swept
+region rather than to open the gap itself. Recursion constructs a short
+dependency chain: a root task pushes the gap-side object, while a middle or tail
+task clears one blocker that prevents a later root push. The recursion depth and
+the number of exposed tasks are bounded so that PIHS receives only a small set
+of promising candidates.
+
+\subsubsection{Contact-Mode Optimization}
+For each generated geometric proposal~$(g,m,\mathbf{v})$, a contact mode is
+optimized in the body frame of~$\Omega_m$. Candidate contacts are first filtered
+so that the contact normal produces positive motion along the desired local
+contact-point velocity. The initial assignment greedily selects, for each robot,
+the feasible contact whose unit generalized wrench is best aligned with the
+residual friction demand. A local replacement search then swaps robot contacts
+whenever the lower-bound feasibility score can improve. The mode score is
 \begin{equation}\label{eq:mode-feasibility}
 \begin{aligned}
-  \mathrm{J}_{\texttt{F}}^m
-  (\boldsymbol{\xi},\mathbf{v}_m^{k,\mathrm{B}})
-  &\triangleq
-  \underset{\mathbf{q}_{m,\boldsymbol{\xi}} \in
-  \mathrm{Q}_{m,\boldsymbol{\xi}}}{\textbf{min}}
-  \left\|
-  \mathbf{q}_{m,\boldsymbol{\xi}} +
-  Q_\mu^m(\mathbf{v}_m^{k,\mathrm{B}})
-  \right\|_1,\\
-  \mathrm{J}_{\texttt{MF}}^m
-  (\boldsymbol{\xi},\mathbf{v}_m^{k,\mathrm{B}})
-  &\triangleq
-  \sum_{\mathbf{v}_d \in \mathcal{D}} w_d \cdot
-  \mathrm{J}_{\texttt{F}}^m(\boldsymbol{\xi},\mathbf{v}_d);
+\mathrm{J}_{\texttt{F}}^m(\boldsymbol{\xi},\mathbf{v})
+&\triangleq
+\min_{\mathbf{q}_{m,\boldsymbol{\xi}}\in\mathrm{Q}_{m,\boldsymbol{\xi}}}
+\left\|\mathbf{q}_{m,\boldsymbol{\xi}}+Q_\mu^m(\mathbf{v})\right\|_1,
 \end{aligned}
 \end{equation}
-where~$\mathbf{q}_{m,\boldsymbol{\xi}} \in \mathbb{R}^3$ is the generalized
-body wrench induced by mode~$\boldsymbol{\xi}$;
-$\mathrm{Q}_{m,\boldsymbol{\xi}} \subseteq \mathbb{R}^3$ is the corresponding
-set of admissible body wrenches under the contact and friction constraints;
-$Q_\mu^m(\mathbf{v}_m^{k,\mathrm{B}}) \in \mathbb{R}^3$ denotes the
-quasi-static friction wrench of~$\Omega_m$ at direction~$\mathbf{v}_m^{k,\mathrm{B}}$;
-$\mathcal{D} \subset \mathbb{R}^3$ is a finite
-set of basis velocities containing the desired direction;
-and~$w_d > 0$ is the
-weight associated with~$\mathbf{v}_d \in \mathcal{D}$. Thus,
-small~$\mathrm{J}_{\texttt{F}}^m(\boldsymbol{\xi},\mathbf{v}_m^{k,\mathrm{B}})$ is
-necessary for force feasibility, while small
-$\mathrm{J}_{\texttt{MF}}^m$ indicates a robust mode.
-Accordingly, the associated mode
-$\boldsymbol{\xi}_m^k \triangleq (\mathcal{C}_m^k,\mathbf{u}_m^k)$ is generated
-by sparse optimization over the reachable part of~$\partial\Omega_m$. The
-reachable boundary is discretized into candidate contacts, and a sparse linear
-program (LP) is solved to minimize
-$\mathrm{J}_{\texttt{MF}}^m(\boldsymbol{\xi},\mathbf{v}_m^{k,\mathrm{B}})$
-under the local friction and wrench constraints.
-Detailed derivations are omitted here for brevity,
-and referred to~\cite{tang2024collaborative,tang2025pushingbots}.
-The resulting nonzero contacts provide~$\mathcal{C}_m^k$, and the corresponding forces
-yield~$\mathbf{u}_m^k$. Only the best few
-pairs~$(\mathbf{v}_m^k,\boldsymbol{\xi}_m^k)$ are retained and collected
-into~$\Xi_g$.
+where~$\mathrm{Q}_{m,\boldsymbol{\xi}}$ is the admissible generalized-wrench set
+under the selected contacts and friction cones, and~$Q_\mu^m$ is the predicted
+quasi-static friction wrench. The total loss combines~\eqref{eq:mode-feasibility}
+with robustness and vertex-risk terms. ModeTable entries are reused as cached
+priors when enabled, while the default policy still performs the greedy
+optimization above and sorts the resulting modes by loss. Each feasible mode
+turns~$\tau_{\mathrm{geo}}$ into a simulated task
+$\tau\triangleq(g,m,\mathbf{v},\boldsymbol{\xi})$.
 
-%==============================================
-\subsubsection{Pushing Strategy Evaluation}
-For a current state~$\mathbf{s}$ and a candidate strategy
-$(\mathbf{v},\boldsymbol{\xi})\in\Xi_g$, a short-horizon rollout evaluates the
-transition in~\eqref{eq:transition} under the selected mode. A strategy is
-accepted only if the robots reach the pre-contact poses, avoid collision,
-maintain stable contact, and induce obstacle motion that enlarges~$g$. The
-simulation returns:
-\begin{equation}
-  (\mathbf{s}',\,\delta_{\texttt{T}},\,\delta_{\texttt{J}})
-  \triangleq
-  \mathsf{EvalSim}\big(\mathbf{s},\,(g,\mathbf{v},\boldsymbol{\xi})\big),
-  \label{eq:sim}
+\subsubsection{Push Simulation Evaluation}
+Generated tasks are filtered by robot reachability, swept collision, and
+expected clearance progress. The remaining tasks are evaluated by parallel
+PyBullet rollouts,
+\begin{equation}\label{eq:sim}
+(\mathbf{s}',\rho)\triangleq\mathsf{EvalSim}(\mathbf{s},\tau),
 \end{equation}
-where~$\mathbf{s}'$ is the successor state,~$\delta_{\texttt{T}}>0$ is the
-time cost, and~$\delta_{\texttt{J}}$ is the control effort.
-\todo{add a figure above?}
+where~$\mathbf{s}'$ is the successor state and~$\rho$ records WCCG progress,
+such as gap-width improvement or a reduction of the estimated W-clearance
+cost-to-go. Direct tasks are evaluated first. If no direct rollout is valid, or
+if the valid rollouts produce progress below a small threshold, the recursive
+middle and tail tasks are released for simulation. Thus, a selected gap may
+produce multiple push tasks and multiple successor snapshots, while PIHS keeps
+only the physically validated successors for search expansion.
+
+A task is accepted only if the rollout satisfies collision and contact-validity
+checks and produces measurable gap or endpoint progress. Execution uses the same
+primitive: a hybrid controller first plans transition paths to the selected
+pre-contact poses, resolves transition conflicts by goal exchange or
+priority-based replanning, and then switches to contact tracking. During pushing,
+robots approach the current contact poses until all are in contact, after which
+they track forward contact poses generated by an arc transition of the pushed
+object.
 
 %------------------------------
 \begin{figure}[t!]
@@ -95,9 +116,9 @@ time cost, and~$\delta_{\texttt{J}}$ is the control effort.
   \vspace{-0.15in}
   \caption{
 \textbf{Top:} Core components of the proposed physics-informed hybrid search;
-\textbf{Bottom:} Sampled push tasks are evaluated via parallel simulation, producing updated states
-for search expansion.}
-    \label{fig:PIHS}
-   \vspace{-4mm}
+\textbf{Bottom:} sampled push tasks are filtered and evaluated by parallel
+simulation, producing successor states for search expansion.}
+  \label{fig:PIHS}
+  \vspace{-4mm}
 \end{figure}
 %------------------------------
