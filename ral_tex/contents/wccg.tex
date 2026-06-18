@@ -2,65 +2,54 @@
 \subsection{W--Clearance Connectivity Graph}\label{subsec:wccg}
 
 The W--clearance connectivity graph~(WCCG) is a geometric oracle for checking
-whether the external vehicle may pass through the current clutter. It is not a
-vehicle roadmap. Its edges encode obstacle-induced barriers and narrow gaps,
-while the colored faces in Fig.~\ref{fig:wccg} only provide an intuitive
-visualization of the regions induced by these barriers. The actual connectivity
-check is performed by frontier tracing together with endpoint membership in
-$\mathcal{F}_W(t)$, defined in~\eqref{eq:vehicle_free}.
+whether the external vehicle can pass through the current clutter. It is not a
+vehicle roadmap: its edges encode obstacle-induced barriers and narrow portal
+gaps, and the colored faces in Fig.~\ref{fig:wccg} only visualize the induced
+regions. The actual connectivity check combines frontier tracing with endpoint
+membership in~$\mathcal{F}_W(t)$ from~\eqref{eq:vehicle_free}.
 
 \subsubsection{Graph Construction}
 The WCCG is built from polygonal obstacle components, including immovable
-structures and the convex components of movable obstacles. For each component
-$C$, a centroid node~$v_c$ is created. For two components~$C_u$ and~$C_v$, let
+structures and convex components of movable obstacles. For each component~$C$, a
+centroid node~$v_c$ is created. For two components~$C_u$ and~$C_v$, let
 $p_u\in C_u$ and $p_v\in C_v$ be a closest-point pair, and let
-$w_{uv}\triangleq\|p_u-p_v\|$ denote their gap width. If $w_{uv}<W$, the gap is
-too narrow for the vehicle. Two bridge nodes are then added at~$p_u$ and
-$p_v$, connected by a bridge--bridge edge, and linked back to their
-corresponding centroid nodes through centroid--bridge edges. Such a
-bridge--bridge edge is called a \emph{portal gap}, since opening the
-associated gap may allow the vehicle to move from one locally reachable region
-to another. The resulting graph is
+$w_{uv}\triangleq\|p_u-p_v\|$ denote the gap width. If~$w_{uv}<W$, two bridge
+nodes are inserted at~$p_u$ and~$p_v$, connected by a bridge--bridge edge, and
+linked to their corresponding centroids by centroid--bridge edges. The resulting
+graph is
 \begin{equation}\label{eq:wccg}
 \mathcal{G}_W\triangleq(\mathcal{V},\;\mathcal{E}_c\cup\mathcal{E}_b),
 \end{equation}
-where~$\mathcal{V}$ contains all centroid and bridge nodes,
-$\mathcal{E}_c$ is the set of centroid--bridge edges, and
-$\mathcal{E}_b$ is the set of bridge--bridge portal gaps annotated by their
-widths~$w_{uv}$.
+where~$\mathcal{V}$ contains centroid and bridge nodes,
+$\mathcal{E}_c$ is the set of centroid--bridge edges, and~$\mathcal{E}_b$ is
+the set of bridge--bridge portal gaps annotated by their widths~$w_{uv}$.
+Opening a portal gap may allow the vehicle to move from one locally reachable
+region to another.
 
 \subsubsection{Frontier-Tracing Connectivity Query}\label{subsubsec:bugplanner}
 The notation $S\leadsto_W G$ follows~\eqref{eq:wclear} and denotes the
 existence of a continuous vehicle-center path in~$\mathcal{F}_W(t)$ from~$S$
-to~$G$. A WCCG tracing query, similar to the BugPlanner
-in~\cite{McGuireCroonTuyls2019}, takes a source point~$S$ and a goal point~$G$.
-It returns either a skeleton~$\Sigma$ indicating that the two points are
-connected in the WCCG-induced topology, or a frontier loop~$\Gamma$ that blocks
-progress toward~$G$. Here, a \emph{frontier loop} is a closed ordered set of
-WCCG edges forming the current obstacle-induced boundary between the source side
-and the goal side. Let $\operatorname{conn}_W(S,G,t)$ denote that the tracing
-query returns connected. The resulting clearance certificate is
+to~$G$. A WCCG tracing query, similar to BugPlanner~\cite{McGuireCroonTuyls2019},
+takes a source point~$S$ and a goal point~$G$. It returns either a skeleton
+$\Sigma$ certifying WCCG-induced connectivity, or a frontier loop~$\Gamma$ that
+blocks progress toward~$G$. Let~$\operatorname{conn}_W(S,G,t)$ denote that the
+query returns connected. The clearance certificate is
 \begin{equation}\label{eq:wccg_criterion}
 \{S,G\}\subset\mathcal{F}_W(t)\land\operatorname{conn}_W(S,G,t)
 \Longrightarrow S\leadsto_W G.
 \end{equation}
-The endpoint membership condition is essential: the WCCG-induced regions
-preserve the connectivity topology of the vehicle-center free space for the
-convex obstacle components, but they do not by themselves test whether the
-endpoint disks are collision-free.
-
-The skeleton~$\Sigma$ is used as a topological certificate, not as a required
-vehicle path in the subsequent planner. If an explicit curve is needed, standard
-offset and connector operations along the same WCCG-induced region can recover a
-path $\mathcal{P}_{\texttt{V}}^W$ satisfying~\eqref{eq:wclear}. If the tracing
-query is not connected, the returned frontier loop exposes portal gaps for the
-blocking-gap presearch in Sec.~\ref{subsec:gap}.
+The endpoint membership condition is essential because the WCCG-induced regions
+preserve the connectivity topology of the vehicle-center free space for convex
+components, but do not by themselves test whether endpoint disks are collision
+free. The skeleton~$\Sigma$ is used only as a topological certificate. If an
+explicit curve is needed, standard offset and connector operations along the
+same WCCG-induced region recover a path~$\mathcal{P}_{\texttt{V}}^W$ satisfying
+\eqref{eq:wclear}. If the query is not connected, the returned frontier loop
+exposes portal gaps for the presearch in Sec.~\ref{subsec:gap}.
 
 \begin{remark}\label{remark:wccg}
-The WCCG is used as a geometry-based connectivity oracle rather than as a
-sampled roadmap. The face colors in Fig.~\ref{fig:wccg} help explain the induced
-regions, but the method does not require a complete global face decomposition.
-Narrow portal gaps exposed by frontier tracing provide the geometric targets for
-the recursive gap-push module introduced next.
+The WCCG is a geometry-based connectivity oracle rather than a sampled roadmap.
+It avoids a complete global face decomposition during planning; frontier tracing
+exposes only the narrow portal gaps needed by the recursive gap-push module.
 \hfill$\blacksquare$
 \end{remark}

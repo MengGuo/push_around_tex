@@ -1,64 +1,55 @@
 %==============================================
 \subsection{WCCG-guided Gap Sequencing}\label{subsec:gap}
 
-When the WCCG clearance certificate in~\eqref{eq:wccg_criterion} is not
-satisfied, the planner must decide which narrow gap should be cleared first.
-Passing all frontier gaps to the physics-informed hybrid search~(PIHS) would
-create many unnecessary pushing tasks and simulation rollouts. Gap sequencing is
-a lightweight WCCG-level lookahead that ranks frontier gaps before any contact
-mode or physical rollout is generated.
+When the clearance certificate in~\eqref{eq:wccg_criterion} fails, the planner
+must decide which narrow portal gap to clear first. Sending all frontier gaps to
+physics-informed hybrid search~(PIHS) would generate many unnecessary tasks and
+rollouts. Gap sequencing therefore performs a lightweight WCCG-level lookahead
+before any contact mode or physical rollout is generated.
 
 \subsubsection{Search state and expansion}
-A WCCG tracing query from a current source~$S_\ell$ toward the goal~$G$ either
-reaches~$G$ or returns a frontier loop~$\Gamma_\ell$. The bridge--bridge edges
-on~$\Gamma_\ell$ are candidate portal gaps. A sequencing node stores only a
-partial gap sequence~$\mathbf{g}_{1:\ell}\triangleq(g_1,\cdots,g_\ell)$ and
-the current tracing source~$S_\ell$; it does not include contact points, robot
-motions, or object trajectories. Expanding a node selects one portal gap on the
-current frontier loop, moves the tracing source to the opposite side of that
-gap, and invokes the WCCG tracing query again. Nodes are expanded in a
-best-first manner with a fixed beam width and maximum sequence length.
+A WCCG query from a current source~$S_\ell$ toward the goal~$G$ either reaches
+$G$ or returns a frontier loop~$\Gamma_\ell$. The bridge--bridge edges on
+$\Gamma_\ell$ are candidate portal gaps. A sequencing node stores only a partial
+gap sequence~$\mathbf{g}_{1:\ell}\triangleq(g_1,\cdots,g_\ell)$ and the current
+tracing source~$S_\ell$; it does not contain contact points, robot motions, or
+object trajectories. Expansion selects one portal gap, moves the tracing source
+to the opposite side, and queries the WCCG again. Nodes are expanded best-first
+under fixed beam-width and sequence-length limits.
 
 \subsubsection{Transition cost}
-The cost of opening a portal gap is estimated by a recursive geometric
-clearing computation. For each side of a gap, adjacent movable objects are
-tested as possible clearing objects, and the estimate accounts for the required
-opening displacement, object mass, friction, and recursively detected blockers
-along the swept motion. This gives $\mathsf{C}_{\mathrm{gp}}(g,\mathbf{s})$ for
-opening gap~$g$ at state~$\mathbf{s}$. When consecutive gaps can be improved by
-compatible motions of the same movable object, their sequence cost is corrected
-to avoid double-counting the same clearing action. Candidate gaps are expanded
-in increasing order of this estimated clearing cost, with a weak goal-distance
-tie breaker based on $\|\mathbf{p}_g-\mathbf{s}_{\texttt{V}}^{\texttt{G}}\|$,
-where~$\mathbf{p}_g$ is the representative point of~$g$.
+The cost of opening a portal gap is estimated by a recursive geometric clearing
+computation. For each side of a gap, adjacent movable objects are tested as
+possible clearing objects. The estimate accounts for required opening
+displacement, object mass, friction, and movable blockers found along the swept
+motion, giving~$\mathsf{C}_{\mathrm{gp}}(g,\mathbf{s})$ for opening gap~$g$ at
+state~$\mathbf{s}$. Compatible motions of the same movable object are corrected
+to avoid double-counting consecutive gaps. Candidate gaps are expanded by this
+cost with a weak goal-distance tie breaker based on
+$\|\mathbf{p}_g-\mathbf{s}_{\texttt{V}}^{\texttt{G}}\|$, where~$\mathbf{p}_g$ is
+a representative point of~$g$.
 
 \subsubsection{Output and PIHS interface}
-A completed sequencing node is one whose last WCCG tracing query reaches~$G$.
-Let~$\mathfrak{G}(S,G)$ denote the completed sequences visited under the search
-budget. The W-clearance cost-to-go estimate is
+A completed sequencing node is one whose last WCCG query reaches~$G$. Let
+$\mathfrak{G}(S,G)$ denote the completed sequences visited under the search
+budget. The W--clearance cost-to-go estimate is
 \begin{equation}\label{eq:state_c2g}
 \widehat{\mathsf{J}}_{\mathrm{clr}}(\mathbf{s})\triangleq{}
 \min_{\mathbf{g}\in\mathfrak{G}(S,G)}
 \sum_{\ell=1}^{L}
 \mathsf{C}_{\mathrm{gp}}(g_{\ell},\mathbf{s}_{\ell}),
 \end{equation}
-If the WCCG clearance
-certificate in~\eqref{eq:wccg_criterion} already succeeds, then
-$\widehat{\mathsf{J}}_{\mathrm{clr}}(\mathbf{s})=0$.
-The resulting gap sequence is not a physical plan because it has not specified
-contact modes or been validated by simulation. Only the first portal gap of the
-best sequence is passed to the task sampler. PIHS then generates concrete
-pushing candidates for this gap and validates them through contact-mode
-generation and short-horizon physics rollout. The remaining gaps are
-reconsidered after the accepted rollout updates the WCCG.
+with~$\widehat{\mathsf{J}}_{\mathrm{clr}}(\mathbf{s})=0$ if
+\eqref{eq:wccg_criterion} already succeeds. The gap sequence is not a physical
+plan: it has no contact modes and has not been validated by simulation. Only the
+first portal gap of the best sequence is passed to the task sampler; the
+remaining gaps are reconsidered after each accepted rollout updates the WCCG.
 
-\begin{remark} 
-Unlike path-first recursive clearing methods that commit to a geometric path 
-and then remove obstacles from that path, 
-the proposed planner first searches over WCCG-induced gap sequences. 
-Each sequence represents a topological clearance alternative and is scored 
-by the estimated difficulty of opening its blocking gaps. 
-A lightweight reference polyline is derived only after a sequence is selected, 
-and is used to bias local push-task generation rather than 
-define a fixed corridor to be cleared. \hfill $\blacksquare$ 
+\begin{remark}\label{remark:gap_sequence}
+Unlike path-first recursive clearing methods, the proposed planner first
+searches over WCCG-induced gap sequences. Each sequence represents a topological
+clearance alternative. A lightweight reference polyline is derived only after a
+sequence is selected, and is used to bias local push-task generation rather than
+define a fixed corridor to clear.
+\hfill $\blacksquare$
 \end{remark}
