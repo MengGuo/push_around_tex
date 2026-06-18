@@ -1,17 +1,18 @@
 % %% ========================================
 \section{Proposed Solution}\label{sec:solution}
 
-The PushAround framework enables collaborative multi-robot path clearing with
-physics-informed feasibility checks. As shown in Fig.~\ref{fig:overall}, it
-first constructs a W--Clearance Connectivity Graph in Sec.~\ref{subsec:wccg} to
-capture width-constrained workspace connectivity and expose blocking frontier
-gaps. Section~\ref{subsec:gap} performs bounded WCCG presearch to select the
-next portal gap by predicted connection cost. Section~\ref{subsec:push}
-generates local push tasks through clearance-driven velocity sampling,
-contact-mode optimization, quick-pass filtering, and short-horizon simulation.
-Section~\ref{subsec:simloop} integrates these modules into PIHS, where node
-selection follows predicted cost-to-go, robot-transfer cost, and validated push
-effect. Execution and complexity are summarized in Sec.~\ref{subsec:overall}.
+As shown in Fig.~\ref{fig:overall}, PushAround first constructs a
+W-Clearance Connectivity Graph in Sec.~\ref{subsec:wccg} to capture
+workspace connectivity and blocking gaps. Gap ranking in
+Sec.~\ref{subsec:gap} selects obstacle-clearing actions, while mode
+generation and evaluation in Sec.~\ref{subsec:push} ensure physically
+feasible collaborative pushes. These components are integrated into the
+simulation-in-the-loop hybrid search in Sec.~\ref{subsec:simloop}.
+Sec.~\ref{subsec:overall} summarizes the overall online execution.
+
+
+
+
 
 % %% ========================================
 \input{contents/wccg.tex}
@@ -23,4 +24,4 @@ effect. Execution and complexity are summarized in Sec.~\ref{subsec:overall}.
 \input{contents/simloop.tex}
 % %%========================================
 \input{contents/overall.tex}
-% %%==============================
+% %%========================================
