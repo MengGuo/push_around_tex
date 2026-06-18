@@ -3,39 +3,34 @@
 
 \subsubsection{Execution and Online Adaptation}\label{subsec:execute}
 PIHS returns a push-task sequence
-$\pi=\{\tau_1,\cdots,\tau_K\}$ by tracing the accepted edge labels in the
-search tree, where
+$\pi=\{\tau_1,\cdots,\tau_K\}$ by tracing accepted edge labels, where
 $\tau_k\triangleq(g_k,m_k,\mathbf{v}_k,\boldsymbol{\xi}_k)$ specifies the target
-gap, the moved obstacle, the short-horizon object velocity, and the multi-robot
-pushing primitive. The sequence is executed in a receding-horizon manner. For
-each task, the robots move to the assigned pre-contact configurations and
-execute the corresponding pushing routine from the observed state. After each
-task, object poses are updated, the WCCG is rebuilt, and the remaining task
-sequence is checked against the updated gap structure. Execution terminates once
-the WCCG clearance certificate in~\eqref{eq:wccg_criterion} succeeds for the
-current vehicle start and goal. Replanning is triggered when robot transition is
-blocked, the realized state deviates from the simulated successor, contact or
-collision validity checks fail, or the updated WCCG makes the remaining task
-sequence obsolete. The replanning call uses the current observed state while
-reusing the ModeTable and cached invalid task signatures.
+gap, moved obstacle, short-horizon object velocity, and multi-robot pushing
+primitive. Execution is receding-horizon: robots move to assigned pre-contact
+configurations, execute the pushing routine from the observed state, update
+object poses, rebuild WCCG, and recheck the remaining sequence. Execution stops
+once~\eqref{eq:wccg_criterion} succeeds for the current vehicle start and goal.
+Replanning is triggered by blocked robot transition, mismatch between realized
+and simulated states, contact or collision invalidity, or obsolete gap structure.
+The replanning call uses the observed state while reusing the ModeTable and
+cached invalid task signatures.
 
 %----------------------------------------------
 \subsubsection{Computational Complexity}\label{subsubsec:complexity}
 Given~$M$ movable obstacles, one PIHS expansion consists of WCCG construction,
-WCCG-guided gap sequencing, recursive push-task generation, contact-mode
-optimization, quick-pass filtering, and parallel rollouts. WCCG construction and
-frontier extraction require
+gap sequencing, recursive task generation, contact-mode optimization,
+quick-pass filtering, and parallel rollouts. WCCG construction and frontier
+extraction require
 $\mathcal{O}(M\log M+|\mathcal{V}|+|\mathcal{E}_c|+|\mathcal{E}_b|)$ with
-nearest-pair culling. Gap sequencing is bounded by the prescribed beam width and
-maximum sequence length, and its transition costs are estimated by recursive
-geometric clearing computations. If~$B$ is the sampled task-batch size,
-$C_{\mathrm{LP}}$ the cost of one sparse contact LP, $T_{\mathrm{sim}}$ the
-rollout horizon, $n_{\texttt{w}}$ the number of parallel workers, and~$\rho_\nu$
-the fraction of tasks surviving quick-pass filtering, the dominant term is
+nearest-pair culling. Gap sequencing is bounded by its beam width and maximum
+sequence length. If~$B$ is the task-batch size, $C_{\mathrm{LP}}$ the cost of one
+sparse contact LP, $T_{\mathrm{sim}}$ the rollout horizon, $n_{\texttt{w}}$ the
+number of parallel workers, and~$\rho_\nu$ the fraction of tasks surviving
+quick-pass filtering, the dominant term is
 \[
 \mathcal{O}\bigl(B C_{\mathrm{LP}}
 +\rho_\nu B T_{\mathrm{sim}}/n_{\texttt{w}}\bigr).
 \]
-Thus, the implementation avoids exhaustive simulation by sequencing candidate
-gaps before task sampling, keeping~$B$ small, removing duplicate object
-velocities, caching failed task signatures, and reusing ModeTable entries.
+The implementation avoids exhaustive simulation by sequencing candidate gaps
+before task sampling, keeping~$B$ small, removing duplicate velocities, caching
+failed task signatures, and reusing ModeTable entries.

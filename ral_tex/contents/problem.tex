@@ -7,11 +7,11 @@
   \vspace{-0.1in}
   \caption{Illustration of the W--clearance connectivity graph~(WCCG).
   \textbf{Left:} Cluttered PyBullet scenario with immovable walls and movable objects;
-  \textbf{Middle:} WCCG overlay with the centroid nodes (blue squares), bridge nodes
-  (red circles), centroid--bridge edges (blue) and bridge--bridge edges
-  (red dashed) annotated by the gap widths;
-  \textbf{Right:} Induced faces of the WCCG, where different colours indicate
-  distinct connected regions.}
+  \textbf{Middle:} WCCG overlay with centroid nodes (blue squares), bridge nodes
+  (red circles), centroid--bridge edges (blue), and bridge--bridge edges
+  (red dashed) annotated by gap widths;
+  \textbf{Right:} induced WCCG faces, where different colors indicate distinct
+  connected regions.}
   \label{fig:wccg}
   \vspace{-0.2in}
 \end{figure*}
@@ -19,24 +19,19 @@
 
 \subsection{Workspace and Robots}\label{subsec:ws}
 The workspace is a bounded planar region
-$\mathcal{W}\subset\mathbb{R}^2$ that contains two types of
-obstacles. A set $\mathcal{O}\subset\mathcal{W}$ represents immovable
-structures, while the set of movable rigid polygons is
+$\mathcal{W}\subset\mathbb{R}^2$ containing immovable structures
+$\mathcal{O}\subset\mathcal{W}$ and movable rigid polygons
 $\boldsymbol{\Omega}\triangleq\{\Omega_1,\dots,\Omega_M\}\subset\mathcal{W}$.
-Each movable obstacle $\Omega_m$ is characterised by its mass
-$\mathsf{M}_m$, inertia $\mathsf{I}_m$, frictional parameters, and state
-$\mathbf{s}_m(t)\triangleq\bigl(\mathbf{x}_m(t),\psi_m(t)\bigr)$, where
-$\mathbf{x}_m(t)\in\mathbb{R}^2$ is the planar centroid position and
-$\psi_m(t)\in\mathbb{R}$ its orientation.  The region occupied
-by~$\Omega_m$ at time~$t$ is denoted $\Omega_m(t)$.
-
-A team of $N$ robots
-$\mathcal{R}\triangleq\{R_1,\dots,R_N\}$ operates cooperatively.
-Each robot $R_i$ is a rigid body with state
-$\mathbf{s}_{R_i}(t)\triangleq\bigl(\mathbf{x}_{R_i}(t),\psi_{R_i}(t)\bigr)$,
-with position $\mathbf{x}_{R_i}(t)\in\mathbb{R}^2$ and orientation
-$\psi_{R_i}(t)\in\mathbb{R}$.  The footprint of $R_i$ is denoted
-$R_i(t)$.  The instantaneous free space is
+Each movable obstacle~$\Omega_m$ has mass~$\mathsf{M}_m$,
+inertia~$\mathsf{I}_m$, frictional parameters, and state
+$\mathbf{s}_m(t)\triangleq(\mathbf{x}_m(t),\psi_m(t))$, where
+$\mathbf{x}_m(t)\in\mathbb{R}^2$ and $\psi_m(t)\in\mathbb{R}$ are its centroid
+position and orientation. The occupied region is denoted~$\Omega_m(t)$.
+A team of robots
+$\mathcal{R}\triangleq\{R_1,\dots,R_N\}$ operates cooperatively. Robot~$R_i$ is a
+rigid body with state
+$\mathbf{s}_{R_i}(t)\triangleq(\mathbf{x}_{R_i}(t),\psi_{R_i}(t))$ and footprint
+$R_i(t)$. The instantaneous free space is
 \begin{equation}\label{eq:freespace}
 \widehat{\mathcal{W}}(t)\triangleq
 \mathcal{W}\setminus
@@ -44,75 +39,64 @@ $R_i(t)$.  The instantaneous free space is
 \mathcal{O}\cup\{\Omega_m(t)\}_{m=1}^{M}\cup\{R_i(t)\}_{i=1}^{N}
 \Bigr),
 \end{equation}
-excluding regions occupied by immovable obstacles, movable obstacles,
-and robots.
+excluding regions occupied by immovable obstacles, movable obstacles, and
+robots.
 
 %==============================
 \subsection{External Vehicle and Clearance Goal}\label{subsec:vehicle}
-An external vehicle~$\texttt{V}$ of radius $W/2>0$ must travel from a
-start configuration $\mathbf{s}_{\texttt{V}}^{\texttt{S}}\in\mathcal{W}$ to a
-goal configuration $\mathbf{s}_{\texttt{V}}^{\texttt{G}}\in\mathcal{W}$.
-Because movable obstacles may block the way, a direct passage is not always
-feasible. At time~$t$, the vehicle-center free space is defined as
+An external vehicle~$\texttt{V}$ of radius $W/2>0$ must travel from
+$\mathbf{s}_{\texttt{V}}^{\texttt{S}}\in\mathcal{W}$ to
+$\mathbf{s}_{\texttt{V}}^{\texttt{G}}\in\mathcal{W}$. At time~$t$, its
+center-space free region is
 \begin{equation}\label{eq:vehicle_free}
 \mathcal{F}_W(t)\triangleq
 \bigl\{\mathbf{p}\in\widehat{\mathcal{W}}(t)\mid
 \mathbb{B}_{W/2}(\mathbf{p})\subset\widehat{\mathcal{W}}(t)\bigr\},
 \end{equation}
 where~$\mathbb{B}_{W/2}(\mathbf{p})$ is the disk of radius~$W/2$ centered at
-$\mathbf{p}$. The workspace admits a $W$-clear passage at time~$t$ if
+$\mathbf{p}$. A $W$--clear passage exists at time~$t$ if
 \begin{equation}\label{eq:wclear}
 \exists\,\mathcal{P}_{\texttt{V}}^W:[0,1]\to\mathcal{F}_W(t),\ \ 
 \mathcal{P}_{\texttt{V}}^W(0)=\mathbf{s}_{\texttt{V}}^{\texttt{S}},\ \ 
 \mathcal{P}_{\texttt{V}}^W(1)=\mathbf{s}_{\texttt{V}}^{\texttt{G}},
 \end{equation}
-where~$\mathcal{P}_{\texttt{V}}^W$ is a continuous vehicle-center path from
-$\mathbf{s}_{\texttt{V}}^{\texttt{S}}$ to
-$\mathbf{s}_{\texttt{V}}^{\texttt{G}}$.
+where~$\mathcal{P}_{\texttt{V}}^W$ is a continuous vehicle-center path.
 
 %==============================
 \subsection{Collaborative Pushing Modes}\label{ss:interaction_mode}
-To enlarge blocked gaps, the robots actively reconfigure
+To enlarge blocked gaps, the robots reconfigure
 $\boldsymbol{\Omega}$ by pushing movable obstacles. For obstacle
-$\Omega_m\in\boldsymbol{\Omega}$, a pushing primitive is denoted by
+$\Omega_m$, a pushing primitive is
 $\boldsymbol{\xi}_m\triangleq(\mathcal{C}_m,\boldsymbol{\nu}_m)$, where
 $\mathcal{C}_m\triangleq\{c_1,\cdots,c_N\}$ is an ordered tuple of contact
-points on $\partial\Omega_m$, and the ordering determines the robot-to-contact
-assignment. The vector
-$\boldsymbol{\nu}_m\in\mathbb{R}^3$ denotes the desired planar object twist,
-expressed in the body frame of~$\Omega_m$. In the implementation,
-$\boldsymbol{\nu}_m$ is proposed by the push sampler, while the mode generator
-optimizes the contact tuple~$\mathcal{C}_m$ for the given desired twist.
-
-The robots are not assumed to command contact forces directly. Instead, a fixed
-low-level pushing controller~$\kappa$ converts
-$(\mathcal{C}_m,\boldsymbol{\nu}_m)$ into robot velocity or pose references,
-which are then realized by the robot motors through physical contact. The
+points on~$\partial\Omega_m$. The ordering determines robot-to-contact
+assignment. The vector~$\boldsymbol{\nu}_m\in\mathbb{R}^3$ is the desired
+planar object twist in the body frame of~$\Omega_m$: it is proposed by the push
+sampler, while the mode generator optimizes~$\mathcal{C}_m$ for that twist.
+Robots are not assumed to command contact forces directly. A fixed low-level
+controller~$\kappa$ converts $(\mathcal{C}_m,\boldsymbol{\nu}_m)$ into robot
+velocity or pose references, which are realized through physical contact. The
 admissible set~$\Xi_m$ is determined by contact reachability, pre-contact
-configurations, inter-robot spacing, and pushing feasibility. The closed-loop
-state transition induced by executing a pushing primitive for duration
-$\Delta t$ is written as
+configurations, inter-robot spacing, and pushing feasibility. Executing a
+primitive for duration~$\Delta t$ induces
 \begin{equation}\label{eq:transition}
 \mathbf{s}(t^+)\triangleq
 \Phi_{\kappa}\bigl(\mathbf{s}(t),\,m,\,\boldsymbol{\xi}_m,\,\Delta t\bigr),
 \end{equation}
 where~$\mathbf{s}(t)$ stacks all robot and obstacle states, and
-$\Phi_{\kappa}$ denotes the resulting physics-based evolution under the
-controller~$\kappa$.
+$\Phi_{\kappa}$ denotes the physics-based closed-loop evolution.
 
 %==============================
 \subsection{Problem Statement}\label{subsec:objective}
-A \emph{hybrid schedule} reconfigures the workspace so that
-the vehicle eventually satisfies~\eqref{eq:wclear}.
-Let
+A \emph{hybrid schedule} reconfigures the workspace until the vehicle satisfies
+\eqref{eq:wclear}. Let
 \[
 \pi\triangleq
 \bigl\{(m_k,\boldsymbol{\xi}_k,\Delta t_k)\bigr\}_{k=1}^{K},
 \]
-where $\Omega_{m_k}$ is the object to push,
-$\boldsymbol{\xi}_k\in\Xi_{m_k}$ the pushing mode,
-and $\Delta t_k>0$ its duration.  The optimisation balances
-completion time and physical effort:
+where~$\Omega_{m_k}$ is the pushed object,
+$\boldsymbol{\xi}_k\in\Xi_{m_k}$ the pushing mode, and~$\Delta t_k>0$ its
+duration. The optimization balances completion time and physical effort:
 \begin{equation}\label{eq:problem}
 \min_{\pi}\;
 \Bigl(
@@ -120,24 +104,17 @@ T+\alpha\sum_{k=1}^{K}
 J\!\bigl(m_k,\boldsymbol{\xi}_k,\mathbf{s}(t_k)\bigr)
 \Bigr),
 \end{equation}
-where $T\triangleq\sum_{k=1}^{K}\Delta t_k$,
-$\alpha>0$ is a trade-off parameter, and $J(\cdot)$ is a simulation-based
-effort or feasibility cost.
-The schedule must satisfy three requirements:
-(i)~all intermediate states stay within the free space~\eqref{eq:freespace};
-(ii)~each step follows~\eqref{eq:transition} for duration~$\Delta t_k$ with an admissible mode;
-(iii)~after the final step, the workspace satisfies the
-$W$-clearance condition~\eqref{eq:wclear}, i.e.\
-a feasible path connects
-$\mathbf{s}_{\texttt{V}}^{\texttt{S}}$ to
-$\mathbf{s}_{\texttt{V}}^{\texttt{G}}$.
+where~$T\triangleq\sum_{k=1}^{K}\Delta t_k$, $\alpha>0$ is a trade-off
+parameter, and~$J(\cdot)$ is a simulation-based effort or feasibility cost. The
+schedule must keep all intermediate states in~\eqref{eq:freespace}, follow the
+closed-loop transition~\eqref{eq:transition} with admissible modes, and satisfy
+the terminal $W$--clearance condition~\eqref{eq:wclear}.
 %==============================
 \begin{remark}\label{remark:uniqueness}
-The problem jointly couples obstacle selection, pushing-mode optimisation,
-and mode switching into one hybrid optimisation, yielding a combinatorial
-search space far more complex than classical NAMO with simple
-objects or hand-crafted contact modes
-\cite{goyal1989limit,chen2015occlusion,wang2006multi,tang2023combinatorial}.
+The problem jointly couples obstacle selection, pushing-mode optimization, and
+mode switching into one hybrid optimization, yielding a combinatorial search
+space far more complex than classical NAMO with simple objects or hand-crafted
+contact modes~\cite{goyal1989limit,chen2015occlusion,wang2006multi,tang2023combinatorial}.
 \hfill$\blacksquare$
 \end{remark}
 %==============================

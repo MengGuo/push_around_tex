@@ -1,29 +1,25 @@
 %==============================================
 \subsection{Physics-Informed Hybrid Search}\label{subsec:simloop}
 
-As shown in Fig.~\ref{fig:PIHS}, the proposed physics-informed hybrid search
-(PIHS) couples WCCG-guided gap sequencing, recursive push-task generation,
+As shown in Fig.~\ref{fig:PIHS}, the physics-informed hybrid search~(PIHS)
+couples WCCG-guided gap sequencing, recursive push-task generation,
 contact-mode optimization, and short-horizon physics rollout. A search node is a
-simulated system snapshot. Push tasks label the edges of the search tree: a task
-selected at a snapshot is evaluated by physics simulation and produces one or
-more successor snapshots. Auxiliary records, including the parent pointer,
-the incoming push task, the gap-sequencing cache, the accumulated push effect,
-and the accumulated execution cost, are stored only for queue ordering and
-solution reconstruction. Thus, WCCG proposes clearance opportunities through
-selected portal gaps, while all node transitions are generated and validated by
+simulated system snapshot, and a push task labels each tree edge. Auxiliary
+records, including parent pointer, incoming task, gap-sequencing cache,
+accumulated push effect, and accumulated execution cost, are used only for queue
+ordering and solution reconstruction. Thus, WCCG proposes clearance
+opportunities, while all state transitions are generated and validated by
 physics simulation.
 
 \subsubsection{Tree Initialization and Node Value}
 The search tree~$\mathcal{T}$ contains snapshot nodes indexed by~$\nu$, each
 associated with a full system state~$\mathbf{s}_\nu$ in~\eqref{eq:transition}.
 For a non-root node, let~$\nu^-$ be its parent and~$\tau_\nu$ be the incoming
-push task that generates~$\mathbf{s}_\nu$ from~$\mathbf{s}_{\nu^-}$ through the
-simulation evaluation in~\eqref{eq:sim}. The accepted task sequence is not part
-of the node state; it is recovered by tracing the incoming edge labels from a
-terminal node back to the root.
+push task that generates~$\mathbf{s}_\nu$ from~$\mathbf{s}_{\nu^-}$ through
+\eqref{eq:sim}. The accepted task sequence is recovered by tracing incoming edge
+labels from a terminal node back to the root.
 
-For the simulated edge~$\nu^-\xrightarrow{\tau_\nu}\nu$, the accumulated
-push-effect score is updated by
+For the simulated edge~$\nu^-\xrightarrow{\tau_\nu}\nu$, the push-effect score is
 \begin{equation}\label{eq:push_effect}
 \begin{aligned}
 \mathsf{E}(\nu)
@@ -33,23 +29,19 @@ push-effect score is updated by
 \Delta\mathsf{E}(\nu^-,\nu)
 &\triangleq
 \Delta\mathsf{E}_{\mathrm{obs}}(\mathbf{s}_{\nu^-},\mathbf{s}_{\nu})\\
-&\quad
-+b_g\mathbb{I}\{d_g^-\le W+\epsilon<d_g\}
+&\quad +b_g\mathbb{I}\{d_g^-\le W+\epsilon<d_g\}
 +\gamma_g(d_g-d_g^-),
 \end{aligned}
 \end{equation}
-where~$\mathsf{E}_{\max}$ is a finite cap, which can be set to~$\infty$ when
-no clipping is used. The term
-$\Delta\mathsf{E}_{\mathrm{obs}}(\mathbf{s}_{\nu^-},\mathbf{s}_{\nu})$
-measures the weighted change of object poses between the parent and child
-snapshots. The quantities~$d_g^-$ and~$d_g$ are the selected gap widths before
-and after the rollout, while~$b_g,\gamma_g\ge0$ reward first opening the gap
-beyond~$W+\epsilon$ and further enlarging it. For endpoint-clearance tasks,
-the gap-width terms in~\eqref{eq:push_effect} are omitted. This score is only a
-search heuristic; physical validity is still decided by the rollout checks
-in~\eqref{eq:sim}.
+where~$\mathsf{E}_{\max}$ is a finite cap, or~$\infty$ when clipping is not
+used. The term~$\Delta\mathsf{E}_{\mathrm{obs}}$ measures the weighted object-pose
+change between parent and child snapshots. The quantities~$d_g^-$ and~$d_g$ are
+the selected gap widths before and after rollout, and~$b_g,\gamma_g\ge0$ reward
+first opening the gap beyond~$W+\epsilon$ and further enlarging it. Endpoint
+clearance omits the gap-width terms. This score is only a search heuristic;
+physical validity is decided by~\eqref{eq:sim}.
 
-The accumulated execution cost along the same branch is updated by
+The accumulated execution cost is
 \begin{equation}\label{eq:exec_cost}
 \begin{aligned}
 \mathsf{C}(\nu)
@@ -61,40 +53,35 @@ T_{\mathrm{roll}}(\nu^-,\nu)
 +\lambda_{\mathrm{tr}}\widehat{C}_{\mathrm{tr}}(\tau_\nu;\mathbf{s}_{\nu^-}),
 \end{aligned}
 \end{equation}
-where~$T_{\mathrm{roll}}$ is the rollout duration or the corresponding number of
-control steps, and~$\widehat{C}_{\mathrm{tr}}$ estimates the robot-transfer
-cost for reaching the contact configuration of~$\tau_\nu$. The open queue uses
+where~$T_{\mathrm{roll}}$ is rollout duration or control-step count, and
+$\widehat{C}_{\mathrm{tr}}$ estimates robot-transfer cost for reaching the
+contact configuration of~$\tau_\nu$. The open queue uses
 \begin{equation}\label{eq:node_value}
 f(\nu)\triangleq
 \overline{\mathsf{J}}_{\mathrm{clr}}(\mathbf{s}_\nu)
 +(1-\beta)\overline{\mathsf{C}}(\nu)
 -\beta\overline{\mathsf{E}}(\nu),
 \end{equation}
-where~$\overline{\mathsf{J}}_{\mathrm{clr}}$ is the normalized W-clearance
-cost-to-go estimate from~\eqref{eq:state_c2g}, while
-$\overline{\mathsf{C}}$ and~$\overline{\mathsf{E}}$ are normalized branch cost
-and push-effect scores. The parameter~$\beta\in[0,1]$ controls the search
-bias: large~$\beta$ favors aggressive feasibility search in dense scenes,
-whereas small~$\beta$ gives higher priority to low-cost strategies once
-feasible passages are easier to find. Duplicate quantized snapshots are
-filtered by keeping the shallowest occurrence.
+where~$\overline{\mathsf{J}}_{\mathrm{clr}}$ is the normalized W--clearance
+cost-to-go from~\eqref{eq:state_c2g}, and~$\overline{\mathsf{C}}$ and
+$\overline{\mathsf{E}}$ are normalized branch cost and push-effect scores. The
+parameter~$\beta\in[0,1]$ trades optimality for aggressive feasibility search in
+dense scenes. Duplicate quantized snapshots are filtered by keeping the
+shallowest occurrence.
 
 \subsubsection{Expansion by Lazy Recursive Task Batches}
-At each iteration, the node with minimum~\eqref{eq:node_value} is popped and
-WCCG-guided gap sequencing is run on its snapshot~$\mathbf{s}_\nu$. If the WCCG
-clearance certificate in~\eqref{eq:wccg_criterion} already succeeds, the task
-sequence reconstructed from the root to~$\nu$ is returned. If an endpoint is
-blocked, endpoint-clearance tasks are sampled by treating the blocked endpoint
-as a virtual obstacle. Otherwise, the first portal gap of the best gap sequence
-is selected. The task sampler first emits direct pushing tasks for the selected
-gap. If these rollouts break the target gap, improve the WCCG clearance
-estimate, or exceed the lazy-progress threshold, recursive expansion is skipped.
-Recursive blocker-clearing tasks are released only when the direct batch makes
-no sufficient progress, or immediately when the same target gap is revisited and
-eager direct-plus-recursive sampling is triggered. Each accepted rollout creates
-a child snapshot node labeled by the push task that generated it. Successful
-children are sorted by~\eqref{eq:node_value}, limited by the per-expansion child
-budget, and inserted into an open queue capped by a fixed maximum size.
+At each iteration, the node with minimum~\eqref{eq:node_value} is popped and gap
+sequencing is run on~$\mathbf{s}_\nu$. If~\eqref{eq:wccg_criterion} already
+succeeds, the task sequence traced from the root is returned. If an endpoint is
+blocked, endpoint-clearance tasks are sampled by treating the endpoint as a
+virtual obstacle. Otherwise, the first portal gap of the best gap sequence is
+selected. The sampler first emits direct pushing tasks. If these rollouts break
+the target gap, improve the WCCG clearance estimate, or exceed the lazy-progress
+threshold, recursive expansion is skipped. Recursive blocker-clearing tasks are
+released only when the direct batch makes insufficient progress, or immediately
+when the same gap is revisited under eager direct-plus-recursive sampling. Each
+accepted rollout creates a child snapshot, sorted by~\eqref{eq:node_value},
+limited by the child budget, and inserted into a capped open queue.
 
 %==============================================
 \begin{algorithm}[t!]
@@ -156,12 +143,11 @@ trajectory and confirming success.}
 % ========================================
 
 \subsubsection{Termination and Replanning}
-Termination occurs when a popped node~$\nu$ reaches a snapshot~$\mathbf{s}_\nu$
-for which the WCCG clearance certificate in~\eqref{eq:wccg_criterion} succeeds.
-The solution~$\pi^\star$ is obtained by tracing the incoming push-task labels
-from~$\nu$ to the root, and constitutes a complete solution
-to~\eqref{eq:problem}. During execution, the WCCG, the gap-sequencing cache,
-and reusable ModeTable entries are updated after each accepted task. If object
-drift, transition blockage, or contact loss invalidates the remaining prefix,
-the search is restarted from the observed snapshot while preserving failed task
-signatures and reusable mode entries.
+Termination occurs when a popped node~$\nu$ reaches a snapshot satisfying the
+WCCG clearance certificate in~\eqref{eq:wccg_criterion}. The solution
+$\pi^\star$ is obtained by tracing incoming push-task labels to the root and
+constitutes a complete solution to~\eqref{eq:problem}. During execution, WCCG,
+gap-sequencing cache, and reusable ModeTable entries are updated after each
+accepted task. If object drift, transition blockage, or contact loss invalidates
+the remaining prefix, the search restarts from the observed snapshot while
+preserving failed task signatures and reusable mode entries.

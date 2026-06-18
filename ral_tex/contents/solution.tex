@@ -4,15 +4,14 @@
 The PushAround framework enables collaborative multi-robot path clearing with
 physics-informed feasibility checks. As shown in Fig.~\ref{fig:overall}, it
 first constructs a W--Clearance Connectivity Graph in Sec.~\ref{subsec:wccg} to
-capture width-constrained workspace connectivity and identify blocking frontier
-gaps. Section~\ref{subsec:gap} runs bounded WCCG presearch and selects the next
-blocking gap by predicted connection cost. Section~\ref{subsec:push} generates
-local push tasks from clearance-driven
-velocity sampling, contact-mode optimization, quick-pass filtering, and
-short-horizon simulation. Section~\ref{subsec:simloop} integrates these modules
-into the implementation-aligned hybrid search, where node selection follows the
-predicted cost-to-go minus validated push effect. Execution and complexity are
-summarized in Sec.~\ref{subsec:overall}.
+capture width-constrained workspace connectivity and expose blocking frontier
+gaps. Section~\ref{subsec:gap} performs bounded WCCG presearch to select the
+next portal gap by predicted connection cost. Section~\ref{subsec:push}
+generates local push tasks through clearance-driven velocity sampling,
+contact-mode optimization, quick-pass filtering, and short-horizon simulation.
+Section~\ref{subsec:simloop} integrates these modules into PIHS, where node
+selection follows predicted cost-to-go, robot-transfer cost, and validated push
+effect. Execution and complexity are summarized in Sec.~\ref{subsec:overall}.
 
 % %% ========================================
 \input{contents/wccg.tex}

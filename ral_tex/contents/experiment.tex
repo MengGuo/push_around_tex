@@ -1,55 +1,52 @@
 % ============================================================
 \section{Experiments}
 \label{sec:experiments}
-Numerical experiments are conducted to evaluate the proposed PIHS algorithm and
-its implementation as the ClutterBreaker policy. The algorithms are implemented
-in \texttt{Python3} and \texttt{PyBullet}~\cite{coumans2019} on a computer with
-an Intel Core i9-14900KF CPU and an NVIDIA RTX 4080 GPU. Simulation and hardware
-videos are provided in the supplementary material.
+Numerical experiments evaluate PIHS and its implementation as the ClutterBreaker
+policy. The algorithms are implemented in \texttt{Python3} and
+\texttt{PyBullet}~\cite{coumans2019} on a computer with an Intel Core
+i9-14900KF CPU and an NVIDIA RTX 4080 GPU. Simulation and hardware videos are
+provided in the supplementary material.
 
 \subsection{Numerical Simulations}
 \label{subsec:sim}
 
 \subsubsection{Setup and Configuration}\label{subsec:sim-setup}
 As shown in Fig.~\ref{fig:simloop}, the simulation uses a step of
-$\Delta t=1/240$\,s and a control period of $1/40$\,s. Robots are modeled as
-disk or box pushers with dimensions consistent with the W--clearance
-requirement. Movable obstacles have masses uniformly sampled from
-$[5,15]$\,kg, while immovables are modeled with zero mass. A trial is
-successful when a W--clear path exists from start to goal and the vehicle
-reaches the goal disc. The nominal workspace is an $8{\times}5$\,m bounded
-scene with two fixed bar obstacles and a mixed pool of curved and polygonal
-movables, including rings, ellipses, X/T/L/diamond shapes, arrows, rectangles,
-and cylinders. Two robots start in the lower-left region, and the goal lies on
-the right. Each expansion runs an exact WCCG presearch, samples from the first gap of the
-best predicted sequence, and keeps at most $16$ validated child nodes. The node
-queue follows~\eqref{eq:node_value}, and task generation uses velocity
-deduplication, geometric quick-pass filtering, ModeTable reuse, and parallel
-short-horizon simulation.
+$\Delta t=1/240$\,s and a control period of $1/40$\,s. Robots are modeled as disk
+or box pushers with dimensions consistent with the W--clearance requirement.
+Movable obstacle masses are uniformly sampled from $[5,15]$\,kg, while
+immovables have zero mass. A trial is successful when a W--clear path connects
+start and goal after execution. The nominal workspace is an $8{\times}5$\,m scene
+with two fixed bars and a mixed pool of curved and polygonal movables, including
+rings, ellipses, X/T/L/diamond shapes, arrows, rectangles, and cylinders. Each
+expansion runs WCCG presearch, samples from the first gap of the best predicted
+sequence, and keeps at most $16$ validated children. The queue follows
+\eqref{eq:node_value}, and task generation uses velocity deduplication,
+geometric quick-pass filtering, ModeTable reuse, and parallel short-horizon
+simulation.
 
 \subsubsection{Baselines and Ablations}\label{subsec:comparisons}
 Four external planners are evaluated under the same W--clearance and contact
 models. \textbf{DFS-WCCG} is a simulation-in-the-loop depth-first search guided
-by WCCG but using four fixed axis-aligned pushes per movable obstacle.
+by WCCG but restricted to four fixed axis-aligned pushes per movable obstacle.
 \textbf{SL-Push (offline)} clears blockers by minimal displacements along a
 straight or waypointed route without physics. \textbf{SL-Push (sim)} validates
-the same route with physics rollouts. \textbf{Rec-NAMO} combines Dijkstra
-routing, local push decomposition, and edge pruning. Internal ablations remove
-major modules of PushAround: \textbf{w/o presearch} disables frontier extraction
-and gap ranking; \textbf{w/o ModeTable} discards structured contact-mode priors;
-\textbf{w/o quick-pass} forces full-horizon rollouts; and
-\textbf{w/o reinsertion} prevents revisiting promising but temporarily failed
-nodes.
+those route-level pushes with physics rollouts. \textbf{Rec-NAMO} combines
+Dijkstra routing, local push decomposition, and edge pruning. Internal ablations
+remove major modules of PushAround: \textbf{w/o presearch} disables frontier gap
+ranking; \textbf{w/o ModeTable} discards structured contact-mode priors;
+\textbf{w/o quick-pass} forces full-horizon rollouts; and \textbf{w/o reinsertion}
+prevents revisiting promising but temporarily failed nodes.
 
-Table~\ref{tab:main_ablation} shows that PushAround achieves the highest
-success rate, $92.5\%$, with the lowest combined planning and execution time.
-DFS-WCCG reaches only $25.0\%$ success because its fixed push set causes an
-exponential branching burden. SL-Push offline is fast but often physically
-invalid, while SL-Push sim improves feasibility at heavy rollout cost. Rec-NAMO
-is faster than simulation-heavy baselines but frequently fails to establish a
-complete W--clear corridor. The internal ablations show that presearch and
-ModeTable are essential for reducing unnecessary simulations, while quick-pass
-and reinsertion improve runtime and robustness.
+Table~\ref{tab:main_ablation} shows that PushAround achieves the highest success
+rate, $97.5\%$, with the lowest combined planning and execution time. DFS-WCCG
+reaches only $25.0\%$ success because its fixed push set causes exponential
+branching. SL-Push offline is fast but often physically invalid, while SL-Push
+sim improves feasibility at heavy rollout cost. Rec-NAMO is faster than
+simulation-heavy baselines but frequently fails to establish a complete
+W--clear corridor. The ablations show that presearch and ModeTable reduce
+unnecessary simulations, while quick-pass and reinsertion improve runtime and
+robustness.
 
 % ========================================
 \begin{table}[t]
@@ -67,7 +64,7 @@ and reinsertion improve runtime and robustness.
   SL-Push (offline)    & 62.5  & 0.06     & 44.1 & 0.0    & 7.0 \\
   SL-Push (sim)        & 75.0  & 18.2     & 64.6 & 20.0   & 10.0 \\
   Rec-NAMO             & 37.5  & 13.3     & 42.4 & 0.0    & 7.0 \\
-  \textbf{PushAround}  & \textbf{92.5} & \textbf{10.3} &
+  \textbf{PushAround}  & \textbf{97.5} & \textbf{10.3} &
   \textbf{28.6} & \textbf{121.5} & \textbf{6.0} \\
   \midrule
   w/o presearch        & 85.0 & 16.9 & 35.2 & 178 & 7.0 \\
@@ -98,25 +95,26 @@ A separate density-scaling suite evaluates the planner in an $8{\times}8$\,m
 workspace with $N\in\{15,20,25,30,35,40,45\}$ movable obstacles and five random
 seeds per density. For a fixed seed, denser instances are generated by adding
 objects to the lower-density layout, which isolates density from scene identity.
-Planning-time curves use the benchmark post-processing rule: every unsuccessful
-trial, including plan failure and timeout-pruned rows, is assigned the per-trial
-timeout cap of $800$\,s before averaging.
+For planning-time curves, every unsuccessful trial, including plan failure and
+timeout-pruned rows, is assigned the $400$\,s cap before averaging.
 
 As shown in Fig.~\ref{fig:density_scaling}, PushAround keeps $100\%$ success
 across all tested densities and increases from $2.6$\,s at $N=15$ to
-$49.2$\,s at $N=45$ in capped mean planning time. In contrast, Recursive drops
-to $0\%$ success from $N=35$, while SLPush and DFS remain at only $20\%$ success
-at $N=45$ under the same cap convention. The ablation without recursive local
-clearance stays competitive at moderate densities but falls to $40\%$ success at
-$N=45$, showing that recursive blocker clearance is mainly needed in heavily
-packed scenes.
+$49.2$\,s at $N=45$ in capped mean planning time. In contrast, Rec-NAMO drops to
+$0\%$ success from $N=35$, while SL-Push and DFS-WCCG remain at only $20\%$
+success at $N=45$ under the same cap convention. The ablation without recursive
+local clearance stays competitive at moderate densities but falls to $40\%$
+success at $N=45$, showing that recursive blocker clearance is mainly needed in
+heavily packed scenes.
 % ========================================
 \begin{figure}[t!]
   \centering
   \includegraphics[width=1.0\columnwidth]{figures/dense45.png}
-  \caption{
-  }
-  \label{fig:baseline}
+  \vspace{-0.1in}
+  \caption{Representative dense-clutter run with $45$ movable obstacles. The
+  snapshots and WCCG overlays illustrate how the planner incrementally opens a
+  connected W--clear corridor in a highly packed scene.}
+  \label{fig:dense45}
 \end{figure}
 % ========================================
 % ========================================
@@ -142,8 +140,7 @@ packed scenes.
   cluttered workspaces.
   \textbf{Bottom}: corresponding WCCG overlays, where the blue region denotes the
   currently reachable $W$--clear face and the dashed graph encodes candidate gap
-  connections. The statistics are computed over ten hardware trials per scenario.
-  }
+  connections. The statistics are computed over ten hardware trials per scenario.}
   \vspace{-4mm}
   \label{fig:hardware}
 \end{figure*}
@@ -154,12 +151,11 @@ packed scenes.
 \subsubsection{System Description and Results}\label{subsec:exp-description}
 Experiments are conducted in a $5\,\mathrm{m}\times6\,\mathrm{m}$ motion-capture
 workspace with two UGVs and six movable cardboard obstacles, as shown in
-Fig.~\ref{fig:hardware}. The motion-capture poses are streamed to
-\texttt{PyBullet} for online execution and visualization. In a representative
-run, WCCG presearch completes within $10$\,s and clears five gaps through $64$
-node expansions with maximum search depth $3$. The robots rotate a T-shaped
-object, translate adjacent rectangles, and push a cylinder to establish a final
-W--clear corridor. Occasional Mecanum-wheel drift near $45^\circ$ causes small
-execution deviations, but online replanning restores the planned WCCG progress.
-The resulting sequence confirms that the optimized contact modes and local
-pushes are physically executable on hardware.
+Fig.~\ref{fig:hardware}. Motion-capture poses are streamed to \texttt{PyBullet}
+for online execution and visualization. In a representative run, WCCG presearch
+completes within $10$\,s and clears five gaps through $64$ node expansions with
+maximum search depth~$3$. The robots rotate a T-shaped object, translate adjacent
+rectangles, and push a cylinder to establish a final W--clear corridor.
+Occasional Mecanum-wheel drift near $45^\circ$ causes small deviations, but
+online replanning restores WCCG progress. The sequence confirms that the
+optimized contact modes and local pushes are physically executable on hardware.
