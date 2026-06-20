@@ -83,9 +83,9 @@ goal position.
 % ========================================
 \begin{figure}[t!]
   \centering
-  \includegraphics[width=0.98\columnwidth]{figures/Rec_NAMO.pdf}
+  \includegraphics[width=0.8\columnwidth]{figures/compare.png}
   \vspace{-0.15in}
-  \caption{Failure cases by baselines SL-Push (\textbf{Left}) and Rec-NAMO (\textbf{Right}).}
+  \caption{Failure cases by baselines Rec-NAMO, SL-Push and DFS-WCCG.}
   \label{fig:baseline}
   \vspace{-0.1in}
 \end{figure}
@@ -193,7 +193,7 @@ Fig.~\ref{fig:hardware}. Each trial employs $2$ UGVs and $6$ movable obstacles
 represented by cardboard boxes covered with colored paper for visual distinction. Both robots and
 movables are equipped with three to four motion-capture markers. A motion-capture system streams
 global poses to \texttt{PyBullet} in real time, enabling policy execution and visualization.
-Movables are randomly placed at the beginning of each trial to generate diverse clutter.
+Movables are randomly placed for each trial.
 
 \subsubsection{Results}\label{subsec:exp-results}
 Two representative real-world runs are shown in Fig.~\ref{fig:snapshots} and~\ref{fig:hardware}.
