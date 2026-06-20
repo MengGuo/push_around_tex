@@ -31,25 +31,25 @@ resulting one--hop cost is given by:
 \begin{equation}\label{eq:step_cost}
 \mathsf{C}\big(g \mid \mathcal{L}, \mathbf{s}_{\mathcal{R}}\big)
 =\lambda_\texttt{t}\,\mathsf{C}_\texttt{t}\!\left(\mathbf{s}_{\mathcal{R}},\mathbf{o}_g\right)
-+\lambda_\texttt{p}\,\mathsf{C}_\texttt{p}(g),
++\lambda_\texttt{p}\,\big( \mathsf{C}_\texttt{dp}(g) + \mathsf{C}_\texttt{rp}(g)\big)
 \end{equation}
 where~$\lambda_\texttt{t},\lambda_\texttt{p}>0$ are weighting factors
 for the transition and pushing costs, respectively;
 function~$\mathsf{C}_\texttt{t}(\cdot)$ denotes the collision-free
 distance between two points;
-and the function~$\mathsf{C}_\texttt{p}(\cdot)$ measures the widening effort,
-which increases when the gap is narrower than~$W$,
-or when the adjacent obstacles are heavier as scaled by the  mass of adjacent movable
-obstacles.
+the function~$\mathsf{C}_\texttt{dp}(\cdot)$ measures the widening effort of direct pushing,
+which increases with narrower opening and heavier adjacent obstacles;
+the function~$\mathsf{C}_\texttt{rp}(\cdot)$ estimates the pushing effort if recursive pushing
+is required, i.e., multiple out-layer obstacles should be cleared \emph{before}~$g$ can be widened.
 
 %------------------------------
 \begin{figure}[t!]
   \centering
-  \includegraphics[width=0.95\linewidth]{figures/PIHS.png}
+  \includegraphics[width=0.95\linewidth]{figures/paper_density_comparison.pdf}
   \vspace{-0.15in}
   \caption{
 Direct pushing moves a gap-side object
-  toward a full-opening motion, whereas recursive pushing first clears movable
+  toward a opening motion, whereas recursive pushing first clears movable
   blockers found in the swept region and then returns to the root gap-opening
   task.}
     \label{fig:direct_recursive_push}
@@ -62,23 +62,23 @@ Furthermore, to prioritize gaps closer to the goal, a heuristic is added to the 
 i.e.,
 $h(g)=\eta\,\big\|\mathbf{o}(g)-\mathbf{s}_\texttt{V}^{\texttt{G}}\big\|$,
 with the scaling constant~$\eta>0$.
-Lastly, a short A$^\star$-style presearch crosses
-each candidate gap, recomputes the next frontier, and continues for a limited
-beam width and depth. The \emph{cost-to-connect} is predicted by:
+Lastly, a short A$^\star$-style presearch is adopted to cross
+each candidate gap, recompute the next frontier, and continue for a limited
+width and depth. The \emph{cost-to-connect} is predicted by:
 \begin{equation}\label{eq:pred_cost}
 \widehat{\mathsf{Cost}}(g)\triangleq
 \mathsf{C}\!\big(g \mid \mathcal{L},\mathbf{s}_{\mathcal{R}}\big)
 +\!\!\!\sum_{g'\in\Pi^\star(g)}\!\!\!\big{\{}\mathsf{C}(g' \mid \cdot)+h(g')\big{\}},
 \end{equation}
-where~$\Pi^\star(g)$ is the sequence of subsequent gaps discovered after
+where~$\Pi^\star(g)$ is the \emph{sequence of subsequent gaps} discovered after
 virtually crossing~$g$;
-the dots indicate updated inputs along that rollout;
+the dots indicate updated inputs along the rollout of consecutive pushes;
 and the scalar score~$\widehat{\mathsf{Cost}}(g)>0$ for each candidate gap.
 Consequently,
 the final output of this module is the ranked list of candidate gaps, i.e.,
 $\textsf{Rank}\big(\Gamma_\mathcal{L}\big)
 \triangleq \textbf{argsort}_{g\in\Gamma_\mathcal{L}}\widehat{\mathsf{Cost}}(g)$,
-which sorts~$\Gamma_\mathcal{L}$ in ascending predicted cost. This
+in ascending predicted cost. This
 ordered set is passed to the hybrid search module, such that only the
 promising gaps are expanded first.
 
@@ -86,7 +86,5 @@ promising gaps are expanded first.
 Efficiency of the above ranking procedure can be improved by
 caching frontier loops, storing the transitions
 $(\mathcal{L},g)\mapsto\mathcal{L}'$, and accelerating the edge queries with
-axis-aligned bounding-box culling. With a small beam width and depth,
-the runtime of ranking remains negligible compared to
-the cost of simulation-based validation. \hfill$\blacksquare$
+axis-aligned bounding-box culling. \hfill$\blacksquare$
 \end{remark}

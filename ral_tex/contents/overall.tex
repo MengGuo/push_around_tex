@@ -28,14 +28,14 @@ execution is aborted and Alg.~\ref{alg:push} is called from the updated state.
 \subsubsection{Computational Complexity}\label{subsubsec:complexity}
 Given~$M$ movable obstacles, let
 $\mathcal{G}_W$ be the current WCCG in~\eqref{eq:wccg},
-$\Gamma_{L_\nu}$ be the visible frontier-gap set at node~$\nu$,
+$\Gamma_{\nu}$ be the visible frontier-gap set at node~$\nu$,
 and let~$\Xi_g$ be the candidate pushing-strategy set for gap~$g$.
 Then one node expansion in Alg.~\ref{alg:push}
 consists of:
 (I) WCCG update and frontier extraction,
 with complexity~$\mathcal{O}(M\log M + |\mathcal{V}| + |\mathcal{E}_c| + |\mathcal{E}_b|)$;
-(II) gap ranking over~$\Gamma_{L_\nu}$,
-with complexity~$\mathcal{O}(|\Gamma_{L_\nu}|\log |\Gamma_{L_\nu}|)$;
+(II) gap ranking over~$\Gamma_{\mathcal{L}_\nu}$,
+with complexity~$\mathcal{O}(|\Gamma_{\mathcal{L}_\nu}|\log |\Gamma_{\mathcal{L}_\nu}|)$;
 and
 (III) candidate generation and validation over the ranked gaps. If
 $C_{\mathrm{LP}}$ denotes the cost of one sparse LP in mode
@@ -43,9 +43,8 @@ generation,~$T_{\mathrm{sim}}$ the rollout horizon of one
 $\mathsf{EvalSim}(\cdot)$ in~\eqref{eq:sim},~$n_{\texttt{w}}$ the number of parallel
 simulations, and~$\rho_\nu\in[0,1]$ the fraction of validated candidates,
 then the dominant complexity is
-$\mathcal{O}(\sum_{g\in \mathsf{Rank}(\nu)} |\Xi_g|\, C_{\mathrm{LP}}
-+\frac{\rho_\nu\, T_{\mathrm{sim}}}{n_{\texttt{w}}}
-\sum_{g\in \mathsf{Rank}(\nu)} |\Xi_g|)$.
+$\mathcal{O}(\sum_{g\in \mathsf{Rank}(\nu)} |\Xi_g|\, \big(C_{\mathrm{LP}}
++\frac{\rho_\nu\, T_{\mathrm{sim}}}{n_{\texttt{w}}}\big))$.
 Hence, the overall cost per expansion is dominated by the
 simulation process, while quick-pass, early stopping and parallel
 rollouts can reduce the constant factors in practice.
