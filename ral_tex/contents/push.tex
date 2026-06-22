@@ -2,22 +2,36 @@
 \subsection{Pushing Mode Generation and Evaluation}\label{subsec:push}
 For a selected frontier gap~$g$, this subsection constructs a set of candidate
 pushing strategies
-$\Xi_g \triangleq \{(\mathbf{v},\boldsymbol{\xi})\}$,
+$\Xi_g \triangleq \{(\Omega_m,\mathbf{v},\boldsymbol{\xi})\}$,
 where~$\mathbf{v} \triangleq (v_x,v_y,\omega)\in\mathbb{R}^3$ is a
-short-horizon pushing direction for the movable obstacle adjacent to~$g$, and
+short-horizon pushing direction for the movable obstacle~$\Omega_m$ induced by~$g$, and
 $\boldsymbol{\xi}\triangleq(\mathcal{C},\mathbf{u})$ is the associated pushing
-mode in~\eqref{eq:transition}. It consists of three steps:
-direction sampling, pushing mode generation and evaluation.
+mode in~\eqref{eq:transition}.
+
 
 
 %==============================================
-\subsubsection{Pushing Direction Sampling}
-Let~$\Omega_m$ denote one of the two movable obstacles adjacent to~$g$. For
+\subsubsection{Direct and Recursive Pushing Tasks}
+For \emph{direct push}, let~$\Omega_m$ denote one of the two movable obstacles adjacent to~$g$. For
 each such obstacle, a small set of candidate body velocities
-$\{\mathbf{v}_m^k\}_{k=1}^{K_m}$ is sampled with a bias toward enlarging the gap~$g$,
-while a few angular components are included to account for local geometry.
-These directions reflect the candidate pushing intents for the obstacles adjacent
-to gap~$g$, as shown in Fig.~\ref{fig:direct_recursive_push}.
+$\{\mathbf{v}_m^k\}_{k=1}^{K_m}$ is sampled with a bias toward enlarging the
+gap~$g$, while a few angular components are included to account for local
+geometry.
+However, if the swept region of a direct push intersects
+movable blockers, \emph{recursive push} tasks are further required.
+Namely, for
+each out-layer blocker~$\Omega_m$, the nominal direction moves it away
+from both the swept region
+and the reference gap sequence~$\Pi^\star(g)$,
+with the candidate velocities~$\{\mathbf{v}_m^k\}_{k=1}^{K_m}$.
+The recursive pushes aim to
+move the blocker out of the swept region rather than directly open the gap.
+Recursion therefore creates a bounded dependency chain which prioritizes the
+final blocker~$\Omega_m$, as shown in
+Fig.~\ref{fig:direct_recursive_push}.
+
+
+
 
 %------------------------------
 \begin{figure}[t!]
@@ -90,20 +104,21 @@ into~$\Xi_g$.
 %==============================================
 \subsubsection{Pushing Strategy Evaluation}
 For a current state~$\mathbf{s}$ and a candidate strategy
-$(\mathbf{v},\boldsymbol{\xi})\in\Xi_g$, a short-horizon rollout evaluates the
+$(\Omega_m,\mathbf{v},\boldsymbol{\xi})\in\Xi_g$, a short-horizon rollout evaluates the
 transition in~\eqref{eq:transition} under the selected mode.
-As illustrated in Fig.~\ref{fig:mode_generation}, a strategy is
-accepted only if the robots reach the pre-contact poses, avoid collision,
-maintain stable contact, and induce obstacle motion that enlarges~$g$. The
+As shown in Fig.~\ref{fig:mode_generation}, a strategy is
+accepted only if the robots reach the pre-contact poses,
+maintain stable contact, and induce obstacle motion above threshold. The
 simulation returns:
 \begin{equation}
   (\mathbf{s}',\,\delta_{\texttt{T}},\,\delta_{\texttt{J}})
   \triangleq
-  \mathsf{EvalSim}\big(\mathbf{s},\,(g,\mathbf{v},\boldsymbol{\xi})\big),
+  \mathsf{EvalSim}\big(\mathbf{s},\,(\Omega_m,\mathbf{v},\boldsymbol{\xi})\big),
   \label{eq:sim}
 \end{equation}
-where~$\mathbf{s}'$ is the successor state,~$\delta_{\texttt{T}}>0$ is the
-time cost, and~$\delta_{\texttt{J}}$ is the control effort.
+where~$\mathbf{s}'$ is the successor state given the strategy;
+$\delta_{\texttt{T}}>0$ is the
+time cost; and~$\delta_{\texttt{J}}$ is the control effort.
 
 %------------------------------
 \begin{figure}[t!]
