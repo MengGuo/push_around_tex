@@ -1,0 +1,15 @@
+Dear Professor Asfour,
+
+On behalf of my co-authors, I am pleased to submit our manuscript entitled "PushAround: Collaborative Path Clearing via Physics-Informed Hybrid Search" for possible publication as a regular paper in IEEE Robotics and Automation Letters.
+
+This paper addresses collaborative path clearing in cluttered environments, where a team of mobile robots must rearrange movable obstacles to create a traversable corridor for a large vehicle. The proposed PushAround framework couples W-clearance geometric connectivity reasoning with physics-informed hybrid search and short-horizon simulation validation. In contrast to geometric NAMO methods that often ignore robot size, obstacle mass, contact geometry, and force feasibility, the proposed method jointly selects blocking gaps, movable obstacles, pushing directions, contact modes, and forces, admitting only physically validated pushing strategies into the clearing plan.
+
+The manuscript is original, has not been published previously, and is not under consideration elsewhere. All authors have approved the submission. Supplementary videos are provided to illustrate the planning, simulation, and hardware execution results.
+
+We thank you very much for the handling of our paper and are looking forward to hearing from you.
+
+Sincerely,
+
+Meng Guo
+on behalf of all authors
+Peking University
