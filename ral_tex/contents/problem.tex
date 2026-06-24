@@ -43,43 +43,80 @@ obstacles, movable obstacles, and robots.
 
 %==============================
 \subsection{External Vehicle and Clearance Goal}\label{subsec:vehicle}
-An external vehicle~$\texttt{V}$ of radius~$W/2>0$ must navigate within the workspace
-from a start configuration~$\mathbf{s}_\texttt{V}^{\texttt{S}}\in \mathcal{W}$ to a goal configuration
-$\mathbf{s}_\texttt{V}^{\texttt{G}}\in \mathcal{W}$. Since movable obstacles may obstruct the way, a
-direct passage is not always feasible. Feasibility at time~$t$ is captured by
-the~$W$-clearance condition:
+An external vehicle~$\texttt{V}$ whose footprint is enclosed by a disk of
+radius~$W/2>0$ must navigate within the workspace from a start position
+$\mathbf{x}_\texttt{V}^{\texttt{S}}\in\mathcal{W}$ to a goal position
+$\mathbf{x}_\texttt{V}^{\texttt{G}}\in\mathcal{W}$. Since movable obstacles may
+obstruct the way, the clearance goal is to rearrange them so that the workspace
+contains a passage from~$\mathbf{x}_\texttt{V}^{\texttt{S}}$ to
+$\mathbf{x}_\texttt{V}^{\texttt{G}}$ that can accommodate this enclosing disk,
+i.e., a passage of width at least~$W$. At time~$t$, this is expressed by the
+admissible reference-center space
+$\mathcal{F}_W(t)\triangleq
+\{p\in\widehat{\mathcal{W}}(t)\mid
+\mathbb{B}_{W/2}(p)\subset\widehat{\mathcal{W}}(t)\}$, where
+$\mathbb{B}_{W/2}(p)$ is the disk of radius~$W/2$ centered at~$p$. The
+$W$-clearance condition is then
 \begin{equation}\label{eq:wclear}
-\exists\,\mathcal{P}^W_\texttt{V}\subset\widehat{\mathcal{W}}(t):\
-\mathbf{s}_\texttt{V}^{\texttt{S}}\leadsto\mathbf{s}_\texttt{V}^{\texttt{G}},\;
-\texttt{clr}(\mathcal{P}^W_\texttt{V})\ge W,
+\exists\,\mathcal{P}^W_\texttt{V}\subset\mathcal{F}_W(t):\
+\mathbf{x}_\texttt{V}^{\texttt{S}}\leadsto\mathbf{x}_\texttt{V}^{\texttt{G}},
 \end{equation}
-where~$\mathcal{P}^W_\texttt{V}$ is a continuous curve connecting the start and goal inside
-the free space, and~$\texttt{clr}(\mathcal{P}^W_\texttt{V})$ denotes its minimum clearance
-to all surrounding obstacles.
+which certifies a collision-free centerline path for any vehicle footprint
+contained in the enclosing disk.
+% Since movable obstacles may obstruct the way, 
+% a direct passage is not always feasible. 
+% At time~$t$, the admissible center positions of~$\texttt{V}$ are
+% \begin{equation}
+% \mathcal{F}_W(t)\triangleq
+% \{p\in\widehat{\mathcal{W}}(t)\mid \mathbb{B}_{W/2}(p)\subset\widehat{\mathcal{W}}(t)\}.
+% \end{equation}
+% where $\mathbb{B}_{W/2}$ is a disk of radius~$W/2$.
+% The clearance goal is satisfied if there exists a continuous centerline path
+% inside~$\mathcal{F}_W(t)$:
+% \begin{equation}\label{eq}
+% \exists\,\mathcal{P}^W_\texttt{V}\subset\mathcal{F}_W(t):
+% \mathbf{s}_\texttt{V}^{\texttt{S}}\leadsto\mathbf{s}_\texttt{V}^{\texttt{G}}.
+% \end{equation}
+% this therefore certifies a passage with width at
+% least~$W$.
+
 
 %==============================
+
+
 \subsection{Collaborative Pushing Modes}\label{ss:interaction_mode}
-To enlarge the blocked gaps, the robots may actively reconfigure
-$\boldsymbol{\Omega}$ by pushing movable obstacles.
-For obstacle~$\Omega_m\in \boldsymbol{\Omega}$,
-a pushing mode is denoted by
-$\boldsymbol{\xi}_m \triangleq (\mathcal{C}_m,\mathbf{u}_m)$, where
-$\mathcal{C}_m \triangleq \{c_1,\cdots,c_N\}$ is an ordered tuple of contact points
-on the boundary of~$\Omega_m$ with $c_i \in \partial\Omega_m$, and the ordering of~$\mathcal{C}_m$ defines the
-robot-to-contact assignment. The variable
-$\mathbf{u}_m \in \mathbb{R}^{2N}$ are the per-contact
-net body wrench applied to~$\Omega_m$.
-All robots are assumed to participate in each pushing mode,
-each maintaining one simultaneous contact. The admissible set of
-pushing modes is denoted by~$\Xi_m$ and is determined by contact reachability,
-pre-contact configurations, and pushing feasibility.
-Furthermore, the system evolution under a pushing mode is captured by the transition below:
-\begin{equation}\label{eq:transition}
-  \mathbf{s}(t^+)\triangleq\Phi\big(\mathbf{s}(t),\,m,\,\boldsymbol{\xi}_m\big),
+To enlarge blocked gaps, the robots may actively reconfigure
+$\boldsymbol{\Omega}$ by pushing movable obstacles. For obstacle
+$\Omega_m\in\boldsymbol{\Omega}$, a pushing mode is denoted by
+$\boldsymbol{\xi}_m\triangleq(\mathcal{C}_m,\mathbf{u}_m)$, where
+$\mathcal{C}_m=(c_1,\cdots,c_N)$ is an ordered tuple of contact points on
+$\partial\Omega_m$, and the ordering specifies the robot-to-contact assignment.
+The vector~$\mathbf{u}_m\in\mathbb{R}^{2N}$ stacks the corresponding planar
+contact forces, expressed in the body frame of~$\Omega_m$.
+For a contact tuple~$\mathcal{C}_m$, the admissible force set
+$\mathcal{U}_m(\mathcal{C}_m)\subset\mathbb{R}^{2N}$ collects contact forces
+satisfying the robot pushing limits, robot--object friction, and unilateral
+contact constraints. The body wrench induced by a mode is
+\begin{equation}
+\mathbf{q}_m(\boldsymbol{\xi}_m)
+\triangleq
+G_m(\mathcal{C}_m)\mathbf{u}_m\in\mathbb{R}^3.
+\label{eq:contact_wrench_map}
 \end{equation}
-where~$\mathbf{s}(t)$ stacks all robot and obstacle states;
-and the operator~$\Phi$ encapsulates the overall evolution,
-which can be evaluated through physics simulation.
+where~$G_m(\mathcal{C}_m)\in\mathbb{R}^{3\times 2N}$ is the contact-to-wrench map.
+The admissible mode set is state dependent and is denoted by
+$\Xi_m(\mathbf{s})$. It contains modes whose contacts are reachable from the
+current robot configurations, whose pre-contact configurations are feasible in
+the current clutter, and whose forces satisfy
+$\mathbf{u}_m\in\mathcal{U}_m(\mathcal{C}_m)$. Hence, applying a feasible mode
+$\boldsymbol{\xi}_m\in\Xi_m(\mathbf{s}(t))$ yields the physics-evaluated
+transition
+\begin{equation}\label{eq:transition}
+  \mathbf{s}(t^+)\triangleq
+  \Phi\big(\mathbf{s}(t),\,m,\,\boldsymbol{\xi}_m\big),
+\end{equation}
+where~$\mathbf{s}(t)$ stacks all robot and obstacle states.
+
 
 %==============================
 \subsection{Problem Statement}\label{subsec:objective}

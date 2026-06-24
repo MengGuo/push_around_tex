@@ -17,12 +17,10 @@ For consistency with execution, the WCCG is rebuilt periodically from
 the current configuration. Execution terminates once a $W$--clear path
 $\mathcal{P}^W_\texttt{V}$ connects $\mathbf{s}_t$ and
 $\mathbf{s}_\texttt{V}^{\texttt{G}}$.
-Replanning is triggered if nominal execution cannot continue reliably, e.g., if
-reassignment is blocked by nearby obstacles; if the realized motion deviates
-significantly from the simulated state, the current push fails; or if
-the updated local geometry invalidates the remaining schedule. In such cases,
-execution is aborted and Alg.~\ref{alg:push} is called from the updated state.
-
+Replanning is triggered when contact reassignment is blocked, the realized
+motion deviates from simulation, a push fails, or the updated geometry
+invalidates the remaining schedule. In such cases, Alg.~\ref{alg:pihs} is
+called from the updated state.
 
 %----------------------------------------------
 \subsubsection{Computational Complexity}\label{subsubsec:complexity}
@@ -38,7 +36,7 @@ with complexity~$\mathcal{O}(M\log M + |\mathcal{V}| + |\mathcal{E}_c| + |\mathc
 with complexity~$\mathcal{O}(|\Gamma_{\mathcal{L}_\nu}|\log |\Gamma_{\mathcal{L}_\nu}|)$;
 and
 (III) candidate generation and validation over the ranked gaps. If
-$C_{\mathrm{LP}}$ denotes the cost of one sparse LP in mode
+$C_{\mathrm{LP}}$ denotes the cost of one LP in mode
 generation,~$T_{\mathrm{sim}}$ the rollout horizon of one
 $\mathsf{EvalSim}(\cdot)$ in~\eqref{eq:sim},~$n_{\texttt{w}}$ the number of parallel
 simulations, and~$\rho_\nu\in[0,1]$ the fraction of validated candidates,

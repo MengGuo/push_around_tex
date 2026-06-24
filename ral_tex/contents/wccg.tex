@@ -10,8 +10,9 @@ it avoids discretization error and remains consistent—crucial because connecti
 during planning.
 
 \subsubsection{Graph Construction}
-The WCCG is built by decomposing each movable obstacle
-$\Omega_m\in\boldsymbol{\Omega}$ into convex components. From each component
+The WCCG is built by decomposing all clearance-relevant obstacle and workspace
+boundaries into convex components or segments.
+From each component
 $C$, a centroid node~$v_c$ is created. When two components~$C_u$ and~$C_v$
 have closest points~$p_u\in C_u$ and~$p_v\in C_v$ with distance less than~$W$,
 bridge nodes are added at~$p_u$ and~$p_v$. These bridge nodes are
@@ -37,45 +38,31 @@ goal is reached; otherwise a blocking cycle is returned. Successful execution
 produces a skeleton~$\Sigma$, as an ordered sequence of centroid and
 bridge nodes that certifies~$\mathbf{s}_\texttt{V}^{\texttt{S}}$ and
 $\mathbf{s}_\texttt{V}^{\texttt{G}}$ lie in the same connected face.
-Let the~$W$--clear free space be
-$\mathcal{F}_W\triangleq\mathbb{R}^2\setminus(\mathcal{O}\oplus\mathbb{B}_{W/2})$,
-where~$\oplus$ denotes Minkowski addition and~$\mathbb{B}_{W/2}$ is a disk of radius~$W/2$.
-Then, the criterion for the  existence of a~$W$--clear path
-$\mathcal{P}^W_\texttt{V}$ by~\eqref{eq:transition} is:
+Using the admissible reference-center space~$\mathcal{F}_W(t)$ defined in
+Section~\ref{subsec:vehicle}, the WCCG connectivity criterion for
+\eqref{eq:wclear} is
 \begin{equation}\label{eq:wccg_criterion}
   \big{(}\mathbf{s}_\texttt{V}^{\texttt{S}},\, \mathbf{s}_\texttt{V}^{\texttt{G}}
   \; \text{belong to the same face of}\; \mathcal{G}_W\big{)},
 \end{equation}
 and $\mathbb{B}_{W/2}(\mathbf{s}_\texttt{V}^{\texttt{S}}),\,
-\mathbb{B}_{W/2}(\mathbf{s}_\texttt{V}^{\texttt{G}})\subset\mathcal{F}_W$
-with~$\mathbb{B}_{W/2}(\cdot)$ being the centered disk of radius~$W/2$.
+\mathbb{B}_{W/2}(\mathbf{s}_\texttt{V}^{\texttt{G}})\subset\mathcal{F}_W$.
 This aligns with~\eqref{eq:wclear} for clearance.
 
-\subsubsection{Skeleton to Path}
-The skeleton~$\Sigma$, the output of the previous step,
-is an ordered sequence of centroid and bridge nodes connected by frontier
-edges in~$\mathcal{G}_W$. This skeleton serves as a compact certificate that
-$\mathbf{s}_\texttt{V}^{\texttt{S}}$ and~$\mathbf{s}_\texttt{V}^{\texttt{G}}$
-lie in the same connected face. Given as input the skeleton~$\Sigma$, together
-with~$\mathcal{G}_W$, the clearance~$W$, and the endpoint disks
-$\mathbb{B}_{W/2}(\mathbf{s}_\texttt{V}^{\texttt{S}})$ and
-$\mathbb{B}_{W/2}(\mathbf{s}_\texttt{V}^{\texttt{G}})$, the output is an explicit
-$W$--clear path~$\mathcal{P}^W_\texttt{V}$. This path is constructed by sliding
-each skeleton segment along the boundary of the inflated obstacles, offsetting
-inward into~$\mathcal{F}_W$, and attaching short connectors inside the
-endpoint disks. The resulting~$\mathcal{P}^W_\texttt{V}$ remains in
-$\mathcal{F}_W$, preserves the homotopy of~$\Sigma$, and guarantees clearance of
-at least~$W$.
 
+% \subsubsection{Frontier-Gap Interface}
+% If the connectivity criterion fails, the frontier-tracing procedure returns a
+% blocking cycle~$\mathcal{L}$ instead of a skeleton. The bridge--bridge edges on
+% $\mathcal{L}$ expose the frontier gaps whose widths are insufficient for the
+% vehicle. These gaps form the interface between WCCG connectivity reasoning and
+% the gap-ranking module described next.
 
 \begin{remark}\label{remark:wccg}
-  The proposed WCCG differs from sampling- and grid-based planners in two key aspects:
-  (I) It avoids discretization of~$\mathcal{W}$ and is therefore \emph{free from}
-  resolution-induced errors;
-  (II) It relies purely on geometry, which makes
-queries highly efficient. These two features are crucial, since connectivity
-checks and clearance tests are invoked many times within the hybrid
-planner described in the sequel. \hfill$\blacksquare$
+Unlike sampling or grid-based planners, the WCCG avoids workspace
+discretization and thus eliminates resolution-induced errors. Its purely
+geometric construction also enables efficient connectivity and clearance
+queries, which are repeatedly invoked by the hybrid planner below.
+\hfill$\blacksquare$
 \end{remark}
 
 

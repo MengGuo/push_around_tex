@@ -3,15 +3,12 @@
 
 As shown in Fig.~\ref{fig:PIHS},
 the proposed physics-informed hybrid search (PIHS)
-couples high-level decisions about blocking gaps with
-low-level feasibility of multi-robot pushing.
-Unlike purely geometric planners,
-this procedure simultaneously determines a sequence of gaps to clear
-and physically-feasible pushing strategies.
-Parallel physics simulation is embedded so that strategies are evaluated simultaneously.
-Algorithmic details are summarized in Alg.~\ref{alg:push}
-and explained below.
-
+couples high-level selection of blocking gaps with
+the generation and physics validation of multi-robot pushing strategies.
+Unlike purely geometric NAMO planners that expand abstract obstacle
+displacements, PIHS admits only strategies validated by short-horizon simulation.
+Candidate strategies are evaluated in parallel, 
+and Alg.~\ref{alg:push} summarizes the procedure described below.
 
 \subsubsection{Tree and Initialization}
 The search tree~$\mathcal{T}$ is composed of nodes
@@ -26,9 +23,9 @@ and~$\chi(\nu)$ returns the cumulative execution cost
 from the root to~$\nu$.
 The root is initialized as~$\nu_0\triangleq(\mathbf{s}_0,\emptyset)$,
 where~$\mathbf{s}_0$ is the initial system state.
-At initialization,~$\chi(\nu_0)=0$, and
-$\mathsf{Rank}(\nu_0)$ is constructed by computing~$\Gamma_{\mathcal{L}_{\nu_0}}$
-for state~$\mathbf{s}_0$.
+% At initialization,~$\chi(\nu_0)=0$, and
+% $\mathsf{Rank}(\nu_0)$ is constructed by computing~$\Gamma_{\mathcal{L}_{\nu_0}}$
+% for state~$\mathbf{s}_0$.
 
 \subsubsection{Node Selection}
 At each iteration, the node with minimum best-first priority is selected from
@@ -129,10 +126,10 @@ stored in~$\nu$ constitutes a complete solution to~\eqref{eq:problem}, encoding
 both the sequence of gaps to clear and the pushing strategies
 that realize them.
 
-\begin{remark}\label{remark:simloop}
-Another efficiency gain above comes from the persistent ModeTable. Effective pushing
-modes satisfying~\eqref{eq:mode-feasibility} are stored and later reused for
-obstacles with similar local geometry. This reuse avoids repeated contact-mode
-optimization and reduces the simulations required
-during hybrid search. \hfill$\blacksquare$
-\end{remark}
+\begin{remark}\label{remark:simloop} 
+Efficiency comes from three lightweight heuristics: 
+gap-lookahead reduces unproductive branches, 
+\textsc{mode-cache} warm-starts mode optimization, 
+and the quick-pass rollout bypass skips simple motions whose mode was previously validated,
+avoiding redundant simulations.
+\hfill$\blacksquare$ \end{remark}
