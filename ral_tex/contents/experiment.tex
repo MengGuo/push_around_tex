@@ -16,11 +16,11 @@ The simulation uses a step of $\Delta t=1/240$\,s
 and a control period of $1/40$\,s.
 Robots are modeled as disk or box pushers with sizes consistent with the
 $W$-clearance definition.
-Movable obstacles have masses uniformly sampled from $[5,15]$,kg,
+Movable obstacles have masses uniformly sampled from $[5,15]$\,kg,
 while immovables are modeled with zero mass.
 A trial is successful when a $W$-clear path exists from start to goal and the
-target reaches its goal disc. The nominal scenario consists of an
-$8{\times}5$,m bounded workspace with two bar obstacles forming bottlenecks
+vehicle reaches its goal disc. The nominal scenario consists of an
+$8{\times}5$\,m bounded workspace with two bar obstacles forming bottlenecks
 and a mixed pool of curved and polygonal shapes, including rings, ellipses,
 X/T/L/diamond, arrow-like shapes, rectangles, and cylinders. Two robots start
 in the lower-left and the goal lies on the right, with $10$--$15$ movables
@@ -47,14 +47,14 @@ Guided by the selected frontier gaps, the planner obtains a clearing plan with
 $6$ push tasks in $7.4$\,s.
 During execution, the planned pushes progressively enlarge the
 reachable $W$-clearance region. The execution finishes in $42.27$\,s, and the
-final WCCG overlay shows that the blue start face contains the goal.
-Meanwhile, Scenario~2 increases the clutter level to $14$ movable obstacles. The planner
+final WCCG overlay shows that the start face contains the goal.
+Meanwhile, Scenario~2 increases to $14$ movable obstacles. The planner
 finds a $9$-task clearing plan in $11.2$\,s, and the execution finishes in
 $61.27$\,s. Compared with Scenario~1, the longer task sequence reflects the
 additional bottlenecks and stronger obstacle interactions. In both scenarios,
 the updated WCCG overlays are aligned with the executed pushes: the blue start
-face expands after each clearance action until a complete $W$-clear path is
-established.
+face expands after each clearance until a complete $W$-clear path is
+found.
 
 
 % ========================================
@@ -100,19 +100,22 @@ established.
 % ========================================
 
 \subsubsection{Comparisons}\label{subsec:comparisons}
-Four external baselines are evaluated on Scenario~1 over $40$ randomized trials
-under the same $W$-clearance criterion, object distribution, and execution
-simulator.
-External baselines are: \textbf{DFS-WCCG},
-a simulation-in-the-loop depth-first search guided by the WCCG with fixed axis-aligned pushes;
-\textbf{SL-Push (offline)}, which clears blockers by minimal
-displacements along a straight or waypointed route without physics, planning
-quickly but yielding unrealizable executions; \textbf{SL-Push (sim)}, which
-validates the same route with physics, improving feasibility but requiring many
-simulations and long action sequences; and \textbf{Rec-NAMO},
-another simulation-free approach that combines Dijkstra routing with local push recursion,
-producing faster plans than simulation-heavy methods but often failing to establish a
-connected $W$-clear corridor in dense clutter.
+Four literature-inspired baselines are evaluated on Scenario~1 over $40$
+randomized trials under the same $W$-clearance criterion, object distribution,
+and execution simulator. The baselines include: \textbf{DFS-WCCG}, a
+simulation-in-the-loop depth-first search guided by the WCCG with fixed
+axis-aligned pushes, following the spirit of search-based NAMO and
+Bug-style frontier navigation~\cite{stilman2007manipulation,McGuireCroonTuyls2019};
+\textbf{SL-Push (offline)}, a geometric route-level pushing baseline that
+clears blockers by minimal displacements along a straight or waypointed route
+without physics validation, related to local planning among pushable or movable
+objects~\cite{stilman2005navigation,yao2024local};
+\textbf{SL-Push (sim)}, which validates the same route-level push candidates
+through physics simulation, in line with simulation-based planning for
+non-prehensile manipulation among movable objects~\cite{saxena2023planning};
+and \textbf{Rec-NAMO}, a simulation-free recursive NAMO baseline that combines
+Dijkstra routing with local blocker recursion, following geometric and
+search-based NAMO formulations~\cite{ren2025search}.
 Table~\ref{tab:main_ablation} shows that PushAround achieves the highest
 success rate of $97.5\%$ and the lowest combined planning and execution
 time of $38.9$\,s.
@@ -166,15 +169,15 @@ from $10.3$\,s to $23.6$\,s.
 Density scalability is evaluated in an $8{\times}8\,$m workspace with
 $N\in\{15,20,25,30,35,40,45\}$ movable obstacles and five seeds per density,
 as shown in Fig.~\ref{fig:dense45}. For each seed, denser instances are generated
-by incrementally adding objects to the same layout, making the higher-density
-cases strictly harder. Unsuccessful trials, including plan failures and
+by incrementally adding objects to the same layout.
+Unsuccessful trials, including plan failures and
 timeout-pruned rows, are assigned the $400$\,s cap in planning-time statistics.
 As shown in Fig.~\ref{fig:density_scaling}, PushAround maintains $100\%$
 success up to $N=45$, while its capped mean planning time increases only from
 $2.6$\,s to $49.2$\,s. In contrast, Rec-NAMO fails completely from $N=35$, and
 SL-Push and DFS-WCCG reach only $20\%$ success at $N=45$. The non-recursive
 ablation further drops to $40\%$ success at $N=45$, confirming that recursive
-blocker clearance is critical in the hardest dense scenes.
+clearance is critical in the dense scenes.
 
 % ========================================
 \begin{figure}[t!]
@@ -232,7 +235,7 @@ Movables are randomly placed for each trial.
 \subsubsection{Results}\label{subsec:exp-results}
 Two representative real-world runs are shown in Fig.~\ref{fig:hardware}.
 In Scenario~1, PIHS breaks five candidate gaps within
-$6.5\,$s, using $12$ node expansions, $49$ visited system-state snapshots,
+$6.5$\,s, using $12$ node expansions, $49$ visited system-state snapshots,
 and a maximum search depth of $6$. The four-task schedule first pushes and
 rotates the yellow L-shaped object to open a gap near an immovable obstacle.
 It then pushes the green and orange rectangular objects in opposite lateral
