@@ -169,7 +169,7 @@ from $10.3$\,s to $23.6$\,s.
 Density scalability is evaluated in an $8{\times}8\,$m workspace with
 $N\in\{15,20,25,30,35,40,45\}$ movable obstacles and five seeds per density,
 as shown in Fig.~\ref{fig:dense45}. For each seed, denser instances are generated
-by incrementally adding objects to the same layout.
+by incrementally adding objects.
 Unsuccessful trials, including plan failures and
 timeout-pruned rows, are assigned the $400$\,s cap in planning-time statistics.
 As shown in Fig.~\ref{fig:density_scaling}, PushAround maintains $100\%$
@@ -177,7 +177,7 @@ success up to $N=45$, while its capped mean planning time increases only from
 $2.6$\,s to $49.2$\,s. In contrast, Rec-NAMO fails completely from $N=35$, and
 SL-Push and DFS-WCCG reach only $20\%$ success at $N=45$. The non-recursive
 ablation further drops to $40\%$ success at $N=45$, confirming that recursive
-clearance is critical in the dense scenes.
+clearance is critical for the dense scenes.
 
 % ========================================
 \begin{figure}[t!]
@@ -223,7 +223,7 @@ blue. }
 \subsection{Hardware Experiments}\label{subsec:hardware}
 % ========================================
 
-\subsubsection{System description}\label{subsec:exp-description}
+\subsubsection{System Description}\label{subsec:exp-description}
 Experiments are conducted in a $5\,\mathrm{m}\times6\,\mathrm{m}$ workspace assembled from
 interlocking $0.6\,\mathrm{m}\times0.6\,\mathrm{m}$ foam mats, as illustrated in
 Fig.~\ref{fig:hardware}. Each trial employs $2$ UGVs and $6$ movable obstacles
@@ -242,15 +242,12 @@ It then pushes the green and orange rectangular objects in opposite lateral
 directions, progressively expanding the reachable $W$-clearance region. After
 the green cylinder is pushed to the right, a complete $W$-clear path is
 established at $t=52\,$s.
-In Scenario~2, PushAround succeeds in $8/10$ trials by generating an average of
+In Scenario~2, the proposed method succeeds in $8/10$ trials by generating an average of
 $5.2$ pushes. The planning phase takes
 $11.4$\,s on average, and first selects a
 direct push on the blue L-shaped object, which also moves the adjacent T-shaped
 block and opens the first gap into the narrow passage. The complete execution
-takes $77.1$\,s on average, during which local
-replanning compensates for object sliding and contact deviations, while the
-final clearance task enables the large vehicle to traverse the
-passage.
+takes $77.1$\,s on average with $15.9$\,s deviations.
 The main deviations arise from direction-dependent force limits,
-drifting, and Mecanum-wheel slippage near $45^\circ$ directions, which
+drifting, and Mecanum-wheel slippage near $45^\circ$ motion directions, which
 are compensated by online replanning.

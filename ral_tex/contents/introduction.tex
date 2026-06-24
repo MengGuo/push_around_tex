@@ -41,17 +41,18 @@ making prediction and planning substantially more complex.
 
 \subsection{Related Work}\label{subsec:intro-related}
 
-NAMO has been studied as an extension of
-motion planning in cluttered environments. Classical methods planned explicit
-sequences of obstacle displacements through pushing, pulling, or
-rotating~\cite{stilman2005navigation,stilman2007manipulation}, while later work
-introduced heuristic search for scalability~\cite{stilman2007manipulation} and
-graph and sampling based formulations for larger workspaces~\cite{yao2024local}.
-Recent efforts extend NAMO to multi-agent settings where teams of robots clear
-passages collaboratively~\cite{tang2024collaborative,ren2025search}. However,
-most NAMO approaches still idealize robots as point agents with unlimited
-actuation and neglect robot size, obstacle mass, and realistic dynamics, which
-leads to plans that are physically unrealizable.
+NAMO extends motion planning to cluttered environments by planning obstacle
+displacements through pushing, pulling, or
+rotating~\cite{stilman2005navigation,stilman2007manipulation}. Later work
+improved scalability using heuristic search, learning-based local planning, and
+search-based planning in interactive
+environments~\cite{stilman2007manipulation,yao2024local,ren2025search}.
+Recent studies further consider movability-aware pushing with physics-based
+rollouts~\cite{weeda2025pushing} and collaborative multi-robot
+pushing~\cite{tang2026pushingbots}. However, many NAMO formulations still
+simplify robot geometry, actuation limits, object mass, and contact dynamics,
+leading to physically unrealizable plans.
+
 
 
 %==============================================
@@ -77,8 +78,8 @@ Foundational studies examined the mechanics of pushing and the limit-surface
 model~\cite{goyal1989limit,lynch1992manipulation}. Subsequent work considered
 cooperative transport with robot swarms~\cite{chen2015occlusion}, multi-robot
 box pushing with reinforcement learning~\cite{wang2006multi}, collaborative
-pushing of polytopic objects in cluttered scenes~\cite{tang2024collaborative},
-and learning-based loco-manipulation for long-term quadrupedal
+pushing of polytopic objects in cluttered scenes~\cite{tang2026pushingbots},
+and learning-based loco-manipulation for long-horizon quadrupedal
 pushing~\cite{feng2025learning}. These studies demonstrate effective
 multi-robot cooperation, but typically focus on a prescribed object
 and avoid exploiting inter-object contacts for multiple objects.
@@ -92,11 +93,11 @@ For non-prehensile manipulation,
 demonstration-guided optimal control reasons over contact modes and
 pushing dynamics~\cite{xue2023demonstration}, and physics-based simulation is
 interleaved with multi-agent pathfinding for manipulation among movable
-objects~\cite{saxena2023planning}. Neural motion-planning
+objects~\cite{saxena2023planning,ren2025object}. Neural motion-planning
 methods further use learned physical priors
 for motion generation~\cite{ni2023progressive,liu2025physics}. While these
 approaches improve physical grounding, they either remain focused on
-single-object manipulation, contact execution, or generic planning, and
+mobile manipulator, contact execution, or generic planning, and
 do not directly solve collaborative path clearing with many interacting movable
 obstacles.
 
@@ -117,7 +118,7 @@ strategy that prioritizes frontier gaps by estimated effort,
 and the pushing mode generation under geometric constraints.
 These components are encapsulated under a search
 procedure that incrementally expands candidate clearing plans while validating their
-physical realizability. This integration yields resulting plans that
+physical realizability. This integration yields plans that
 are not only geometrically valid but also feasible under robot dimensions,
 object mass, contact geometry, and coupled pushing dynamics. Efficiency is
 achieved by combining compact geometric reasoning with prioritized evaluation.
