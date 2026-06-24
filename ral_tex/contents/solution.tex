@@ -1,14 +1,13 @@
 % %% ========================================
 \section{Proposed Solution}\label{sec:solution}
 
-As shown in Fig.~\ref{fig:overall}, PushAround first constructs a
-W-Clearance Connectivity Graph in Sec.~\ref{subsec:wccg} to capture
-workspace connectivity and blocking gaps. Gap ranking in
-Sec.~\ref{subsec:gap} selects obstacle-clearing actions, while mode
-generation and evaluation in Sec.~\ref{subsec:push} ensure physically
-feasible collaborative pushes. These components are integrated into the
-simulation-in-the-loop hybrid search in Sec.~\ref{subsec:simloop}.
-Sec.~\ref{subsec:overall} summarizes the overall online execution.
+As shown in Fig.~\ref{fig:overall}, PushAround first uses the W-Clearance
+Connectivity Graph in Sec.~\ref{subsec:wccg} and gap ranking in
+Sec.~\ref{subsec:gap} to identify and prioritize blocking gaps. It then
+generates and evaluates physically feasible collaborative pushing modes in
+Sec.~\ref{subsec:push}. These components are integrated into the
+simulation-in-the-loop hybrid search in Sec.~\ref{subsec:simloop}, followed by
+the online execution procedure summarized in Sec.~\ref{subsec:overall}.
 
 
 
