@@ -56,15 +56,15 @@ $\mathcal{F}_W(t)\triangleq
 \{p\in\widehat{\mathcal{W}}(t)\mid
 \mathbb{B}_{W/2}(p)\subset\widehat{\mathcal{W}}(t)\}$, where
 $\mathbb{B}_{W/2}(p)$ is the disk of radius~$W/2$ centered at~$p$. The
-$W$-clearance condition is then
+$W$-clearance condition is then given by:
 \begin{equation}\label{eq:wclear}
 \exists\,\mathcal{P}^W_\texttt{V}\subset\mathcal{F}_W(t):\
 \mathbf{x}_\texttt{V}^{\texttt{S}}\leadsto\mathbf{x}_\texttt{V}^{\texttt{G}},
 \end{equation}
 which certifies a collision-free centerline path for any vehicle footprint
 contained in the enclosing disk.
-% Since movable obstacles may obstruct the way, 
-% a direct passage is not always feasible. 
+% Since movable obstacles may obstruct the way,
+% a direct passage is not always feasible.
 % At time~$t$, the admissible center positions of~$\texttt{V}$ are
 % \begin{equation}
 % \mathcal{F}_W(t)\triangleq
@@ -88,29 +88,30 @@ contained in the enclosing disk.
 To enlarge blocked gaps, the robots may actively reconfigure
 $\boldsymbol{\Omega}$ by pushing movable obstacles. For obstacle
 $\Omega_m\in\boldsymbol{\Omega}$, a pushing mode is denoted by
-$\boldsymbol{\xi}_m\triangleq(\mathcal{C}_m,\mathbf{u}_m)$, where
-$\mathcal{C}_m=(c_1,\cdots,c_N)$ is an ordered tuple of contact points on
+$\boldsymbol{\xi}_m\triangleq(\mathbf{c}_m,\mathbf{u}_m)$, where
+$\mathbf{c}_m=(c_1,\cdots,c_N)$ is an ordered tuple of contact points on
 $\partial\Omega_m$, and the ordering specifies the robot-to-contact assignment.
 The vector~$\mathbf{u}_m\in\mathbb{R}^{2N}$ stacks the corresponding planar
 contact forces, expressed in the body frame of~$\Omega_m$.
-For a contact tuple~$\mathcal{C}_m$, the admissible force set
-$\mathcal{U}_m(\mathcal{C}_m)\subset\mathbb{R}^{2N}$ collects contact forces
+For a contact tuple~$\mathbf{c}_m$, the set of admissible forces
+${U}_m(\mathbf{c}_m)\subset\mathbb{R}^{2N}$ collects contact forces
 satisfying the robot pushing limits, robot--object friction, and unilateral
-contact constraints. The body wrench induced by a mode is
+contact constraints. The body wrench induced by a mode is defined as:
 \begin{equation}
 \mathbf{q}_m(\boldsymbol{\xi}_m)
 \triangleq
-G_m(\mathcal{C}_m)\mathbf{u}_m\in\mathbb{R}^3.
+G_m(\mathbf{c}_m)\mathbf{u}_m,
 \label{eq:contact_wrench_map}
 \end{equation}
-where~$G_m(\mathcal{C}_m)\in\mathbb{R}^{3\times 2N}$ is the contact-to-wrench map.
-The admissible mode set is state dependent and is denoted by
-$\Xi_m(\mathbf{s})$. It contains modes whose contacts are reachable from the
-current robot configurations, whose pre-contact configurations are feasible in
-the current clutter, and whose forces satisfy
-$\mathbf{u}_m\in\mathcal{U}_m(\mathcal{C}_m)$. Hence, applying a feasible mode
-$\boldsymbol{\xi}_m\in\Xi_m(\mathbf{s}(t))$ yields the physics-evaluated
-transition
+where~$G_m(\mathbf{c}_m)\in\mathbb{R}^{3\times 2N}$ is the contact-to-wrench mapping;
+and $\mathbf{q}_m(\boldsymbol{\xi}_m)\in\mathbb{R}^3$.
+The admissible mode set is state dependent as denoted by~$\Xi_m(\mathbf{s})$.
+It contains modes whose contacts are reachable from the
+current robot configurations, pre-contact configurations are feasible in
+the current clutter, and forces satisfy
+$\mathbf{u}_m\in{U}_m(\mathbf{c}_m)$. Hence, applying a feasible
+mode~$\boldsymbol{\xi}_m\in\Xi_m(\mathbf{s}(t))$ yields the physical
+transition:
 \begin{equation}\label{eq:transition}
   \mathbf{s}(t^+)\triangleq
   \Phi\big(\mathbf{s}(t),\,m,\,\boldsymbol{\xi}_m\big),
