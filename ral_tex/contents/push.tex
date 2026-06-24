@@ -5,7 +5,7 @@ pushing strategies
 $\Xi_g \triangleq \{(\Omega_m,\mathbf{v},\boldsymbol{\xi})\}$,
 where~$\mathbf{v} \triangleq (v_x,v_y,\omega)\in\mathbb{R}^3$ is a
 short-horizon pushing direction for the movable obstacle~$\Omega_m$ induced by~$g$, and
-$\boldsymbol{\xi}\triangleq(\mathcal{C}_m,\mathbf{u})$ is the associated pushing
+$\boldsymbol{\xi}\triangleq(\mathbf{c}_m,\mathbf{u})$ is the associated pushing
 mode in~\eqref{eq:transition}.
 
 
@@ -36,12 +36,12 @@ Fig.~\ref{fig:direct_recursive_push}.
 %------------------------------
 \begin{figure}[t!]
   \centering
-  \includegraphics[width=0.9\linewidth]{figures/mode_generation.pdf}
+  \includegraphics[width=0.85\linewidth]{figures/mode_generation.pdf}
   \vspace{-4mm}
   \caption{
 Reachable contacts are filtered by the
-  desired object twist, assigned to robots, refined by local replacement search,
-  and finally validated by short-horizon simulation.}
+  desired object twist, assigned to robots, refined by local replacement,
+  and finally validated by simulation.}
     \label{fig:mode_generation}
    \vspace{-4mm}
 \end{figure}
@@ -86,7 +86,7 @@ Reachable contacts are filtered by the
 % necessary for force feasibility, while small
 % $\mathrm{J}_{\texttt{MF}}^m$ indicates a robust mode.
 % Accordingly, the associated mode
-% $\boldsymbol{\xi}_m^k \triangleq (\mathcal{C}_m^k,\mathbf{u}_m^k)$ is generated
+% $\boldsymbol{\xi}_m^k \triangleq (\mathbf{c}_m^k,\mathbf{u}_m^k)$ is generated
 % by sparse optimization over the reachable part of~$\partial\Omega_m$. The
 % reachable boundary is discretized into candidate contacts, and a sparse linear
 % program (LP) is solved to minimize
@@ -94,7 +94,7 @@ Reachable contacts are filtered by the
 % under the local friction and wrench constraints.
 % Detailed derivations are omitted here for brevity,
 % and referred to~\cite{tang2024collaborative,tang2025pushingbots}.
-% The resulting nonzero contacts provide~$\mathcal{C}_m^k$, and the corresponding forces
+% The resulting nonzero contacts provide~$\mathbf{c}_m^k$, and the corresponding forces
 % yield~$\mathbf{u}_m^k$. Only the best few
 % pairs~$(\mathbf{v}_m^k,\boldsymbol{\xi}_m^k)$ are retained and collected
 % into~$\Xi_g$.
@@ -103,60 +103,60 @@ Reachable contacts are filtered by the
 At a search state~$\mathbf{s}$, a pushing mode is generated for each candidate
 direction~$\mathbf{v}_m^k$ and obstacle~$\Omega_m$. In this subsubsection,
 contact tuples, object velocities, forces, and wrenches are expressed in the
-body frame of~$\Omega_m$. For a contact tuple~$\mathcal{C}$, its
-multi-directional force feasibility is
+body frame of~$\Omega_m$. For a contact tuple~$\mathbf{c}$, its
+multi-directional force feasibility is:
 \begin{equation}\label{eq:mode-feasibility}
-\mathrm{J}_{\texttt{MF}}^m(\mathcal{C},\mathbf{v}_m^k)
+\mathrm{J}_{\texttt{MF}}^m(\mathbf{c},\mathbf{v}_m^k)
 \triangleq
 \sum_{\mathbf{v}_d\in\mathcal{D}_m^k} w_d
-\min_{\mathbf{u}\in\mathcal{U}_m(\mathcal{C})}
+\underset{\mathbf{u}\in{U}_m(\mathbf{c})}{\textbf{min}}
 \|
-\mathbf{q}_m(\mathcal{C},\mathbf{u})
+\mathbf{q}_m(\mathbf{c},\mathbf{u})
 +\mathbf{q}_m^\mu(\mathbf{v}_d)
 \| ,
 \end{equation}
 where~$\|\cdot\|$ is a weighted $\ell_1$ wrench norm,
 $\mathcal{D}_m^k$ is a finite perturbation set around~$\mathbf{v}_m^k$,
-and~$\mathbf{q}_m^\mu(\mathbf{v}_d)$ is the quasi-static friction wrench of $\Omega_m$; 
-the inner minimization is a small Linear Program (LP) 
-over the admissible contact forces~$\mathcal{U}_m(\mathcal{C})$.
+and~$\mathbf{q}_m^\mu(\mathbf{v}_d)$ is the quasi-static friction wrench of $\Omega_m$;
+the inner minimization is a small Linear Program (LP)
+over the admissible contact forces~${U}_m(\mathbf{c})$.
 A state- and direction-dependent contact set
 $\mathcal{A}_m^k(\mathbf{s})\subset\partial\Omega_m$ is obtained from the
 robot-reachable boundary of~$\Omega_m$ by velocity--force compatibility
 filtering, as illustrated in Fig.~\ref{fig:mode_generation}. Starting from
 cached layouts, if available, and random initializations in
 $\mathcal{A}_m^k(\mathbf{s})$, the contact tuple is refined by sequential greedy
-replacement. At the $\ell$-th greedy step, let~$\mathcal{C}^{\ell}$ be the
-current tuple, and let~$\mathcal{C}_{r,c}^{\ell}$ be obtained by replacing its
-$r$-th contact with~$c$. The best replacement is
+replacement. At the $\ell$-th greedy step, let~$\mathbf{c}^{\ell}$ be the
+current tuple, and let~$\mathbf{c}_{r,c}^{\ell}$ be obtained by replacing its
+$r$-th contact with~$c\in \mathbb{R}^2$. The best replacement is derived by:
 \begin{equation}
 c^\star
-\in
-\arg\min_{c\in\mathcal{A}_m^k(\mathbf{s})}
+=
+\underset{c\in\mathcal{A}_m^k(\mathbf{s})}{\textbf{argmin}}\;
 \mathrm{J}_{\texttt{MF}}^m
-\bigl(\mathcal{C}_{r,c}^{\ell},\mathbf{v}_m^k\bigr).
+\bigl(\mathbf{c}_{r,c}^{\ell},\mathbf{v}_m^k\bigr),
 \label{eq:greedy_mode_update}
 \end{equation}
-The greedy refinement sweeps over contact slots until
-$\mathrm{J}_{\texttt{MF}}^m$ no longer decreases. 
+where the greedy refinement for~$c^\star$ sweeps over contact slots
+until~$\mathrm{J}_{\texttt{MF}}^m$ no longer decreases.
 Among initializations, the
-best local tuple is selected as~$\mathcal{C}_m^{k,\star}$, and
+best local tuple is selected as~$\mathbf{c}_m^{k,\star}$, thus
 $\mathbf{u}_m^k$ is obtained by the inner minimization in
-\eqref{eq:mode-feasibility} for~$\mathbf{v}_m^k$. 
-This yields $\boldsymbol{\xi}_m^k=(\mathcal{C}_m^{k,\star},\mathbf{u}_m^k)$. 
-The mode is inserted into a persistent \textsc{mode-cache}, 
-indexed by discretized shape, mass, available robot force, and pushing direction, 
+\eqref{eq:mode-feasibility} for~$\mathbf{v}_m^k$.
+This yields $\boldsymbol{\xi}_m^k=(\mathbf{c}_m^{k,\star},\mathbf{u}_m^k)$.
+The mode is inserted into a persistent \textsc{mode-cache},
+indexed by discretized shape, mass, available robot force, and pushing direction,
 and used only as a warm start for later similar queries.
 The best few pairs~$(\mathbf{v}_m^k,\boldsymbol{\xi}_m^k)$ with
 $\boldsymbol{\xi}_m^k\in\Xi_m(\mathbf{s})$ are retained for gap~$g$ and passed
 to simulation evaluation.
 
 % The best refined mode over all initializations is denoted by
-% $\boldsymbol{\xi}_m^k=(\mathcal{C}_m^k,\mathbf{u}_m^k)$. 
-% It is admitted only if its rollout is validated in simulation. 
-% Accepted modes are stored in a persistent \textsc{mode-cache}, 
-% indexed by discretized shape, mass, available robot force, and pushing direction, 
-% and reused as warm starts. 
+% $\boldsymbol{\xi}_m^k=(\mathbf{c}_m^k,\mathbf{u}_m^k)$.
+% It is admitted only if its rollout is validated in simulation.
+% Accepted modes are stored in a persistent \textsc{mode-cache},
+% indexed by discretized shape, mass, available robot force, and pushing direction,
+% and reused as warm starts.
 
 %==============================================
 \subsubsection{Pushing Strategy Evaluation}
@@ -176,12 +176,12 @@ simulation returns:
 where~$\mathbf{s}'$ is the successor state given the strategy;
 $\delta_{\texttt{T}}>0$ is the
 time cost; and~$\delta_{\texttt{J}}$ is the control effort.
-For efficiency, the pushing rollout may be bypassed when the mode has been validated before 
-and the swept region of~$\Omega_m$ is collision-free with other obstacles.
+For efficiency, the pushing rollout may be bypassed when the mode has been validated before
+and the swept region of~$\Omega_m$ is collision-free.
 %------------------------------
 \begin{figure}[t!]
   \centering
-  \includegraphics[width=0.95\linewidth]{figures/PIHS.pdf}
+  \includegraphics[width=0.9\linewidth]{figures/PIHS.pdf}
   \vspace{-2mm}
   \caption{
   \textbf{Top:} Core components of the proposed physics-informed hybrid search;

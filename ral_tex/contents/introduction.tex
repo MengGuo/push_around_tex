@@ -5,14 +5,14 @@ the deployment of mobile robot teams to actively clear traversable corridors and
 enable safe passage. This capability is critical in cluttered and
 unstructured environments such as warehouses, disaster sites, and dense urban spaces.
 Conventional path planning methods assume static obstacles and thus fail
-once direct routes are blocked~\cite{liu2023path}. 
+once direct routes are blocked~\cite{liu2023path}.
 Navigation Among Movable
 Obstacles (NAMO) has been studied as a means of creating new routes by pushing,
 pulling, or rotating obstacles~\cite{stilman2005navigation}, yet most
 methods abstract away physical feasibility. Factors such as robot dimensions,
 obstacle size and mass, contact geometry, applied forces, and the coupled
 dynamics of pushing are typically ignored, producing plans that are \emph{geometrically
-valid but physically unrealizable}. 
+valid but physically unrealizable}.
 As shown in Fig.~\ref{fig:snapshots},
 this difficulty is amplified
 when a large robot cannot reach obstacle boundaries, while a small robot lacks
@@ -20,24 +20,11 @@ sufficient pushing force. Cooperative pushing by several small robots is a
 viable alternative, but introduces strong physical coupling since simultaneous
 pushes can trigger chained motions of multiple obstacles,
 making prediction and planning substantially more complex.
-% In many real-world settings, the passage of large vehicles or transport
-% units is obstructed by movable obstacles such as pallets, boxes, or equipment,
-% motivating mobile robot teams to actively clear traversable corridors in
-% warehouses, disaster sites, and dense urban spaces. Conventional path planning
-% methods assume static obstacles and fail once direct routes are blocked
-% ~\cite{liu2023path}. Navigation Among Movable Obstacles (NAMO) creates new
-% routes by pushing, pulling, or rotating obstacles~\cite{stilman2005navigation},
-% but often abstracts away physical feasibility, neglecting robot dimensions,
-% obstacle size and mass, contact geometry, applied forces, and coupled pushing
-% dynamics. As shown in Fig.~\ref{fig:snapshots}, this difficulty is amplified
-% when a large robot cannot reach obstacle boundaries, while a small robot lacks
-% sufficient pushing force. Cooperative pushing by several small robots is a
-% viable alternative, but introduces strong physical coupling since simultaneous
-% pushes can trigger chained motions of multiple obstacles.
+
 %==============================================
 \begin{figure}[t!]
   \centering
-  \includegraphics[width=0.95\linewidth]{figures/cover.png}% or {presearch.pdf}
+  \includegraphics[width=0.9\linewidth]{figures/cover.png}% or {presearch.pdf}
   \vspace{-0.1in}
   \caption{
     Collaborative path clearing in both simulation (\textbf{Top})
@@ -70,7 +57,7 @@ leads to plans that are physically unrealizable.
 %==============================================
 \begin{figure*}[t!]
   \centering
-  \includegraphics[width=0.95\linewidth]{figures/overall.pdf}
+  \includegraphics[width=0.85\linewidth]{figures/overall.pdf}
   \vspace{-0.1in}
 \caption{Overview of the proposed framework.
 \textbf{Top:} Scene inputs, WCCG construction, gap ranking, and sampling of pushing
@@ -117,24 +104,28 @@ obstacles.
 %==============================
 \subsection{Our Method}\label{subsec:intro-our}
 
-As shown in Fig.~\ref{fig:overall}, this work introduces
-\textbf{PushAround}, a physics-informed framework for collaborative
-path clearing. Its key idea is a hybrid search that couples
-corridor-level clearance reasoning with low-level pushing feasibility.
-A W--clearance connectivity graph (WCCG) exposes vehicle-critical
-bottleneck gaps, a ranking module orders them by predicted downstream
-effort, and a mode generator proposes contact points, directions, and
-forces for direct or recursive pushes. 
-Candidate actions are admitted
-only after physics validation, so the search expands geometrically
-relevant and physically grounded plans instead of exhaustively rolling
-out obstacle--action combinations. 
-Efficiency is achieved by combining compact geometric reasoning with prioritized evaluation,
-avoiding the need for exhaustive obstacle--action rollouts while preserving
-physically grounded plan expansion.
+As shown in Fig.~\ref{fig:overall},
+this work introduces \textbf{PushAround}, a physics-informed framework for
+collaborative multi-robot pushing that actively constructs traversable
+corridors for large vehicles in cluttered environments. The central novelty is
+a hybrid search that jointly determines which obstacles to displace and how to
+push them, coupling the high-level sequence of obstacle clearing with the
+low-level pushing modes that specify contact points, directions, and forces.
+The framework integrates three components: a W--clearance connectivity graph
+(WCCG) that certifies vehicle passage under width constraints, a gap-ranking
+strategy that prioritizes frontier gaps by estimated effort,
+and the pushing mode generation under geometric constraints.
+These components are encapsulated under a search
+procedure that incrementally expands candidate clearing plans while validating their
+physical realizability. This integration guarantees that the resulting plans
+are not only geometrically valid but also feasible under robot dimensions,
+object mass, contact geometry, and coupled pushing dynamics. Efficiency is
+achieved by combining compact geometric reasoning with prioritized evaluation.
+Extensive simulations and experiments are conducted for validation.
 
-The contributions are twofold:
-{(I)} a geometry--physics screening framework that uses WCCG frontier gaps
-to guide contact-feasible collaborative pushing for executable path clearing; and
-{(II)} improved feasibility, efficiency, and scalability over NAMO and
-collaborative clearing baselines.
+The contributions are twofold: {(I)} it introduces an unified framework that
+couples collaborative pushing with
+physics-informed verification, producing executable plans for
+path clearing in cluttered environments; and {(II)} it
+shows significant improvements in feasibility, efficiency and
+scalability over existing NAMO and collaborative clearing methods.

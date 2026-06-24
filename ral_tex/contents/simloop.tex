@@ -1,14 +1,14 @@
 %==============================================
 \subsection{Physics-Informed Hybrid Search}\label{subsec:simloop}
 
-As shown in Fig.~\ref{fig:PIHS},
-the proposed physics-informed hybrid search (PIHS)
-couples high-level selection of blocking gaps with
-the generation and physics validation of multi-robot pushing strategies.
-Unlike purely geometric NAMO planners that expand abstract obstacle
-displacements, PIHS admits only strategies validated by short-horizon simulation.
-Candidate strategies are evaluated in parallel, 
-and Alg.~\ref{alg:pihs} summarizes the procedure described below.
+The proposed physics-informed hybrid search
+(PIHS) selects blocking gaps and validates the corresponding multi-robot
+pushing strategies through short-horizon simulation,
+as shown in Fig.~\ref{fig:PIHS} and summarized in Alg.~\ref{alg:pihs}.
+Unlike purely geometric
+NAMO planners, PIHS expands only physics-validated strategies. Candidate
+strategies are evaluated in parallel.
+
 
 \subsubsection{Tree and Initialization}
 The search tree~$\mathcal{T}$ is composed of nodes
@@ -77,9 +77,10 @@ Init~$\mathcal{Q}$ by~\eqref{eq:priority}\;
   \centering
   \includegraphics[width=0.95\linewidth]{figures/sim.pdf}
   \vspace{-0.15in}
-\caption{Execution and planning alignment in two simulation scenarios.
+  \caption{Execution and planning alignment in Scenario 1 (\textbf{Left})
+    and  Scenario 2 (\textbf{Right}).
 \textbf{Top:} simulated snapshots during path clearing.
-\textbf{Bottom:} corresponding WCCG overlays with the start face in blue. 
+\textbf{Bottom:} corresponding WCCG overlays with the start face in blue.
 The executed pushes progressively expand the reachable $W$--clearance region until the goal is connected.}
 \vspace{-0.2in}
 \label{fig:main_result}
@@ -126,10 +127,10 @@ stored in~$\nu$ constitutes a complete solution to~\eqref{eq:problem}, encoding
 both the sequence of gaps to clear and the pushing strategies
 that realize them.
 
-\begin{remark}\label{remark:simloop} 
-Efficiency comes from three lightweight heuristics: 
-gap-lookahead reduces unproductive branches, 
-\textsc{mode-cache} warm-starts mode optimization, 
+\begin{remark}\label{remark:simloop}
+Efficiency comes from three lightweight heuristics:
+gap-lookahead reduces unproductive branches,
+\textsc{mode-cache} warm-starts mode optimization,
 and the quick-pass rollout bypass skips simple motions whose mode was previously validated,
 avoiding redundant simulations.
 \hfill$\blacksquare$ \end{remark}

@@ -6,30 +6,34 @@ The algorithms are implemented in \texttt{Python3} and \texttt{PyBullet}~\cite{c
 on a computer with an Intel Core i9-14900KF and an NVIDIA RTX 4080.
 Simulation and hardware videos are provided in the supplementary material.
 
-
-
 \subsection{Numerical Simulations}
 \label{subsec:sim}
 % ========================================
 
+
 \subsubsection{Setup and Configuration}\label{subsec:sim-setup}
 The simulation uses a step of $\Delta t=1/240$\,s
 and a control period of $1/40$\,s.
-Robots are modeled as disk or box pushers with radii consistent with the $W$-clearance definition.
-Movable obstacles have masses uniformly sampled from $[5,15]$\,kg,
+Robots are modeled as disk or box pushers with sizes consistent with the
+$W$-clearance definition.
+Movable obstacles have masses uniformly sampled from $[5,15]$,kg,
 while immovables are modeled with zero mass.
-A trial is successful when a $W$-clear path exists from start to goal and the target reaches
-its goal disc. The nominal scenario consists of an $8{\times}5$\,m bounded workspace with two bar
-obstacles forming bottlenecks and a mixed pool of curved and polygonal shapes including rings,
-ellipses, X/T/L/diamond, arrow-like, rectangles, and cylinders. Two robots start in the lower-left
-and the goal lies on the right, with $10$--$15$ movables placed randomly under a minimum separation.
-The per-task simulation horizon is $80$ steps, and up to $64$ candidate push tasks are generated per
-expansion. The node priority follows~\eqref{eq:priority} with heuristic factor
-$10$, and gap sampling follows a softmax distribution with temperature~$0.05$.
+A trial is successful when a $W$-clear path exists from start to goal and the
+target reaches its goal disc. The nominal scenario consists of an
+$8{\times}5$,m bounded workspace with two bar obstacles forming bottlenecks
+and a mixed pool of curved and polygonal shapes, including rings, ellipses,
+X/T/L/diamond, arrow-like shapes, rectangles, and cylinders. Two robots start
+in the lower-left and the goal lies on the right, with $10$--$15$ movables
+placed randomly under a minimum separation.
+The per-task simulation horizon is $80$ steps, and up to $64$ candidate push
+tasks are generated per expansion. The node priority follows~\eqref{eq:priority}
+with heuristic factor $10$, and gap sampling follows a softmax distribution
+with temperature~$0.05$.
 Unless otherwise stated, quantitative comparisons and ablations are conducted
-on Scenario~1 with $10$ movable obstacles over $40$ randomized trials. Scenario~2
-with $14$ movable obstacles is used as an additional representative run to
-demonstrate behavior in a more cluttered layout.
+on Scenario~1 with $10$ movable obstacles over $40$ randomized trials, while
+Scenario~2 with $14$ movable obstacles is used as an additional representative
+run in a more cluttered layout.
+
 
 %==============================
 \subsubsection{Results}
@@ -37,15 +41,14 @@ demonstrate behavior in a more cluttered layout.
 
 Two representative simulation runs are shown in Fig.~\ref{fig:main_result}.
 Scenario~1 contains $10$ movable obstacles and two robots. In the initial state,
-the start and goal belong to different $W$-clearance faces, 
+the start and goal belong to different $W$-clearance faces,
 indicating that the target passage is blocked by movable obstacles.
 Guided by the selected frontier gaps, the planner obtains a clearing plan with
-$6$ push tasks in $7.4$\,s. 
+$6$ push tasks in $7.4$\,s.
 During execution, the planned pushes progressively enlarge the
 reachable $W$-clearance region. The execution finishes in $42.27$\,s, and the
 final WCCG overlay shows that the blue start face contains the goal.
-
-Scenario~2 increases the clutter level to $14$ movable obstacles. The planner
+Meanwhile, Scenario~2 increases the clutter level to $14$ movable obstacles. The planner
 finds a $9$-task clearing plan in $11.2$\,s, and the execution finishes in
 $61.27$\,s. Compared with Scenario~1, the longer task sequence reflects the
 additional bottlenecks and stronger obstacle interactions. In both scenarios,
@@ -88,7 +91,7 @@ established.
 \begin{figure}[t!]
   \centering
   \vspace{-0.1in}
-  \includegraphics[width=0.8\columnwidth]{figures/compare.png}
+  \includegraphics[width=0.75\columnwidth]{figures/compare.png}
   \vspace{-0.1in}
   \caption{Failure cases by baselines Rec-NAMO, SL-Push and DFS-WCCG.}
   \label{fig:baseline}
@@ -99,26 +102,26 @@ established.
 \subsubsection{Comparisons}\label{subsec:comparisons}
 Four external baselines are evaluated on Scenario~1 over $40$ randomized trials
 under the same $W$-clearance criterion, object distribution, and execution
-simulator. 
-External baselines are: \textbf{DFS-WCCG}, 
+simulator.
+External baselines are: \textbf{DFS-WCCG},
 a simulation-in-the-loop depth-first search guided by the WCCG with fixed axis-aligned pushes;
 \textbf{SL-Push (offline)}, which clears blockers by minimal
 displacements along a straight or waypointed route without physics, planning
 quickly but yielding unrealizable executions; \textbf{SL-Push (sim)}, which
 validates the same route with physics, improving feasibility but requiring many
-simulations and long action sequences; and \textbf{Rec-NAMO}, 
+simulations and long action sequences; and \textbf{Rec-NAMO},
 another simulation-free approach that combines Dijkstra routing with local push recursion,
 producing faster plans than simulation-heavy methods but often failing to establish a
-connected $W$-clear corridor in dense clutter. 
+connected $W$-clear corridor in dense clutter.
 Table~\ref{tab:main_ablation} shows that PushAround achieves the highest
 success rate of $97.5\%$ and the lowest combined planning and execution
-time of $38.9$\,s. 
-DFS-WCCG suffers from exponential branching, requiring more than $100$\,s of planning. 
-SL-Push (offline) plans almost instantly in $0.06$\,s, 
-but its non-physical displacements often become unrealizable during execution, 
-resulting in $62.5\%$ success. 
-SL-Push (sim) improves success to $75.0\%$ by validating pushes in simulation, 
-but increases the planning time to $18.2$\,s and requires $10.2$ pushes on average. 
+time of $38.9$\,s.
+DFS-WCCG suffers from exponential branching, requiring more than $100$\,s of planning.
+SL-Push (offline) plans almost instantly in $0.06$\,s,
+but its non-physical displacements often become unrealizable during execution,
+resulting in $62.5\%$ success.
+SL-Push (sim) improves success to $75.0\%$ by validating pushes in simulation,
+but increases the planning time to $18.2$\,s and requires $10.2$ pushes on average.
 Rec-NAMO often fails to complete a connected W--clear corridor in dense clutter.
 
 
@@ -140,14 +143,14 @@ Rec-NAMO often fails to complete a connected W--clear corridor in dense clutter.
 %==============================
 \subsubsection{Ablation Studies}
 Moreover, four internal ablations are conducted:
-\textbf{w/o gap-lookahead}, which ranks frontier gaps without downstream costs; 
-\textbf{w/o mode-cache}, which disables warm starts from previously validated modes; 
-\textbf{w/o quick-pass}, which evaluates all candidate strategies by rollout; 
+\textbf{w/o gap-lookahead}, which ranks frontier gaps without downstream costs;
+\textbf{w/o mode-cache}, which disables warm starts from previously validated modes;
+\textbf{w/o quick-pass}, which evaluates all candidate strategies by rollout;
 and \textbf{w/o reinsertion}, which prevents promising but temporarily failed nodes from being reconsidered.
-Table~\ref{tab:main_ablation} shows that gap-lookahead and reinsertion mainly improve robustness, 
+Table~\ref{tab:main_ablation} shows that gap-lookahead and reinsertion mainly improve robustness,
 with success dropping more than $10\%$ when either is removed.
 Removing mode-cache causes a smaller success drop to $92.5\%$,
-consistent with its role as a warm start rather than a feasibility gate. 
+consistent with its role as a warm start rather than a feasibility gate.
 Quick-pass mainly improves efficiency: disabling it increases
 the average number of simulations from $121.5$ to $208.2$ and the planning time
 from $10.3$\,s to $23.6$\,s.
@@ -161,7 +164,7 @@ from $10.3$\,s to $23.6$\,s.
 
 \subsubsection{Density Scalability}\label{subsec:density}
 Density scalability is evaluated in an $8{\times}8\,$m workspace with
-$N\in\{15,20,25,30,35,40,45\}$ movable obstacles and five seeds per density, 
+$N\in\{15,20,25,30,35,40,45\}$ movable obstacles and five seeds per density,
 as shown in Fig.~\ref{fig:dense45}. For each seed, denser instances are generated
 by incrementally adding objects to the same layout, making the higher-density
 cases strictly harder. Unsuccessful trials, including plan failures and
@@ -227,7 +230,7 @@ global poses to \texttt{PyBullet} in real time, enabling policy execution and vi
 Movables are randomly placed for each trial.
 
 \subsubsection{Results}\label{subsec:exp-results}
-Two representative real-world runs are shown in Fig.~\ref{fig:hardware}. 
+Two representative real-world runs are shown in Fig.~\ref{fig:hardware}.
 In Scenario~1, PIHS breaks five candidate gaps within
 $6.5\,$s, using $12$ node expansions, $49$ visited system-state snapshots,
 and a maximum search depth of $6$. The four-task schedule first pushes and
@@ -236,10 +239,15 @@ It then pushes the green and orange rectangular objects in opposite lateral
 directions, progressively expanding the reachable $W$-clearance region. After
 the green cylinder is pushed to the right, a complete $W$-clear path is
 established at $t=52\,$s.
-In Scenario~2, a direct push on the blue L-shaped object also moves the adjacent
-T-shaped block, opening the first gap into the narrow passage. Subsequent local
-replanning handles object sliding and contact deviations, and the final
-endpoint-clearance task enables the vehicle footprint to traverse the passage.
-The main execution deviations arise from direction-dependent force limits,
-drifting, and Mecanum-wheel slippage near $45^\circ$ motion directions, which
+In Scenario~2, PushAround succeeds in $8/10$ trials by generating an average of
+$5.2$ pushes. The planning phase takes
+$11.4$\,s on average, and first selects a
+direct push on the blue L-shaped object, which also moves the adjacent T-shaped
+block and opens the first gap into the narrow passage. The complete execution
+takes $77.1$\,s on average, during which local
+replanning compensates for object sliding and contact deviations, while the
+final clearance task enables the large vehicle to traverse the
+passage.
+The main deviations arise from direction-dependent force limits,
+drifting, and Mecanum-wheel slippage near $45^\circ$ directions, which
 are compensated by online replanning.
