@@ -70,34 +70,34 @@ modes for breaking frontier gaps;
 %==============================================
 
 
-Via employing multiple robots, collaborative pushing provides a potential
-solution for such scenarios.
-It has been widely investigated in multi-robot
-manipulation. Foundational studies examined the mechanics of pushing and the
-limit surface model~\cite{goyal1989limit,lynch1992manipulation}, while more
-recent work addressed force synchronization~\cite{ni2023progressive}, contact
-stability and slip margins~\cite{liu2025physics,chen2015occlusion}, and
-cooperative transport of large payloads in structured
-environments~\cite{ni2024physics,wang2006multi}. Learning-based approaches have
-further explored emergent coordination in cluttered
-settings~\cite{feng2025learning}. These studies demonstrate effective
-multi-robot cooperation but are generally limited to single-object tasks and
-assume strict collision avoidance with surrounding obstacles. As a result,
-inter-object interactions and the coupled dynamics of multiple movable
-obstacles remain largely unaddressed.
+By employing multiple robots, collaborative pushing provides a potential solution
+for such scenarios
+and has been widely studied in multi-robot manipulation.
+Foundational studies examined the mechanics of pushing and the limit-surface
+model~\cite{goyal1989limit,lynch1992manipulation}. Subsequent work considered
+cooperative transport with robot swarms~\cite{chen2015occlusion}, multi-robot
+box pushing with reinforcement learning~\cite{wang2006multi}, collaborative
+pushing of polytopic objects in cluttered scenes~\cite{tang2024collaborative},
+and learning-based loco-manipulation for long-term quadrupedal
+pushing~\cite{feng2025learning}. These studies demonstrate effective
+multi-robot cooperation, but typically focus on a prescribed object
+and avoid exploiting inter-object contacts for multiple objects.
 
-To improve physical feasibility,
-physics-informed planning has emerged to integrate realistic dynamics into
-motion generation. Several methods use physics engines to validate candidate
-manipulations~\cite{lin2019efficient} or embed contact simulation directly in
-the planning loop~\cite{rouxel2024multi}. Other approaches incorporate dynamic
-models into planning for non-prehensile manipulation~\cite{xue2023guided,saxena2023planning}
-or apply learning with physics priors and differentiable physics for
-contact-rich tasks~\cite{ni2023progressive,liu2025physics}.
-While these approaches emphasize embedding physical reasoning,
-they often decouple high-level planning from low-level feasibility checks or
-remain confined to single-object manipulation. Consequently, they do not scale
-to collaborative path clearing in cluttered environments with many movable
+Physics-informed planning has emerged to
+incorporate dynamics models, contact reasoning, or simulation feedback into
+motion generation. Learned dynamics have been used for humanoid
+contact planning~\cite{lin2019efficient}, while multi-contact force-control
+methods address physically consistent execution~\cite{rouxel2024multi}.
+For non-prehensile manipulation,
+demonstration-guided optimal control reasons over contact modes and
+pushing dynamics~\cite{xue2023demonstration}, and physics-based simulation is
+interleaved with multi-agent pathfinding for manipulation among movable
+objects~\cite{saxena2023planning}. Neural motion-planning
+methods further use learned physical priors
+for motion generation~\cite{ni2023progressive,liu2025physics}. While these
+approaches improve physical grounding, they either remain focused on
+single-object manipulation, contact execution, or generic planning, and
+do not directly solve collaborative path clearing with many interacting movable
 obstacles.
 
 
@@ -117,13 +117,13 @@ strategy that prioritizes frontier gaps by estimated effort,
 and the pushing mode generation under geometric constraints.
 These components are encapsulated under a search
 procedure that incrementally expands candidate clearing plans while validating their
-physical realizability. This integration guarantees that the resulting plans
+physical realizability. This integration yields resulting plans that
 are not only geometrically valid but also feasible under robot dimensions,
 object mass, contact geometry, and coupled pushing dynamics. Efficiency is
 achieved by combining compact geometric reasoning with prioritized evaluation.
 Extensive simulations and experiments are conducted for validation.
 
-The contributions are twofold: {(I)} it introduces an unified framework that
+The contributions are twofold: {(I)} it introduces a unified framework that
 couples collaborative pushing with
 physics-informed verification, producing executable plans for
 path clearing in cluttered environments; and {(II)} it
