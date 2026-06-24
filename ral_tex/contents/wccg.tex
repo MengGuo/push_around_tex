@@ -3,17 +3,17 @@
 
 The feasibility of routing the vehicle reduces to whether a~$W$-width corridor
 connects~$\mathbf{x}_\texttt{V}^{\texttt{S}}$ and~$\mathbf{x}_\texttt{V}^{\texttt{G}}$.
-A W--clearance connectivity graph (WCCG) is introduced in this work as shown in Fig.~\ref{fig:wccg},
+A W--clearance connectivity graph (WCCG) is introduced here as shown in Fig.~\ref{fig:wccg},
 which encodes obstacle adjacencies under clearance~$W$ and enables \emph{fast connectivity queries}.
 Constructed directly from geometry  rather than grids or roadmaps,
-it avoids discretization error and remains consistent—crucial because connectivity is checked repeatedly
+it avoids discretization error and remains consistent, which is crucial as connectivity is checked repeatedly
 during planning.
 
 \subsubsection{Graph Construction}
 The WCCG is built by decomposing all clearance-relevant obstacle and workspace
 boundaries into convex components or segments.
-From each component
-$C$, a centroid node~$v_c$ is created. When two components~$C_u$ and~$C_v$
+From each component~$C$,
+a centroid node~$v_c$ is created. When two components~$C_u$ and~$C_v$
 have closest points~$p_u\in C_u$ and~$p_v\in C_v$ with distance less than~$W$,
 bridge nodes are added at~$p_u$ and~$p_v$. These bridge nodes are
 connected by a bridge--bridge edge, annotated with the gap width
@@ -23,39 +23,35 @@ as potential bottlenecks. The resulting graph is given by:
 \begin{equation}\label{eq:wccg}
 \mathcal{G}_W\triangleq(\mathcal{V},\; \mathcal{E}_c\cup\mathcal{E}_b),
 \end{equation}
-where~$\mathcal{V}$ contains all centroid and bridge nodes;
-$\mathcal{E}_c$ is the set of centroid--bridge edges; and~$\mathcal{E}_b$ the
-set of bridge--bridge edges annotated by widths~$w_{uv}$.
+where~$\mathcal{V}$ are centroid and bridge nodes;
+$\mathcal{E}_c$ is are centroid--bridge edges; and~$\mathcal{E}_b$ for
+bridge--bridge edges with widths~$w_{uv}$.
 
 \subsubsection{Connectivity Criterion}\label{subsubsec:bugplanner}
 Once~$\mathcal{G}_W$ has been constructed, connectivity queries can be
-performed without explicitly computing a geometric path. A frontier-tracing
-procedure, similar to the BugPlanner~\cite{McGuireCroonTuyls2019}, starts from the vehicle start
-$\mathbf{x}_\texttt{V}^{\texttt{S}}$, casts a ray toward the goal
-$\mathbf{x}_\texttt{V}^{\texttt{G}}$, and explores the encountered loop of
-frontier edges. If a valid exit is discovered, the process continues until the
-goal is reached; otherwise a blocking cycle is returned.
-Successful execution produces a skeleton~$\Sigma$, as an ordered sequence of
-centroid and bridge nodes that certifies~$\mathbf{x}_\texttt{V}^{\texttt{S}}$
-and~$\mathbf{x}_\texttt{V}^{\texttt{G}}$ lie in the same connected face.
-The WCCG criterion for~\eqref{eq:wclear} is therefore
+performed without explicitly computing a geometric path. Let
+$\textsf{Face}(\mathcal{G}_W)$ denote the set of connected planar faces induced
+by the embedded WCCG, i.e., the maximal regions separated by obstacle
+components and WCCG bottleneck edges. The criterion for~\eqref{eq:wclear}
+is given by:
 \begin{equation}\label{eq:wccg_criterion}
-\mathbf{x}_\texttt{V}^{\texttt{S}},\mathbf{x}_\texttt{V}^{\texttt{G}}\in
-\mathcal{F}_W(t)
-\ \ and\ \ 
-\exists F\in\mathrm{Face}(\mathcal{G}_W):
-\{\mathbf{x}_\texttt{V}^{\texttt{S}},\mathbf{x}_\texttt{V}^{\texttt{G}}\}\subset F .
+\big(\mathbf{x}_\texttt{V}^{\texttt{S}},\mathbf{x}_\texttt{V}^{\texttt{G}}\in
+\mathcal{F}_W(t)\big)
+and
+\big( \exists F\in\textsf{Face}(\mathcal{G}_W):
+{\mathbf{x}_\texttt{V}^{\texttt{S}},\mathbf{x}_\texttt{V}^{\texttt{G}}}\subset F \big),
 \end{equation}
+which requires the start and goal to be individually $W$-clear and to lie in
+the same WCCG face. This is sufficient for the graph-level query because
+bridge--bridge edges with width below~$W$ encode non-traversable bottlenecks,
+while points in the same face are not separated by such a
+bottleneck. A frontier-tracing procedure, similar to the
+BugPlanner~\cite{McGuireCroonTuyls2019}, is then used to extract a skeleton
+$\Sigma$ as an ordered sequence of centroid and bridge nodes. Starting from
+$\mathbf{x}_\texttt{V}^{\texttt{S}}$, it casts a ray toward
+$\mathbf{x}_\texttt{V}^{\texttt{G}}$ and follows the encountered frontier loop
+until either a valid exit is found or a blocking cycle is returned.
 
-\noindent\textit{Proof sketch.}
-Let~$\rho=W/2$. A~$W$-clearance path is equivalent to a continuous
-reference-center path in~$\mathcal{F}_W(t)$. For any convex components
-$C_u,C_v$, $d(C_u,C_v)<W$ iff their~$\rho$-offsets overlap; hence each WCCG
-bridge lies in the forbidden offset region and closes exactly a
-non-traversable gap. Thus a feasible path cannot cross WCCG edges, so its
-endpoints must be in the same face. Conversely, endpoint-free points in the
-same face are separated by no~$<W$ gap, and convexity gives local disk-center
-passages that can be concatenated in~$\mathcal{F}_W(t)$.
 
 \begin{remark}\label{remark:wccg}
 Unlike sampling or grid-based planners, the WCCG avoids workspace
