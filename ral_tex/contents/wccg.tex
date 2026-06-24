@@ -34,28 +34,28 @@ procedure, similar to the BugPlanner~\cite{McGuireCroonTuyls2019}, starts from t
 $\mathbf{x}_\texttt{V}^{\texttt{S}}$, casts a ray toward the goal
 $\mathbf{x}_\texttt{V}^{\texttt{G}}$, and explores the encountered loop of
 frontier edges. If a valid exit is discovered, the process continues until the
-goal is reached; otherwise a blocking cycle is returned. Successful execution
-produces a skeleton~$\Sigma$, as an ordered sequence of centroid and
-bridge nodes that certifies~$\mathbf{x}_\texttt{V}^{\texttt{S}}$ and
-$\mathbf{x}_\texttt{V}^{\texttt{G}}$ lie in the same connected face.
-Using the admissible reference-center space~$\mathcal{F}_W(t)$ defined in
-Section~\ref{subsec:vehicle}, the WCCG connectivity criterion for
-\eqref{eq:wclear} is
+goal is reached; otherwise a blocking cycle is returned.
+Successful execution produces a skeleton~$\Sigma$, as an ordered sequence of
+centroid and bridge nodes that certifies~$\mathbf{x}_\texttt{V}^{\texttt{S}}$
+and~$\mathbf{x}_\texttt{V}^{\texttt{G}}$ lie in the same connected face.
+The WCCG criterion for~\eqref{eq:wclear} is therefore
 \begin{equation}\label{eq:wccg_criterion}
-  \big{(}\mathbf{x}_\texttt{V}^{\texttt{S}},\, \mathbf{x}_\texttt{V}^{\texttt{G}}
-  \; \text{belong to the same face of}\; \mathcal{G}_W\big{)},
+\mathbf{x}_\texttt{V}^{\texttt{S}},\mathbf{x}_\texttt{V}^{\texttt{G}}\in
+\mathcal{F}_W(t)
+\ \ and\ \ 
+\exists F\in\mathrm{Face}(\mathcal{G}_W):
+\{\mathbf{x}_\texttt{V}^{\texttt{S}},\mathbf{x}_\texttt{V}^{\texttt{G}}\}\subset F .
 \end{equation}
-and $\mathbb{B}_{W/2}(\mathbf{x}_\texttt{V}^{\texttt{S}}),\,
-\mathbb{B}_{W/2}(\mathbf{x}_\texttt{V}^{\texttt{G}})\subset\mathcal{F}_W$.
-This aligns with~\eqref{eq:wclear} for clearance.
 
-
-% \subsubsection{Frontier-Gap Interface}
-% If the connectivity criterion fails, the frontier-tracing procedure returns a
-% blocking cycle~$\mathcal{L}$ instead of a skeleton. The bridge--bridge edges on
-% $\mathcal{L}$ expose the frontier gaps whose widths are insufficient for the
-% vehicle. These gaps form the interface between WCCG connectivity reasoning and
-% the gap-ranking module described next.
+\noindent\textit{Proof sketch.}
+Let~$\rho=W/2$. A~$W$-clearance path is equivalent to a continuous
+reference-center path in~$\mathcal{F}_W(t)$. For any convex components
+$C_u,C_v$, $d(C_u,C_v)<W$ iff their~$\rho$-offsets overlap; hence each WCCG
+bridge lies in the forbidden offset region and closes exactly a
+non-traversable gap. Thus a feasible path cannot cross WCCG edges, so its
+endpoints must be in the same face. Conversely, endpoint-free points in the
+same face are separated by no~$<W$ gap, and convexity gives local disk-center
+passages that can be concatenated in~$\mathcal{F}_W(t)$.
 
 \begin{remark}\label{remark:wccg}
 Unlike sampling or grid-based planners, the WCCG avoids workspace
