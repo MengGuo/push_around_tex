@@ -2,7 +2,7 @@
 \subsection{W--Clearance Connectivity Graph}\label{subsec:wccg}
 
 The feasibility of routing the vehicle reduces to whether a~$W$-width corridor
-connects~$\mathbf{s}_\texttt{V}^{\texttt{S}}$ and~$\mathbf{s}_\texttt{V}^{\texttt{G}}$.
+connects~$\mathbf{x}_\texttt{V}^{\texttt{S}}$ and~$\mathbf{x}_\texttt{V}^{\texttt{G}}$.
 A W--clearance connectivity graph (WCCG) is introduced in this work as shown in Fig.~\ref{fig:wccg},
 which encodes obstacle adjacencies under clearance~$W$ and enables \emph{fast connectivity queries}.
 Constructed directly from geometry  rather than grids or roadmaps,
@@ -31,22 +31,22 @@ set of bridge--bridge edges annotated by widths~$w_{uv}$.
 Once~$\mathcal{G}_W$ has been constructed, connectivity queries can be
 performed without explicitly computing a geometric path. A frontier-tracing
 procedure, similar to the BugPlanner~\cite{McGuireCroonTuyls2019}, starts from the vehicle start
-$\mathbf{s}_\texttt{V}^{\texttt{S}}$, casts a ray toward the goal
-$\mathbf{s}_\texttt{V}^{\texttt{G}}$, and explores the encountered loop of
+$\mathbf{x}_\texttt{V}^{\texttt{S}}$, casts a ray toward the goal
+$\mathbf{x}_\texttt{V}^{\texttt{G}}$, and explores the encountered loop of
 frontier edges. If a valid exit is discovered, the process continues until the
 goal is reached; otherwise a blocking cycle is returned. Successful execution
 produces a skeleton~$\Sigma$, as an ordered sequence of centroid and
-bridge nodes that certifies~$\mathbf{s}_\texttt{V}^{\texttt{S}}$ and
-$\mathbf{s}_\texttt{V}^{\texttt{G}}$ lie in the same connected face.
+bridge nodes that certifies~$\mathbf{x}_\texttt{V}^{\texttt{S}}$ and
+$\mathbf{x}_\texttt{V}^{\texttt{G}}$ lie in the same connected face.
 Using the admissible reference-center space~$\mathcal{F}_W(t)$ defined in
 Section~\ref{subsec:vehicle}, the WCCG connectivity criterion for
 \eqref{eq:wclear} is
 \begin{equation}\label{eq:wccg_criterion}
-  \big{(}\mathbf{s}_\texttt{V}^{\texttt{S}},\, \mathbf{s}_\texttt{V}^{\texttt{G}}
+  \big{(}\mathbf{x}_\texttt{V}^{\texttt{S}},\, \mathbf{x}_\texttt{V}^{\texttt{G}}
   \; \text{belong to the same face of}\; \mathcal{G}_W\big{)},
 \end{equation}
-and $\mathbb{B}_{W/2}(\mathbf{s}_\texttt{V}^{\texttt{S}}),\,
-\mathbb{B}_{W/2}(\mathbf{s}_\texttt{V}^{\texttt{G}})\subset\mathcal{F}_W$.
+and $\mathbb{B}_{W/2}(\mathbf{x}_\texttt{V}^{\texttt{S}}),\,
+\mathbb{B}_{W/2}(\mathbf{x}_\texttt{V}^{\texttt{G}})\subset\mathcal{F}_W$.
 This aligns with~\eqref{eq:wclear} for clearance.
 
 
