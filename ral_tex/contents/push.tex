@@ -5,7 +5,7 @@ pushing strategies
 $\Xi_g \triangleq \{(\Omega_m,\mathbf{v},\boldsymbol{\xi})\}$,
 where~$\mathbf{v} \triangleq (v_x,v_y,\omega)\in\mathbb{R}^3$ is a
 short-horizon pushing direction for the movable obstacle~$\Omega_m$ induced by~$g$, and
-$\boldsymbol{\xi}\triangleq(\mathcal{C},\mathbf{u})$ is the associated pushing
+$\boldsymbol{\xi}\triangleq(\mathcal{C}_m,\mathbf{u})$ is the associated pushing
 mode in~\eqref{eq:transition}.
 
 
@@ -48,58 +48,115 @@ Reachable contacts are filtered by the
 %------------------------------
 
 %==============================================
+% \subsubsection{Pushing Mode Generation}
+% For each sampled direction~$\mathbf{v}_m^k$ and obstacle~$\Omega_m$, the
+% quality of a candidate mode is measured in the body frame. Let
+% $\mathbf{v}_m^{k,\mathrm{B}} \in \mathbb{R}^3$ denote~$\mathbf{v}_m^k$
+% expressed in the body frame of~$\Omega_m$. For a mode~$\boldsymbol{\xi}$,
+% define the primary and multi-directional feasibility losses by:
+% \begin{equation}\label{eq:mode-feasibility}
+% \begin{aligned}
+%   \mathrm{J}_{\texttt{F}}^m
+%   (\boldsymbol{\xi},\mathbf{v}_m^{k,\mathrm{B}})
+%   &\triangleq
+%   \underset{\mathbf{q}_{m,\boldsymbol{\xi}} \in
+%   \mathrm{Q}_{m,\boldsymbol{\xi}}}{\textbf{min}}
+%   \left\|
+%   \mathbf{q}_{m,\boldsymbol{\xi}} +
+%   Q_\mu^m(\mathbf{v}_m^{k,\mathrm{B}})
+%   \right\|_1,\\
+%   \mathrm{J}_{\texttt{MF}}^m
+%   (\boldsymbol{\xi},\mathbf{v}_m^{k,\mathrm{B}})
+%   &\triangleq
+%   \sum_{\mathbf{v}_d \in \mathcal{D}} w_d \cdot
+%   \mathrm{J}_{\texttt{F}}^m(\boldsymbol{\xi},\mathbf{v}_d);
+% \end{aligned}
+% \end{equation}
+% where~$\mathbf{q}_{m,\boldsymbol{\xi}} \in \mathbb{R}^3$ is the generalized
+% body wrench induced by mode~$\boldsymbol{\xi}$;
+% $\mathrm{Q}_{m,\boldsymbol{\xi}} \subseteq \mathbb{R}^3$ is the corresponding
+% set of admissible body wrenches under the contact and friction constraints;
+% $Q_\mu^m(\mathbf{v}_m^{k,\mathrm{B}}) \in \mathbb{R}^3$ denotes the
+% quasi-static friction wrench of~$\Omega_m$ at direction~$\mathbf{v}_m^{k,\mathrm{B}}$;
+% $\mathcal{D} \subset \mathbb{R}^3$ is a finite
+% set of basis velocities containing the desired direction;
+% and~$w_d > 0$ is the
+% weight associated with~$\mathbf{v}_d \in \mathcal{D}$. Thus,
+% small~$\mathrm{J}_{\texttt{F}}^m(\boldsymbol{\xi},\mathbf{v}_m^{k,\mathrm{B}})$ is
+% necessary for force feasibility, while small
+% $\mathrm{J}_{\texttt{MF}}^m$ indicates a robust mode.
+% Accordingly, the associated mode
+% $\boldsymbol{\xi}_m^k \triangleq (\mathcal{C}_m^k,\mathbf{u}_m^k)$ is generated
+% by sparse optimization over the reachable part of~$\partial\Omega_m$. The
+% reachable boundary is discretized into candidate contacts, and a sparse linear
+% program (LP) is solved to minimize
+% $\mathrm{J}_{\texttt{MF}}^m(\boldsymbol{\xi},\mathbf{v}_m^{k,\mathrm{B}})$
+% under the local friction and wrench constraints.
+% Detailed derivations are omitted here for brevity,
+% and referred to~\cite{tang2024collaborative,tang2025pushingbots}.
+% The resulting nonzero contacts provide~$\mathcal{C}_m^k$, and the corresponding forces
+% yield~$\mathbf{u}_m^k$. Only the best few
+% pairs~$(\mathbf{v}_m^k,\boldsymbol{\xi}_m^k)$ are retained and collected
+% into~$\Xi_g$.
+
 \subsubsection{Pushing Mode Generation}
-For each sampled direction~$\mathbf{v}_m^k$ and obstacle~$\Omega_m$, the
-quality of a candidate mode is measured in the body frame. Let
-$\mathbf{v}_m^{k,\mathrm{B}} \in \mathbb{R}^3$ denote~$\mathbf{v}_m^k$
-expressed in the body frame of~$\Omega_m$. For a mode~$\boldsymbol{\xi}$,
-define the primary and multi-directional feasibility losses by:
+At a search state~$\mathbf{s}$, a pushing mode is generated for each candidate
+direction~$\mathbf{v}_m^k$ and obstacle~$\Omega_m$. In this subsubsection,
+contact tuples, object velocities, forces, and wrenches are expressed in the
+body frame of~$\Omega_m$. For a contact tuple~$\mathcal{C}$, its
+multi-directional force feasibility is
 \begin{equation}\label{eq:mode-feasibility}
-\begin{aligned}
-  \mathrm{J}_{\texttt{F}}^m
-  (\boldsymbol{\xi},\mathbf{v}_m^{k,\mathrm{B}})
-  &\triangleq
-  \underset{\mathbf{q}_{m,\boldsymbol{\xi}} \in
-  \mathrm{Q}_{m,\boldsymbol{\xi}}}{\textbf{min}}
-  \left\|
-  \mathbf{q}_{m,\boldsymbol{\xi}} +
-  Q_\mu^m(\mathbf{v}_m^{k,\mathrm{B}})
-  \right\|_1,\\
-  \mathrm{J}_{\texttt{MF}}^m
-  (\boldsymbol{\xi},\mathbf{v}_m^{k,\mathrm{B}})
-  &\triangleq
-  \sum_{\mathbf{v}_d \in \mathcal{D}} w_d \cdot
-  \mathrm{J}_{\texttt{F}}^m(\boldsymbol{\xi},\mathbf{v}_d);
-\end{aligned}
+\mathrm{J}_{\texttt{MF}}^m(\mathcal{C},\mathbf{v}_m^k)
+\triangleq
+\sum_{\mathbf{v}_d\in\mathcal{D}_m^k} w_d
+\min_{\mathbf{u}\in\mathcal{U}_m(\mathcal{C})}
+\|
+\mathbf{q}_m(\mathcal{C},\mathbf{u})
++\mathbf{q}_m^\mu(\mathbf{v}_d)
+\| ,
 \end{equation}
-where~$\mathbf{q}_{m,\boldsymbol{\xi}} \in \mathbb{R}^3$ is the generalized
-body wrench induced by mode~$\boldsymbol{\xi}$;
-$\mathrm{Q}_{m,\boldsymbol{\xi}} \subseteq \mathbb{R}^3$ is the corresponding
-set of admissible body wrenches under the contact and friction constraints;
-$Q_\mu^m(\mathbf{v}_m^{k,\mathrm{B}}) \in \mathbb{R}^3$ denotes the
-quasi-static friction wrench of~$\Omega_m$ at direction~$\mathbf{v}_m^{k,\mathrm{B}}$;
-$\mathcal{D} \subset \mathbb{R}^3$ is a finite
-set of basis velocities containing the desired direction;
-and~$w_d > 0$ is the
-weight associated with~$\mathbf{v}_d \in \mathcal{D}$. Thus,
-small~$\mathrm{J}_{\texttt{F}}^m(\boldsymbol{\xi},\mathbf{v}_m^{k,\mathrm{B}})$ is
-necessary for force feasibility, while small
-$\mathrm{J}_{\texttt{MF}}^m$ indicates a robust mode.
-Accordingly, the associated mode
-$\boldsymbol{\xi}_m^k \triangleq (\mathcal{C}_m^k,\mathbf{u}_m^k)$ is generated
-by sparse optimization over the reachable part of~$\partial\Omega_m$. The
-reachable boundary is discretized into candidate contacts, and a sparse linear
-program (LP) is solved to minimize
-$\mathrm{J}_{\texttt{MF}}^m(\boldsymbol{\xi},\mathbf{v}_m^{k,\mathrm{B}})$
-under the local friction and wrench constraints.
-Detailed derivations are omitted here for brevity,
-and referred to~\cite{tang2024collaborative,tang2025pushingbots}.
-The resulting nonzero contacts provide~$\mathcal{C}_m^k$, and the corresponding forces
-yield~$\mathbf{u}_m^k$. Only the best few
-pairs~$(\mathbf{v}_m^k,\boldsymbol{\xi}_m^k)$ are retained and collected
-into~$\Xi_g$.
+where~$\|\cdot\|$ is a weighted $\ell_1$ wrench norm,
+$\mathcal{D}_m^k$ is a finite perturbation set around~$\mathbf{v}_m^k$,
+and~$\mathbf{q}_m^\mu(\mathbf{v}_d)$ is the quasi-static friction wrench of $\Omega_m$; 
+the inner minimization is a small Linear Program (LP) 
+over the admissible contact forces~$\mathcal{U}_m(\mathcal{C})$.
+A state- and direction-dependent contact set
+$\mathcal{A}_m^k(\mathbf{s})\subset\partial\Omega_m$ is obtained from the
+robot-reachable boundary of~$\Omega_m$ by velocity--force compatibility
+filtering, as illustrated in Fig.~\ref{fig:mode_generation}. Starting from
+cached layouts, if available, and random initializations in
+$\mathcal{A}_m^k(\mathbf{s})$, the contact tuple is refined by sequential greedy
+replacement. At the $\ell$-th greedy step, let~$\mathcal{C}^{\ell}$ be the
+current tuple, and let~$\mathcal{C}_{r,c}^{\ell}$ be obtained by replacing its
+$r$-th contact with~$c$. The best replacement is
+\begin{equation}
+c^\star
+\in
+\arg\min_{c\in\mathcal{A}_m^k(\mathbf{s})}
+\mathrm{J}_{\texttt{MF}}^m
+\bigl(\mathcal{C}_{r,c}^{\ell},\mathbf{v}_m^k\bigr).
+\label{eq:greedy_mode_update}
+\end{equation}
+The greedy refinement sweeps over contact slots until
+$\mathrm{J}_{\texttt{MF}}^m$ no longer decreases. 
+Among initializations, the
+best local tuple is selected as~$\mathcal{C}_m^{k,\star}$, and
+$\mathbf{u}_m^k$ is obtained by the inner minimization in
+\eqref{eq:mode-feasibility} for~$\mathbf{v}_m^k$. 
+This yields $\boldsymbol{\xi}_m^k=(\mathcal{C}_m^{k,\star},\mathbf{u}_m^k)$. 
+The mode is inserted into a persistent \textsc{mode-cache}, 
+indexed by discretized shape, mass, available robot force, and pushing direction, 
+and used only as a warm start for later similar queries.
+The best few pairs~$(\mathbf{v}_m^k,\boldsymbol{\xi}_m^k)$ with
+$\boldsymbol{\xi}_m^k\in\Xi_m(\mathbf{s})$ are retained for gap~$g$ and passed
+to simulation evaluation.
 
-
+% The best refined mode over all initializations is denoted by
+% $\boldsymbol{\xi}_m^k=(\mathcal{C}_m^k,\mathbf{u}_m^k)$. 
+% It is admitted only if its rollout is validated in simulation. 
+% Accepted modes are stored in a persistent \textsc{mode-cache}, 
+% indexed by discretized shape, mass, available robot force, and pushing direction, 
+% and reused as warm starts. 
 
 %==============================================
 \subsubsection{Pushing Strategy Evaluation}
@@ -119,17 +176,18 @@ simulation returns:
 where~$\mathbf{s}'$ is the successor state given the strategy;
 $\delta_{\texttt{T}}>0$ is the
 time cost; and~$\delta_{\texttt{J}}$ is the control effort.
-
+For efficiency, the pushing rollout may be bypassed when the mode has been validated before 
+and the swept region of~$\Omega_m$ is collision-free with other obstacles.
 %------------------------------
 \begin{figure}[t!]
   \centering
   \includegraphics[width=0.95\linewidth]{figures/PIHS.pdf}
-  \vspace{-0.15in}
+  \vspace{-2mm}
   \caption{
   \textbf{Top:} Core components of the proposed physics-informed hybrid search;
   \textbf{Bottom:} Sampled push tasks are evaluated via parallel simulation, producing updated states
   for search expansion.}
     \label{fig:PIHS}
-   \vspace{-4mm}
+   \vspace{-5mm}
 \end{figure}
 %------------------------------
