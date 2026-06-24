@@ -2,8 +2,8 @@
 \subsection{Ranking Current-Frontier Gaps}\label{subsec:gap}
 
 When the condition in~\eqref{eq:wccg_criterion} fails, the vehicle cannot
-reach~$\mathbf{s}_\texttt{V}^{\texttt{G}}$ from
-$\mathbf{s}_\texttt{V}^{\texttt{S}}$ through a~$W$--clear path
+reach~$\mathbf{x}_\texttt{V}^{\texttt{G}}$ from
+$\mathbf{x}_\texttt{V}^{\texttt{S}}$ through a~$W$--clear path
 $\mathcal{P}^W_\texttt{V}$. 
 In this case, the planner must prioritize
 \emph{blocking gaps} on the reachable frontier of~$\mathcal{G}_W$
@@ -13,7 +13,7 @@ the ranked list provides the local clearance targets that guide the hybrid searc
 
 \subsubsection{Frontier Extraction and Candidate Gaps}
 A BugPlanner query on~$\mathcal{G}_W$, given
-$(\mathbf{s}_\texttt{V}^{\texttt{S}},\mathbf{s}_\texttt{V}^{\texttt{G}},W)$,
+$(\mathbf{x}_\texttt{V}^{\texttt{S}},\mathbf{x}_\texttt{V}^{\texttt{G}},W)$,
 either confirms connectivity or returns a counter--clockwise frontier loop
 $\mathcal{L}$ that separates the two endpoints. The bridge--bridge edges on
 $\mathcal{L}$ define the first--hop candidate set
@@ -61,7 +61,7 @@ is required, i.e., multiple out-layer obstacles should be cleared \emph{before}~
 \subsubsection{Long-term Cost w.r.t. Goal}
 Furthermore, to prioritize gaps closer to the goal, a heuristic is added to the evaluation,
 i.e.,
-$h(g)=\eta\,\big\|\mathbf{o}(g)-\mathbf{s}_\texttt{V}^{\texttt{G}}\big\|$,
+$h(g)=\eta\,\big\|\mathbf{o}(g)-\mathbf{x}_\texttt{V}^{\texttt{G}}\big\|$,
 with the scaling constant~$\eta>0$.
 Lastly, a short A$^\star$-style presearch is adopted to cross
 each candidate gap, recompute the next frontier, and continue for a limited

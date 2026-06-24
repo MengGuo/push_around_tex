@@ -16,7 +16,7 @@ observation, and execution proceeds to $\tau_{k+1}$ if the action succeeds.
 For consistency with execution, the WCCG is rebuilt periodically from
 the current configuration. Execution terminates once a $W$--clear path
 $\mathcal{P}^W_\texttt{V}$ connects $\mathbf{s}_t$ and
-$\mathbf{s}_\texttt{V}^{\texttt{G}}$.
+$\mathbf{x}_\texttt{V}^{\texttt{G}}$.
 Replanning is triggered when contact reassignment is blocked, the realized
 motion deviates from simulation, a push fails, or the updated geometry
 invalidates the remaining schedule. In such cases, Alg.~\ref{alg:pihs} is
@@ -28,7 +28,7 @@ Given~$M$ movable obstacles, let
 $\mathcal{G}_W$ be the current WCCG in~\eqref{eq:wccg},
 $\Gamma_{\nu}$ be the visible frontier-gap set at node~$\nu$,
 and let~$\Xi_g$ be the candidate pushing-strategy set for gap~$g$.
-Then one node expansion in Alg.~\ref{alg:push}
+Then one node expansion in Alg.~\ref{alg:pihs}
 consists of:
 (I) WCCG update and frontier extraction,
 with complexity~$\mathcal{O}(M\log M + |\mathcal{V}| + |\mathcal{E}_c| + |\mathcal{E}_b|)$;

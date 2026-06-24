@@ -8,7 +8,7 @@ the generation and physics validation of multi-robot pushing strategies.
 Unlike purely geometric NAMO planners that expand abstract obstacle
 displacements, PIHS admits only strategies validated by short-horizon simulation.
 Candidate strategies are evaluated in parallel, 
-and Alg.~\ref{alg:push} summarizes the procedure described below.
+and Alg.~\ref{alg:pihs} summarizes the procedure described below.
 
 \subsubsection{Tree and Initialization}
 The search tree~$\mathcal{T}$ is composed of nodes
@@ -17,7 +17,7 @@ state of all robots and movables in~\eqref{eq:transition},
 and~$\pi$ the partial pushing strategy in~\eqref{eq:problem}.
 Two global functions are
 maintained:~$\mathsf{Rank}(\nu)$ stores ranked candidate gaps~$\Gamma_{\mathcal{L}_\nu}$
-given the the frontier loop~$\mathcal{L}_\nu$ associated with node~$\nu$,
+given the frontier loop~$\mathcal{L}_\nu$ associated with node~$\nu$,
 together with their exploration costs by~\eqref{eq:pred_cost};
 and~$\chi(\nu)$ returns the cumulative execution cost
 from the root to~$\nu$.
@@ -43,7 +43,7 @@ for physical effort already incurred and the most promising future actions.
 
 %==============================================
 \begin{algorithm}[t!]
-\caption{Physics-Informed Hybrid Search}\label{alg:push}
+\caption{Physics-Informed Hybrid Search}\label{alg:pihs}
 \SetAlgoLined
 \KwIn{$\mathbf{s}_0$,~$\alpha$,~$\mathsf{EvalSim}(\cdot)$,~$W$--criterion by~\eqref{eq:wccg_criterion}}
 \KwOut{$\pi^\star$}
@@ -120,7 +120,7 @@ and a single expansion can produce multiple validated successors.
 \subsubsection{Termination}
 Termination occurs when a node~$\nu$ reaches a state~$\mathbf{s}$ for which a
 $W$--clear path~$\mathcal{P}^W_\texttt{V}$ exists from
-$\mathbf{s}_\texttt{V}^{\texttt{S}}$ to~$\mathbf{s}_\texttt{V}^{\texttt{G}}$
+$\mathbf{x}_\texttt{V}^{\texttt{S}}$ to~$\mathbf{x}_\texttt{V}^{\texttt{G}}$
 by~\eqref{eq:wccg_criterion}. Thus, the schedule~$\pi$
 stored in~$\nu$ constitutes a complete solution to~\eqref{eq:problem}, encoding
 both the sequence of gaps to clear and the pushing strategies
