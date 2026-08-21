@@ -8,7 +8,6 @@ $\mathcal{P}^W_\texttt{V}$.
 In this case, the planner must prioritize
 \emph{blocking gaps} on the reachable frontier of~$\mathcal{G}_W$
 according to their predicted downstream cost.
-As shown in Fig.~\ref{fig:wccg},
 the ranked list provides the local clearance targets that guide the hybrid search in the sequel.
 
 \subsubsection{Frontier Extraction and Candidate Gaps}
@@ -33,14 +32,7 @@ resulting one--hop cost is given by:
 =\lambda_\texttt{t}\,\mathsf{C}_\texttt{t}\!\left(\mathbf{s}_{\mathcal{R}},\mathbf{o}_g\right)
 +\lambda_\texttt{p}\,\big( \mathsf{C}_\texttt{dp}(g) + \mathsf{C}_\texttt{rp}(g)\big)
 \end{equation}
-where~$\lambda_\texttt{t},\lambda_\texttt{p}>0$ are weighting factors
-for the transition and pushing costs, respectively;
-function~$\mathsf{C}_\texttt{t}(\cdot)$ denotes the collision-free
-distance between two points;
-the function~$\mathsf{C}_\texttt{dp}(\cdot)$ measures the widening effort of direct pushing,
-which increases with narrower opening and heavier adjacent obstacles;
-the function~$\mathsf{C}_\texttt{rp}(\cdot)$ estimates the pushing effort if recursive pushing
-is required, i.e., multiple out-layer obstacles should be cleared \emph{before}~$g$ can be widened.
+where~$\lambda_\texttt{t},\lambda_\texttt{p}>0$ weight transition and pushing costs, respectively; $\mathsf{C}_\texttt{t}$, $\mathsf{C}_\texttt{dp}$, and $\mathsf{C}_\texttt{rp}$ denote transition, direct-pushing, and recursive-pushing costs.
 
 %------------------------------
 \begin{figure}[t!]
@@ -70,21 +62,11 @@ width and depth. The \emph{cost-to-connect} is predicted by:
 \mathsf{C}\!\big(g \mid \mathcal{L},\mathbf{s}_{\mathcal{R}}\big)
 +\!\!\!\sum_{g'\in\Pi^\star(g)}\!\!\!\big{\{}\mathsf{C}(g' \mid \cdot)+h(g')\big{\}},
 \end{equation}
-where~$\Pi^\star(g)$ is the \emph{sequence of subsequent gaps} discovered after
-virtually crossing~$g$;
-the dots indicate updated inputs along the rollout of consecutive pushes;
-and the scalar score~$\widehat{\mathsf{Cost}}(g)>0$ for each candidate gap.
-Consequently,
-the final output of this module is the ranked list of candidate gaps, i.e.,
+where~$\Pi^\star(g)$ is the sequence of subsequent gaps discovered after virtually crossing~$g$. Consequently, the final output of this module is the ranked list of candidate gaps, i.e.,
 $\textsf{Rank}\big(\Gamma_\mathcal{L}\big)
 \triangleq \textbf{argsort}_{g\in\Gamma_\mathcal{L}}\widehat{\mathsf{Cost}}(g)$,
 in ascending predicted cost. This
 ordered set is passed to the hybrid search module, such that only the
 promising gaps are expanded first.
 
-\begin{remark}\label{remark:gap}
-Efficiency of the above ranking procedure can be improved by
-caching frontier loops, storing the transitions
-$(\mathcal{L},g)\mapsto\mathcal{L}'$, and accelerating the edge queries with
-axis-aligned bounding-box culling. \hfill$\blacksquare$
-\end{remark}
+

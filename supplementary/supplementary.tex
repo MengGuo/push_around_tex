@@ -1,0 +1,199 @@
+\documentclass[journal,letterpaper]{IEEEtran}
+\IEEEoverridecommandlockouts
+
+\let\proof\relax
+\let\endproof\relax
+\usepackage{amsthm}
+\usepackage{times}
+\usepackage[bookmarks=true,colorlinks=false,hypertexnames=false]{hyperref}
+\usepackage{xcolor}
+\usepackage{amsmath,amssymb,amsfonts,bm}
+\usepackage{graphicx}
+\usepackage{siunitx}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{array}
+\usepackage{makecell}
+\usepackage{tabularx}
+\usepackage{enumitem}
+\usepackage{float}
+\usepackage[T1]{fontenc}
+\usepackage{microtype}
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+
+\setlength{\textfloatsep}{7pt plus 1pt minus 1pt}
+\setlength{\dbltextfloatsep}{8pt plus 1pt minus 1pt}
+\setlength{\floatsep}{6pt plus 1pt minus 1pt}
+\setlength{\intextsep}{6pt plus 1pt minus 1pt}
+\setlength{\abovecaptionskip}{3pt}
+\setlength{\belowcaptionskip}{0pt}
+\setlength{\abovedisplayskip}{5pt}
+\setlength{\belowdisplayskip}{5pt}
+\setlist{nosep,leftmargin=*}
+\graphicspath{{figures/}}
+
+\renewcommand{\thefigure}{S\arabic{figure}}
+\renewcommand{\thetable}{S\arabic{table}}
+\renewcommand{\theequation}{S\arabic{equation}}
+\renewcommand{\theHfigure}{S\arabic{figure}}
+\renewcommand{\theHtable}{S\arabic{table}}
+\renewcommand{\theHequation}{S\arabic{equation}}
+
+\newcommand{\change}[1]{{\color{blue}#1}}
+\newcommand{\todo}[1]{{\color{red}#1}}
+
+\title{\LARGE\bf Supplementary Material for\\
+PushAround: Collaborative Path Clearing via\\
+Physics-Informed Hybrid Search}
+\author{Author Names Omitted for Anonymous Review}
+
+\begin{document}
+\maketitle
+
+\section{Evaluation Protocol and Reproducibility Details}
+\label{sec:supp-protocol}
+
+\subsection{Shared Simulation and Comparison Settings}
+\change{The revised manuscript makes the comparison protocol explicit because the baselines differ in whether they invoke physics simulation. All methods use the same workspace geometry, robot footprints, movable-object realization, $W$-clearance success criterion, and execution simulator. Candidate pushes are rejected when the corresponding robot pre-contact pose is in collision or when the transition planner cannot reach the assigned pre-contact configuration from the current robot state. The physics-based methods additionally use the same pool of parallel simulation workers.}
+
+\begin{table}[t!]
+\centering
+\caption{\change{Evaluation budgets and execution-monitor settings.}}
+\label{tab:supp-budget}
+\scriptsize
+\renewcommand{\arraystretch}{1.05}
+\setlength{\tabcolsep}{4pt}
+\begin{tabularx}{0.99\linewidth}{@{}p{0.30\linewidth}Y@{}}
+\toprule
+\change{Item} & \change{Setting}\\
+\midrule
+\change{Simulation step / control period} & \change{$1/240$\,s / $1/40$\,s}\\
+\change{Candidate push cap per expansion} & \change{Up to 64 tasks}\\
+\change{Per-task rollout horizon} & \change{80 simulation steps}\\
+\change{Scenario-1 comparison timeout} & \todo{Verify and insert exact common timeout used for the 40-trial comparison}\\
+\change{Scenario-1 comparison search/control cap} & \todo{Verify and insert exact common budget}\\
+\change{Scenario-1 parallel workers} & \todo{Verify and insert worker count}\\
+\change{Density-scaling parallel workers} & \change{16}\\
+\change{Density-scaling timeout} & \change{800\,s per trial}\\
+\change{Density-scaling control-step cap} & \change{20,000}\\
+\change{Density-scaling obstacle masses} & \change{$[15,30]$\,kg}\\
+\change{Contact-position acceptance threshold} & \change{0.10\,m}\\
+\change{Stall monitor} & \change{less than 0.05\,m motion over a 0.25\,s window}\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\change{The contact-position and stall thresholds above correspond to the current execution controller. They do not attempt to identify a friction or mass error. Instead, they detect whether the planned contact geometry and task-level motion remain executable from observed state feedback. A push can also terminate when its geometric task predicate is satisfied, including gap widening, clearance from a reference point, or clearance from a swept/forbidden region.}
+
+\subsection{Density-Scaling Statistics}
+\change{The original density sweep used five seed sequences. In the revised evaluation, the number of independent sequences is increased to~\todo{insert final number, target at least 10--20}. Within a sequence, obstacle count is increased incrementally so that $N=20$ extends the corresponding $N=15$ layout, and so on; different seed sequences are independently generated. Failed and timeout-pruned trials are assigned the same 800\,s timeout before computing capped planning-time statistics. The revised figure reports dispersion across seeds rather than means alone.}
+
+\change{\todo{After the new runs, add a complete table of success rate, planning-time mean$\pm$standard deviation, and execution-time mean$\pm$standard deviation for every method and obstacle count.}}
+
+\section{WCCG Connectivity Reference Check}
+\label{sec:supp-wccg}
+
+\change{The WCCG query is compared against an independent vehicle-center configuration-space reference. For each generated scene, all fixed and movable obstacle geometry is inflated by a disk of radius $W/2$. The complement of the inflated geometry is rasterized at resolution~\todo{insert reference grid resolution}, and a flood-fill search tests whether the start and goal center locations lie in the same connected free component. A second, finer resolution~\todo{insert finer resolution} is used to verify that the reference label is stable near narrow or tangential contacts.}
+
+\change{The scene set is stratified by geometry type so that non-convex decomposition is evaluated directly. In addition to the nominal mixed-shape pool, dedicated non-convex cases include L/T/X/ring-like obstacles and close pairs whose convex components generate multiple candidate bridges. The main metric is connectivity-label agreement. False positives are reported separately because a false WCCG connection could terminate PIHS prematurely, whereas a false negative would cause unnecessary clearing.}
+
+\begin{table}[t!]
+\centering
+\caption{\change{WCCG versus configuration-space connectivity.}}
+\label{tab:supp-wccg}
+\scriptsize
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{lcccc}
+\toprule
+\change{Geometry} & \change{Trials} & \change{Agreement (\%)} & \change{False $+$} & \change{False $-$}\\
+\midrule
+\change{Convex} & \todo{--} & \todo{--} & \todo{--} & \todo{--}\\
+\change{Non-convex} & \todo{--} & \todo{--} & \todo{--} & \todo{--}\\
+\change{Mixed} & \todo{--} & \todo{--} & \todo{--} & \todo{--}\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\change{\todo{Insert final discussion of disagreements, if any. If discrepancies occur only in near-degenerate rasterization cases, report the geometry and verify it with the finer reference resolution rather than silently counting it as a WCCG error.}}
+
+\section{Physics-Model Mismatch Robustness}
+\label{sec:supp-robustness}
+
+\subsection{Perturbation Protocol}
+\change{To isolate simulation-model sensitivity, planning always uses the nominal parameter set. Only the execution simulator is perturbed after a schedule or receding-horizon action has been selected. One parameter family is varied at a time while all other parameters remain nominal. The tested families are obstacle mass, robot--object lateral friction, available robot pushing force, and contact dynamics. The same scene seeds are reused across perturbation levels to form paired comparisons.}
+
+\change{A recommended final sweep is to include at least one moderate and one severe mismatch on each side of the nominal value wherever physically meaningful. The exact factors should follow the stable range of the simulator and hardware calibration: \todo{insert final mass multipliers}, \todo{friction multipliers}, \todo{force-limit multipliers}, and \todo{contact-dynamics parameter/multipliers}. For each condition, report success rate, number of replans, execution time, and number of completed push tasks over~\todo{insert trial count} trials.}
+
+\begin{table*}[t!]
+\centering
+\caption{\change{Sensitivity to execution-side physics mismatch while planning remains nominal.}}
+\label{tab:supp-robustness}
+\scriptsize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.05}
+\begin{tabular}{llccccc}
+\toprule
+\change{Perturbed quantity} & \change{Execution setting} & \change{Trials} & \change{Succ. (\%)} & \change{Replans} & \change{ET (s)} & \change{\#Pushes}\\
+\midrule
+\change{None} & \change{Nominal} & \todo{--} & \todo{--} & \todo{--} & \todo{--} & \todo{--}\\
+\change{Mass} & \todo{factor(s)} & \todo{--} & \todo{--} & \todo{--} & \todo{--} & \todo{--}\\
+\change{Friction} & \todo{factor(s)} & \todo{--} & \todo{--} & \todo{--} & \todo{--} & \todo{--}\\
+\change{Force limit} & \todo{factor(s)} & \todo{--} & \todo{--} & \todo{--} & \todo{--} & \todo{--}\\
+\change{Contact dynamics} & \todo{parameter/factor(s)} & \todo{--} & \todo{--} & \todo{--} & \todo{--} & \todo{--}\\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\begin{figure}[t!]
+\centering
+\fbox{\parbox[c][4.0cm][c]{0.92\columnwidth}{\centering
+\todo{Placeholder for the final mismatch curves.\\
+Suggested: success rate on the top panel and replans/execution-time ratio on the bottom panel, with one curve per perturbed parameter family.}}}
+\caption{\change{Planner--execution physics mismatch study. \todo{Replace with final data.}}}
+\label{fig:supp-robustness}
+\end{figure}
+
+\change{\todo{Insert the final robustness conclusion. The response should identify the range in which replanning absorbs moderate mismatch, the failure mode under severe mismatch, and the most sensitive parameter family. Avoid claiming model-invariant robustness.}}
+
+\section{Scaling with the Number of Pushing Robots}
+\label{sec:supp-robots}
+
+\change{The contact tuple contains one slot per robot, so a naive enumeration over $|\mathcal{A}|$ reachable contacts would scale as $|\mathcal{A}|^N$. PushAround instead starts from cached/random assignments and performs sequential single-contact replacement. One greedy sweep therefore evaluates at most $N|\mathcal{A}|$ replacements, each invoking the force-feasibility LP with a $2N$-dimensional contact-force vector. The procedure avoids exhaustive joint enumeration, although both LP cost and the number of useful contact assignments still increase with team size.}
+
+\change{The dedicated scaling experiment fixes the scene distribution and varies the available robot team as $N\in\{1,2,3,4\}$. The study records mode-generation time separately from total planning time so that the contact-assignment overhead is distinguishable from any reduction in search depth caused by stronger collaborative pushing.}
+
+\begin{table}[t!]
+\centering
+\caption{\change{Robot-team scaling.}}
+\label{tab:supp-robots}
+\scriptsize
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{ccccc}
+\toprule
+\change{$N$} & \change{Succ. (\%)} & \change{Mode gen. (s)} & \change{PT (s)} & \change{\#Pushes}\\
+\midrule
+1 & \todo{--} & \todo{--} & \todo{--} & \todo{--}\\
+2 & \todo{--} & \todo{--} & \todo{--} & \todo{--}\\
+3 & \todo{--} & \todo{--} & \todo{--} & \todo{--}\\
+4 & \todo{--} & \todo{--} & \todo{--} & \todo{--}\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\change{\todo{Insert the final interpretation, including whether extra robots improve feasibility enough to offset the larger mode-generation cost.}}
+
+\section{Hardware Execution Interface and Coupled Contacts}
+\label{sec:supp-hardware}
+
+\subsection{From Pushing Mode to Robot Commands}
+\change{The optimized force vector in a pushing mode is not directly commanded on the Mecanum UGVs. It is used during planning to test whether the selected contact tuple can generate the required object wrench under the assumed force and friction constraints. During hardware execution, each robot receives a planar velocity command through ROS \texttt{geometry\_msgs/Twist}. The controller computes the robot center pose associated with its assigned object-boundary contact, tracks this pose during approach, and then tracks forward contact poses induced by the desired short-horizon object motion.}
+
+\change{This separation explains the role of the force optimization: it screens physically implausible contact assignments before execution, while the low-level platform remains velocity controlled. Direction-dependent wheel force limits and slippage can therefore still produce tracking error on hardware, which is why execution is closed loop and can trigger replanning.}
+
+\subsection{State-Based Deviation Detection}
+\change{The phrase ``execution differs from simulation'' in the original manuscript is refined to a state-based monitor. Robot and obstacle poses are observed from motion capture. The controller checks pre-contact reachability, contact-position tracking, stall, task-specific geometric completion, and the validity of the updated WCCG/remaining schedule. In the current implementation, a robot is treated as having reached its contact neighborhood when its position error is below 0.10\,m, and the push controller flags a stall when a robot moves less than 0.05\,m over 0.25\,s. The geometric push-task predicates provide an additional object-level success/failure check. Thus no onboard force sensor or online estimation of mass/friction error is required for replanning.}
+
+\subsection{Coupled Motion of Multiple Objects}
+\change{Each high-level strategy names a directly targeted obstacle, but the short-horizon physics rollout propagates the complete scene. Object--object contacts are therefore resolved by the physics engine, and all resulting object states are stored in the successor state passed back to PIHS. A target push can intentionally or incidentally move an adjacent obstacle; the subsequent WCCG and task generation operate on that new coupled configuration. This is the mechanism underlying the adjacent T-shaped-block motion in the second hardware scenario.}
+
+\end{document}

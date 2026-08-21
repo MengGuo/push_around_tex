@@ -1,18 +1,4 @@
 \section{Problem Description}\label{sec:problem}
-%==============================================
-\begin{figure*}[t!]
-  \centering
-  \includegraphics[width=0.95\linewidth]{figures/wccg_new.pdf}
-  \vspace{-0.1in}
-  \caption{Illustration of the W--clearance connectivity graph (WCCG) and gap
-    ranking. From left to right: cluttered PyBullet scenario, WCCG overlay with
-    centroid nodes, bridge nodes, and annotated gap widths, induced WCCG faces,
-    and the prioritized frontier-gap sequence.
-    }
-  \label{fig:wccg}
-  \vspace{-0.2in}
-\end{figure*}
-%==============================================
 %==============================
 \subsection{Workspace and Robots}\label{subsec:ws}
 The workspace is a bounded planar region
@@ -117,38 +103,54 @@ transition:
   \Phi\big(\mathbf{s}(t),\,m,\,\boldsymbol{\xi}_m\big),
 \end{equation}
 where~$\mathbf{s}(t)$ stacks all robot and obstacle states.
+\change{
+The force vector~$\mathbf{u}_m$ serves as a feasibility variable to certify
+wrench generation under the modeled contact and actuation constraints rather
+than a directly commanded control input.
+}
 
 
 %==============================
 \subsection{Problem Statement}\label{subsec:objective}
-The goal is to compute a \emph{hybrid schedule} for the robots that reconfigures the movable
-obstacles so that the vehicle admits a~$W$-feasible path from start to goal.
-The overall schedule for the robotic fleet is defined as:
-$\pi\triangleq\big\{(\Omega_{m_k},\, \boldsymbol{\xi}_k,\, \Delta t_k)\big\}_{k=1}^{K}$,
-where~$\Omega_{m_k}\in \boldsymbol{\Omega}$ specifies the movable obstacle to manipulate;
-$\boldsymbol{\xi}_k\in\Xi_{m_k}$ is the pushing mode;
-and~$\Delta t_k>0$ is the duration of this mode.
-Thus, the optimization balances the execution time and the physical effort
-of the clearance process, i.e.,
-\begin{equation}\label{eq:problem}
-\underset{\pi}{\textbf{min}} \Big{\{} T+\alpha\sum_{k=1}^{K}
-J\!\left(m_k,\,\boldsymbol{\xi}_k,\,\mathbf{s}(t_k)\right)\Big{\}},
+
+The goal is to compute a \emph{hybrid schedule} that reconfigures movable
+obstacles to admit a $W$-feasible path for the external vehicle.
+The schedule is defined as:
+\begin{equation}
+    \pi\triangleq
+    \left\{
+    \left(
+    \Omega_{m_k},
+    \boldsymbol{\xi}_k,
+    \Delta t_k
+    \right)
+    \right\}_{k=1}^{K},
 \end{equation}
-where~$T\triangleq\sum_{k=1}^{K}\Delta t_k$ is the total task duration;
-$\alpha>0$ is a trade-off parameter; and~$J(\cdot)$ is a simulation-based
-control effort or feasibility cost evaluated at state~$\mathbf{s}(\tau_k)$.
-Note that the above optimization
-problem is constrained by~\eqref{eq:freespace}--\eqref{eq:transition}, which jointly ensure collision-free evolution within
-the workspace, valid dynamic transitions under pushing, and a terminal
-$W$-clearance path for the vehicle.
+where~$\Omega_{m_k}\in\boldsymbol{\Omega}$ is the manipulated obstacle,
+$\boldsymbol{\xi}_k\in\Xi_{m_k}$ is its pushing mode, and
+$\Delta t_k>0$ is the execution duration. The search is guided by
+\begin{equation}\label{eq:problem}
+    \mathcal{J}_{\mathrm{clr}}(\pi)
+    \triangleq
+    T+
+    \alpha
+    \sum_{k=1}^{K}
+    J\left(
+    m_k,\boldsymbol{\xi}_k,\mathbf{s}(t_k)
+    \right),
+\end{equation}
+where~$T\triangleq\sum_{k=1}^{K}\Delta t_k$ denotes the robotic clearance
+duration excluding subsequent vehicle traversal, and~$J(\cdot)$ is the
+simulation-estimated manipulation effort. Vehicle traversal is considered
+only through the terminal $W$-clearance condition~\eqref{eq:wclear}.
+The constraints~\eqref{eq:freespace}--\eqref{eq:transition} enforce valid
+pushing transitions. Equation~\eqref{eq:problem} ranks feasible schedules;
+PIHS uses finite sampling and does not guarantee global optimality of the
+continuous hybrid objective.
 
 % ==============================
 \begin{remark}\label{remark:uniqueness}
-  Problem above uniquely couples obstacle selection, pushing
-  mode optimization and switching into one hybrid optimization. This yields a
-  combinatorial search space far more complex than classical NAMO, with simple
-  objects or hand-crafted contact
-  modes~\cite{goyal1989limit,chen2015occlusion,wang2006multi}.
+  \change{The objective and constraints above couple obstacle selection, pushing-mode generation, and switching in a single hybrid planning problem. The resulting combinatorial-continuous search space is substantially richer than classical NAMO formulations with simple objects or hand-crafted contact modes~\cite{goyal1989limit,chen2015occlusion,wang2006multi}.}
   \hfill~$\blacksquare$
 \end{remark}
 % ==============================

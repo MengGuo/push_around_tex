@@ -3,11 +3,9 @@
 
 The feasibility of routing the vehicle reduces to whether a~$W$-width corridor
 connects~$\mathbf{x}_\texttt{V}^{\texttt{S}}$ and~$\mathbf{x}_\texttt{V}^{\texttt{G}}$.
-A W--clearance connectivity graph (WCCG) is introduced here as shown in Fig.~\ref{fig:wccg},
-which encodes obstacle adjacencies under clearance~$W$ and enables \emph{fast connectivity queries}.
-Constructed directly from geometry  rather than grids or roadmaps,
-it avoids discretization error and remains consistent, which is crucial as connectivity is checked repeatedly
-during planning.
+A W--clearance connectivity graph (WCCG) is introduced here to encode obstacle adjacencies under clearance~$W$ and enables
+fast encodes obstacle adjacencies under clearance~$W$ and enables \emph{fast connectivity queries}.
+\change{Constructed directly from obstacle geometry rather than a workspace grid, the WCCG does not introduce a grid-resolution parameter in the repeated connectivity queries used during planning.}
 
 \subsubsection{Graph Construction}
 The WCCG is built by decomposing all clearance-relevant obstacle and workspace
@@ -41,11 +39,13 @@ and
 \big( \exists F\in\textsf{Face}(\mathcal{G}_W):
 {\mathbf{x}_\texttt{V}^{\texttt{S}},\mathbf{x}_\texttt{V}^{\texttt{G}}}\in F \big),
 \end{equation}
-which requires the start and goal to be individually $W$-clear and to lie in
-the same WCCG face. This is sufficient for the graph-level query because
-bridge--bridge edges with width below~$W$ encode non-traversable bottlenecks,
-while points in the same face are not separated by such a
-bottleneck. A frontier-tracing procedure, similar to the
+\change{The criterion follows the standard configuration-space inflation interpretation: 
+expanding obstacles by a disk of radius $W/2$ turns gaps narrower than $W$ into overlapping barriers. 
+Non-convex obstacles are handled through clearance-relevant decomposition, 
+after which WCCG records the separating bottlenecks.
+The consistency between WCCG connectivity and rasterized configuration-space connectivity 
+is further evaluated in Sec.~\ref{subsec:wccg-validation}}.
+A frontier-tracing procedure, similar to the
 BugPlanner~\cite{McGuireCroonTuyls2019}, is then used to extract a skeleton
 $\Sigma$ as an ordered sequence of centroid and bridge nodes. Starting from
 $\mathbf{x}_\texttt{V}^{\texttt{S}}$, it casts a ray toward
@@ -53,13 +53,7 @@ $\mathbf{x}_\texttt{V}^{\texttt{G}}$ and follows the encountered frontier loop
 until either a valid exit is found or a blocking cycle is returned.
 
 
-\begin{remark}\label{remark:wccg}
-Unlike sampling or grid-based planners, the WCCG avoids workspace
-discretization and thus eliminates resolution-induced errors. Its purely
-geometric construction also enables efficient connectivity and clearance
-queries, which are repeatedly invoked by the hybrid planner below.
-\hfill$\blacksquare$
-\end{remark}
+
 
 
 

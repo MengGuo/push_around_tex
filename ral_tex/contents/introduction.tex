@@ -43,15 +43,7 @@ making prediction and planning substantially more complex.
 
 NAMO extends motion planning to cluttered environments by planning obstacle
 displacements through pushing, pulling, or
-rotating~\cite{stilman2005navigation,stilman2007manipulation}. Later work
-improved scalability using heuristic search, learning-based local planning, and
-search-based planning in interactive
-environments~\cite{stilman2007manipulation,yao2024local,ren2025search}.
-Recent studies further consider movability-aware pushing with physics-based
-rollouts~\cite{weeda2025pushing} and collaborative multi-robot
-pushing~\cite{tang2026pushingbots}. However, many NAMO formulations still
-simplify robot geometry, actuation limits, object mass, and contact dynamics,
-leading to physically unrealizable plans.
+rotating~\cite{stilman2005navigation,stilman2007manipulation}. Later work considers heuristic search, learning-based local planning, physics-based rollouts, and collaborative pushing~\cite{stilman2007manipulation,yao2024local,ren2025search,weeda2025pushing,tang2026pushingbots}. However, many NAMO formulations still simplify robot geometry, actuation limits, object mass, and contact dynamics, leading to physically unrealizable plans.
 
 
 
@@ -80,9 +72,7 @@ cooperative transport with robot swarms~\cite{chen2015occlusion}, multi-robot
 box pushing with reinforcement learning~\cite{wang2006multi}, collaborative
 pushing of polytopic objects in cluttered scenes~\cite{tang2026pushingbots},
 and learning-based loco-manipulation for long-horizon quadrupedal
-pushing~\cite{feng2025learning}. These studies demonstrate effective
-multi-robot cooperation, but typically focus on a prescribed object
-and avoid exploiting inter-object contacts for multiple objects.
+pushing~\cite{feng2025learning}. These studies demonstrate effective multi-robot cooperation, but typically focus on a prescribed object rather than multi-object corridor clearing.
 
 Physics-informed planning has emerged to
 incorporate dynamics models, contact reasoning, or simulation feedback into
@@ -95,11 +85,7 @@ pushing dynamics~\cite{xue2023demonstration}, and physics-based simulation is
 interleaved with multi-agent pathfinding for manipulation among movable
 objects~\cite{saxena2023planning,ren2025object}. Neural motion-planning
 methods further use learned physical priors
-for motion generation~\cite{ni2023progressive,liu2025physics}. While these
-approaches improve physical grounding, they either remain focused on
-mobile manipulator, contact execution, or generic planning, and
-do not directly solve collaborative path clearing with many interacting movable
-obstacles.
+for motion generation~\cite{ni2023progressive,liu2025physics}. However, they do not directly address collaborative path clearing with many interacting movable obstacles.
 
 
 %==============================
@@ -120,7 +106,10 @@ These components are encapsulated under a search
 procedure that incrementally expands candidate clearing plans while validating their
 physical realizability. This integration yields plans that
 are not only geometrically valid but also feasible under robot dimensions,
-object mass, contact geometry, and coupled pushing dynamics. Efficiency is
+object mass, contact geometry, and coupled pushing dynamics. 
+\change{Since physics validation depends on model fidelity, 
+robustness under execution-model mismatch is also evaluated.} 
+Efficiency is
 achieved by combining compact geometric reasoning with prioritized evaluation.
 Extensive simulations and experiments are conducted for validation.
 
