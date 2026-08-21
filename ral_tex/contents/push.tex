@@ -123,7 +123,8 @@ over the admissible contact forces~${U}_m(\mathbf{c})$.
 A state- and direction-dependent contact set
 $\mathcal{A}_m^k(\mathbf{s})\subset\partial\Omega_m$ is obtained from the
 robot-reachable boundary of~$\Omega_m$ by velocity--force compatibility
-filtering, as illustrated in Fig.~\ref{fig:mode_generation}. Starting from
+filtering, as illustrated in Fig.~\ref{fig:mode_generation}.
+Reachability is checked before mode optimization: a contact candidate is retained only if its assigned robots can reach collision-free pre-contact poses. Starting from
 cached layouts, if available, and random initializations in
 $\mathcal{A}_m^k(\mathbf{s})$, the contact tuple is refined by sequential greedy
 replacement. At the $\ell$-th greedy step, let~$\mathbf{c}^{\ell}$ be the
@@ -144,12 +145,11 @@ best local tuple is selected as~$\mathbf{c}_m^{k,\star}$, thus
 $\mathbf{u}_m^k$ is obtained by the inner minimization in
 \eqref{eq:mode-feasibility} for~$\mathbf{v}_m^k$.
 This yields $\boldsymbol{\xi}_m^k=(\mathbf{c}_m^{k,\star},\mathbf{u}_m^k)$.
-The mode is inserted into a persistent \textsc{mode-cache},
-indexed by discretized shape, mass, available robot force, and pushing direction,
-and used only as a warm start for later similar queries.
+The mode is cached as a warm start for similar future queries.
 The best few pairs~$(\mathbf{v}_m^k,\boldsymbol{\xi}_m^k)$ with
 $\boldsymbol{\xi}_m^k\in\Xi_m(\mathbf{s})$ are retained for gap~$g$ and passed
 to simulation evaluation.
+The optimized force vector~$\mathbf{u}_m^k$ certifies wrench feasibility; hardware executes pose/velocity commands that maintain the contact geometry.
 
 % The best refined mode over all initializations is denoted by
 % $\boldsymbol{\xi}_m^k=(\mathbf{c}_m^k,\mathbf{u}_m^k)$.
@@ -160,28 +160,35 @@ to simulation evaluation.
 
 %==============================================
 \subsubsection{Pushing Strategy Evaluation}
+
 For a current state~$\mathbf{s}$ and a candidate strategy
-$(\Omega_m,\mathbf{v},\boldsymbol{\xi})\in\Xi_g$, a short-horizon rollout evaluates the
-transition in~\eqref{eq:transition} under the selected mode.
-As shown in Fig.~\ref{fig:mode_generation}, a strategy is
-accepted only if the robots reach the pre-contact poses,
-maintain stable contact, and induce obstacle motion above threshold. The
-simulation returns:
+$(\Omega_m,\mathbf{v},\boldsymbol{\xi})\in\Xi_g$, a short-horizon rollout
+evaluates the transition in~\eqref{eq:transition} under the selected mode.
+As shown in Fig.~\ref{fig:mode_generation}, a strategy is accepted only if
+the robots reach the pre-contact poses, maintain stable contact, and induce
+obstacle motion above threshold. The simulation returns:
 \begin{equation}
-  (\mathbf{s}',\,\delta_{\texttt{T}},\,\delta_{\texttt{J}})
-  \triangleq
-  \mathsf{EvalSim}\big(\mathbf{s},\,(\Omega_m,\mathbf{v},\boldsymbol{\xi})\big),
-  \label{eq:sim}
+    (\mathbf{s}',\,\delta_{\texttt{T}},\,\delta_{\texttt{J}})
+    \triangleq
+    \mathsf{EvalSim}
+    \big(
+    \mathbf{s},(\Omega_m,\mathbf{v},\boldsymbol{\xi})
+    \big),
+    \label{eq:sim}
 \end{equation}
-where~$\mathbf{s}'$ is the successor state given the strategy;
-$\delta_{\texttt{T}}>0$ is the
-time cost; and~$\delta_{\texttt{J}}$ is the control effort.
-For efficiency, the pushing rollout may be bypassed when the mode has been validated before
-and the swept region of~$\Omega_m$ is collision-free.
+where~$\mathbf{s}'$ is the successor state capturing the resulting robot and
+object configurations; $\delta_{\texttt{T}}>0$ is the time cost; and
+$\delta_{\texttt{J}}$ is the control effort. 
+\change{
+The rollout jointly simulates
+all robots and movable bodies, thereby capturing contact-induced object
+interactions.}
+For efficiency, the pushing rollout may be bypassed when the mode has been
+validated before and the swept region of~$\Omega_m$ is collision-free.
 %------------------------------
 \begin{figure}[t!]
   \centering
-  \includegraphics[width=0.9\linewidth]{figures/PIHS.pdf}
+  \includegraphics[width=0.85\linewidth]{figures/PIHS.pdf}
   \vspace{-2mm}
   \caption{
   \textbf{Top:} Core components of the proposed physics-informed hybrid search;

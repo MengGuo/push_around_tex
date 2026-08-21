@@ -1,15 +1,18 @@
 %==============================================
 \subsection{Physics-Informed Hybrid Search}\label{subsec:simloop}
 
-The proposed physics-informed hybrid search
-(PIHS) selects blocking gaps and validates the corresponding multi-robot
-pushing strategies through short-horizon simulation,
-as shown in Fig.~\ref{fig:PIHS} and summarized in Alg.~\ref{alg:pihs}.
-Unlike purely geometric
-NAMO planners, PIHS expands only physics-validated strategies. Candidate
-strategies are evaluated in parallel.
-
-
+The proposed physics-informed hybrid search (PIHS) selects blocking gaps and
+validates corresponding multi-robot pushing strategies through short-horizon
+simulation, as shown in Fig.~\ref{fig:PIHS} and summarized in
+Alg.~\ref{alg:pihs}. Unlike purely geometric NAMO planners, PIHS expands only
+physics-validated strategies through parallel candidate evaluation. It is a
+feasibility-oriented heuristic search, where Eq.~\eqref{eq:problem} defines
+the ranking objective for candidate schedules. 
+\change{
+The search operates on a finite
+sampled candidate set and therefore does not guarantee global optimality or
+completeness of the underlying continuous hybrid planning problem.
+}
 \subsubsection{Tree and Initialization}
 The search tree~$\mathcal{T}$ is composed of nodes
 $\nu\triangleq(\mathbf{s},\pi)$, where~$\mathbf{s}$ is the current system
@@ -36,8 +39,7 @@ the queue. Priority balances realized cost and estimated remaining effort:
 \end{equation}
 where~$\chi(\nu)$ is the cumulative execution cost so far, and the second term
 is the minimum predicted remaining cost among the unexplored gaps of~$\nu$.
-This scoring ensures that nodes are expanded in an order that jointly accounts
-for physical effort already incurred and the most promising future actions.
+\change{The remaining-cost term is a heuristic and is not required to be admissible. The score prioritizes nodes by realized cost and promising future actions, but it does not provide an A* optimality guarantee.}
 
 
 
@@ -75,14 +77,14 @@ Init~$\mathcal{Q}$ by~\eqref{eq:priority}\;
 %==============================
 \begin{figure*}[t!]
   \centering
-  \includegraphics[width=0.95\linewidth]{figures/sim.pdf}
+  \includegraphics[width=0.9\linewidth]{figures/sim.pdf}
   \vspace{-0.15in}
   \caption{Execution and planning alignment in Scenario 1 (\textbf{Left})
     and  Scenario 2 (\textbf{Right}).
 \textbf{Top:} simulated snapshots during path clearing.
 \textbf{Bottom:} corresponding WCCG overlays with the start face in blue.
 The executed pushes progressively expand the reachable $W$--clearance region until the goal is connected.}
-\vspace{-0.2in}
+\vspace{-4mm}
 \label{fig:main_result}
 \end{figure*}
 % ========================================
@@ -122,10 +124,7 @@ and a single expansion can produce multiple validated successors.
 Termination occurs when a node~$\nu$ reaches a state~$\mathbf{s}$ for which a
 $W$--clear path~$\mathcal{P}^W_\texttt{V}$ exists from
 $\mathbf{x}_\texttt{V}^{\texttt{S}}$ to~$\mathbf{x}_\texttt{V}^{\texttt{G}}$
-by~\eqref{eq:wccg_criterion}. Thus, the schedule~$\pi$
-stored in~$\nu$ constitutes a complete solution to~\eqref{eq:problem}, encoding
-both the sequence of gaps to clear and the pushing strategies
-that realize them.
+by~\eqref{eq:wccg_criterion}. \change{Thus, the schedule~$\pi$ stored in~$\nu$ is a feasible solution satisfying the terminal clearance condition and the validated pushing transitions. It encodes both the sequence of gaps to clear and the pushing strategies that realize them, without implying that~$\mathcal{J}_{\mathrm{clr}}(\pi)$ is globally minimal.}
 
 \begin{remark}\label{remark:simloop}
 Efficiency comes from three lightweight heuristics:

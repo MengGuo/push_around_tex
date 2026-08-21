@@ -1,0 +1,574 @@
+\documentclass[11pt]{article}
+\usepackage{siunitx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsfonts}
+\usepackage{subfigure}
+\usepackage[x11names]{xcolor}
+\usepackage[left=3.5cm,right=3.5cm]{geometry}
+\usepackage{framed}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{amsthm}
+\usepackage{times}
+\usepackage{multicol}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{multirow}
+\usepackage[para,online,flushleft]{threeparttable}
+\usepackage{float}
+\usepackage[font=footnotesize,labelfont=bf]{caption}
+
+\newtheorem{remark}{Remark}
+\colorlet{shadecolor}{Thistle3!50}
+\newcommand{\change}[1]{{\color{blue}#1}}
+\newcommand{\todo}[1]{{\color{red}#1}}
+\graphicspath{{figures/}}
+\setlength{\parskip}{0.25em}
+
+\begin{document}
+\title{Author Response for Submission\\
+``PushAround: Collaborative Path Clearing via Physics-Informed Hybrid Search''}
+\author{Author Names Omitted for Anonymous Review.}
+\date{}
+\maketitle
+
+%========================================
+\section*{To Associate Editor}
+%========================================
+\begin{shaded*}
+\noindent \textbf{Q:}
+{\itshape
+The reviewers acknowledge the contribution of the paper, however, they
+have some concerns that need to be addressed.
+}
+\end{shaded*}
+
+\noindent \textbf{A:}
+We sincerely thank the Associate Editor for the careful handling of the
+submission and for summarizing the reviewers' constructive comments. The revised
+draft addresses every point raised by Reviewers~3 and~4 through clarification of
+the WCCG connectivity interpretation, the role and guarantees of the hybrid
+search objective, the hardware execution interface, state-based online
+replanning, and the comparison protocol. It also introduces dedicated validation
+for physics-model mismatch, WCCG connectivity, density statistics, and scaling
+with the number of robots. Numerical quantities that require new experiments are
+marked in red with \verb|\todo{}| in this initial response draft.
+
+The principal revisions are summarized below.
+\begin{itemize}
+\item \textbf{Physics-model robustness.} A new planner--execution mismatch study
+perturbs mass, friction, robot force limits, and contact dynamics while keeping
+the planning model nominal. The main manuscript and Supplementary Material now
+contain the protocol and result placeholders. \todo{Insert final perturbation
+levels, trial count, and numerical conclusions.}
+
+\item \textbf{WCCG connectivity justification.} Sec.~III-A now interprets WCCG
+through $W/2$ configuration-space inflation and explicitly discusses non-convex
+boundary decomposition. A new connectivity-validation experiment compares WCCG
+with an independent rasterized configuration-space flood-fill reference.
+\todo{Insert final agreement/false-positive/false-negative statistics.}
+
+\item \textbf{Search objective and guarantees.} Eq.~(5) is reformulated as a
+clearance cost used to guide the search. The revised text states explicitly that
+PIHS uses sampled actions, bounded lookahead, a heuristic priority, and
+first-feasible termination; hence no global optimality or completeness claim is
+made for the underlying continuous hybrid problem.
+
+\item \textbf{Hardware force/control interface and coupled contacts.} The
+revision explains that optimized contact forces are feasibility variables rather
+than direct hardware setpoints. The Mecanum robots execute planar velocity
+commands while tracking mode-defined contact poses. Short-horizon simulation
+propagates all movable bodies, so contact-induced motion of neighboring objects
+is retained in the successor state.
+
+\item \textbf{Execution discrepancy and replanning.} The previous phrase
+``deviation from simulation'' is replaced by explicit state-based monitoring of
+pre-contact reachability, contact tracking/stall, task predicates, and updated
+WCCG/schedule validity. Motion capture provides the required robot/object states
+in the hardware experiments.
+
+\item \textbf{Experimental protocol and statistics.} The manuscript now states
+shared reachability/collision checks and computation budgets. The density suite
+correctly records 16 workers, an 800~s timeout, and 20,000 control steps. The
+revised density experiment increases the number of independent seeds and reports
+dispersion. \todo{Insert final seed count and regenerated statistics/figure.}
+
+\item \textbf{Robot-team scaling.} The complexity discussion now explains the
+$N$-dependence of contact replacement and the $2N$-dimensional force LP, and a
+new simulation table varies $N=1,2,3,4$. \todo{Insert final robot-scaling data.}
+\end{itemize}
+
+The detailed responses below provide the corresponding manuscript locations and
+revised text in blue. Added experimental values and conclusions that remain to be
+collected are shown in red.
+
+\newpage
+%========================================
+\section*{To Reviewer 3}
+%========================================
+\begin{shaded*}
+\noindent \textbf{Q:}
+{\itshape
+Overall, this is a good contribution to the field and a well-written
+paper. The combination of geometric reasoning, recursive pushing, and
+physics-informed search is interesting, and the real-world validation
+strengthens the contribution.
+}
+\end{shaded*}
+
+\noindent \textbf{A:}
+We sincerely thank the reviewer for the positive assessment of PushAround and,
+in particular, for recognizing the end-to-end integration, recursive pushing,
+dense-clutter scalability, and hardware validation. The revision focuses on the
+reviewer's two stated weaknesses and four follow-up questions without changing
+the central planning framework.
+
+%==============================
+\begin{shaded*}
+\noindent \textbf{Q:}
+{\itshape
+Physics-model robustness is insufficiently characterized: The method
+relies heavily on simulation-based feasibility validation, but
+sensitivity to uncertainty in mass, friction, force limits, contact
+dynamics etc. is not systematically evaluated.
+}
+\end{shaded*}
+
+\noindent \textbf{A:}
+Thank you for identifying this important limitation. We agree that the original
+hardware experiments demonstrate closed-loop recovery from execution error but
+do not isolate sensitivity to individual physics-model parameters. The revised
+draft therefore adds a dedicated planner--execution mismatch experiment.
+
+\begin{itemize}
+\item \textbf{Mismatch rather than retuning.} Planning always uses the nominal
+mass, friction, force-limit, and contact model. Only the execution simulator is
+perturbed, so the test measures sensitivity to an incorrect planning model.
+
+\item \textbf{Perturbation families.} Obstacle mass, robot--object friction,
+available pushing force, and contact dynamics are varied separately using the
+same scene seeds. \todo{Insert final perturbation levels and number of trials.}
+
+\item \textbf{Metrics.} The revision reports success rate, execution time,
+number of replans, and push count. This distinguishes outright failures from
+cases where online replanning absorbs moderate mismatch.
+
+\item \textbf{Claim scope.} The manuscript no longer relies on the hardware runs
+alone to imply general model robustness; it explicitly states that simulation
+validation is model dependent and quantifies the sensitivity.
+\end{itemize}
+
+\noindent\textbf{Changes in the revised manuscript:}
+\begin{itemize}
+\item The following statement was added in Sec.~I-B to make the model-dependence
+explicit:
+\change{Because this physical validation is model dependent, the revised
+experiments explicitly quantify sensitivity to planner--execution mismatch in
+mass, friction, available force, and contact dynamics.}
+
+\item A new subsection, Sec.~IV-A5, was added with the following protocol:
+\change{Because PIHS validates candidates with a physics simulator, robustness
+is evaluated under deliberate planner--execution model mismatch. The planner
+retains the nominal model used to generate the schedule, while the execution
+simulator perturbs one parameter family at a time: obstacle mass, robot--object
+friction, available robot force, and contact dynamics. This protocol
+distinguishes sensitivity to model error from retuning the planner to the
+perturbed model.}
+
+\item A result figure and the corresponding discussion have been placed in the
+main paper, and the full table/protocol are included in the Supplementary
+Material. \todo{Insert final numerical result and robustness conclusion.}
+\end{itemize}
+
+%==============================
+\begin{shaded*}
+\noindent \textbf{Q:}
+{\itshape
+Limited evaluation of more complex scenarios: Although the method is
+tested with up to 45 movable obstacles, the number of independent
+trials is limited.
+}
+\end{shaded*}
+
+\noindent \textbf{A:}
+We agree. The original density sweep used five independent seed sequences per
+obstacle density, which is too small for a strong statistical statement at the
+highest clutter levels. The revised experiment expands this set to
+\todo{insert final number, target at least 10--20} independent seed sequences.
+Within one seed, increasing obstacle counts remain nested by adding objects, but
+different seeds are independently generated. The revised figure reports
+success and timing dispersion rather than means alone.
+
+\noindent\textbf{Changes in the revised manuscript:}
+\begin{itemize}
+\item Sec.~IV-A6 now states:
+\change{The revised evaluation expands the original five seeds to
+\todo{insert final number, target at least 10--20} independent seed sequences
+per density. Within each seed sequence, denser instances are generated by
+incrementally adding objects, while different seeds define independent base
+layouts.}
+
+\item The density figure caption now explicitly requires error bars/dispersion:
+\change{The revised plot reports success rate and planning/execution time with
+dispersion across independent seeds. \todo{Replace the current five-seed figure
+by the expanded-seed mean$\pm$standard-deviation/confidence-interval plot.}}
+\end{itemize}
+
+%==============================
+\begin{shaded*}
+\noindent \textbf{Q:}
+{\itshape
+The experiments primarily use two robots. What happens when the
+number of robots increases with the complexity of the task? How does
+the search and the contact/force formulation scale to larger robot
+teams?
+}
+\end{shaded*}
+
+\noindent \textbf{A:}
+Thank you for raising the team-size question. The revised paper addresses it in
+both the complexity analysis and a dedicated simulation study.
+
+The key point is that the implementation does not enumerate all joint contact
+tuples. If each robot has $|\mathcal A|$ reachable contact candidates, exhaustive
+assignment would require $|\mathcal A|^N$ tuples. Instead, one greedy replacement
+sweep tests at most $N|\mathcal A|$ single-contact substitutions. Each test
+solves the force LP whose decision vector has dimension $2N$. Thus larger teams
+can enlarge the feasible wrench set but also increase contact assignment and LP
+cost. The number of strategies entering simulation remains bounded by the
+retained-mode and per-expansion candidate caps.
+
+A new table varies $N\in\{1,2,3,4\}$ and reports success, mode-generation time,
+planning time, and push count. \todo{Insert final results and interpretation.}
+
+\noindent\textbf{Changes in the revised manuscript:}
+\begin{itemize}
+\item Sec.~III-E2 now adds:
+\change{If $|\mathcal{A}|$ reachable contact candidates are considered per
+robot, one greedy replacement sweep tests at most $N|\mathcal{A}|$
+single-contact substitutions rather than enumerating $|\mathcal{A}|^N$ joint
+tuples. Each substitution solves the LP in Eq.~(10), whose force-vector
+dimension is $2N$.}
+
+\item Sec.~IV-A7 and Table~\todo{final table number} provide the dedicated
+robot-team scaling experiment. \todo{Insert final numerical data.}
+\end{itemize}
+
+%==============================
+\begin{shaded*}
+\noindent \textbf{Q:}
+{\itshape
+What guarantees, if any, does the hybrid search provide regarding
+solution quality?
+}
+\end{shaded*}
+
+\noindent \textbf{A:}
+We agree that this should have been stated explicitly. No global optimality or
+completeness guarantee is intended for the underlying continuous hybrid
+problem. PIHS samples a finite set of pushing directions/contact modes, uses
+bounded gap lookahead and a heuristic best-first priority, and terminates at the
+first physics-validated $W$-clear solution. Moreover, the remaining-cost term is
+not required to be admissible. Equation~(5) therefore defines the clearance
+cost used to rank schedules rather than an optimization problem that PIHS claims
+to solve globally.
+
+\noindent\textbf{Changes in the revised manuscript:}
+\begin{itemize}
+\item Eq.~(5) is now introduced as the clearance objective
+$\mathcal J_{\mathrm{clr}}(\pi)$ rather than as an implicit global-minimization
+claim.
+
+\item Sec.~III-D now states:
+\change{PIHS is a feasibility-oriented heuristic search. Equation~(5) defines
+the schedule cost used to rank candidates, while the implemented search samples
+a finite set of pushing directions and modes, uses bounded gap lookahead, and
+terminates when a feasible $W$-clear schedule is found. Therefore, no global
+optimality or completeness claim is made with respect to the underlying
+continuous hybrid planning problem.}
+
+\item The termination statement was revised to say that the returned schedule is
+a feasible solution without implying global minimization of
+$\mathcal J_{\mathrm{clr}}$.
+\end{itemize}
+
+%==============================
+\begin{shaded*}
+\noindent \textbf{Q:}
+{\itshape
+The objective includes the total duration T and the control-effort
+cost J. Is the time needed for the final vehicle to actually traverse
+the cleared corridor included in this objective, or is the objective
+only concerned with clearing the obstacles? Similarly, does J only
+capture the robots' effort in moving the obstacles?
+}
+\end{shaded*}
+
+\noindent \textbf{A:}
+The objective concerns the robotic clearance operation only. The external
+vehicle traversal time is not included in $T$; vehicle passage is a terminal
+feasibility condition. Similarly, $J$ represents the robots' manipulation/control
+effort during obstacle pushing. We have made both points explicit to remove the
+ambiguity.
+
+\noindent\textbf{Changes in the revised manuscript:}
+\begin{itemize}
+\item Sec.~II-D now states:
+\change{$T\triangleq\sum_{k=1}^{K}\Delta t_k$ is the duration of the robotic
+clearance operation only; the subsequent traversal time of the external vehicle
+is not included. The weight $\alpha>0$ trades time against $J(\cdot)$, which
+measures the robots' simulation-estimated control/manipulation effort for moving
+obstacles. Vehicle traversal enters the formulation only through the terminal
+$W$-clearance condition.}
+\end{itemize}
+
+%==============================
+\begin{shaded*}
+\noindent \textbf{Q:}
+{\itshape
+The paper demonstrates online replanning when the real execution
+differs from the simulation, How can simple pushing robots evaluate
+this discrepancy?
+}
+\end{shaded*}
+
+\noindent \textbf{A:}
+Thank you for pointing out that the original wording could be interpreted as
+requiring online parameter identification or force sensing. That is not the
+implementation. The phrase ``deviates from simulation'' has been replaced by an
+explicit state-based execution monitor.
+
+In the hardware experiments, motion capture supplies robot and obstacle poses.
+The controller checks whether the pre-contact transition is feasible, whether
+robots maintain/track their intended contact poses, whether motion stalls,
+whether the task-specific geometric push predicate is achieved, and whether the
+updated WCCG still supports the remaining schedule. A failure of any of these
+checks triggers replanning from the observed state. Thus simple velocity-controlled
+pushers do not need to estimate the underlying mass/friction error itself.
+
+\noindent\textbf{Changes in the revised manuscript:}
+\begin{itemize}
+\item Sec.~III-E1 now states:
+\change{Replanning does not require the robots to estimate an unknown force-model
+error directly. The execution monitor uses observed robot/object poses and task
+predicates: replanning is triggered when a pre-contact transition is blocked,
+contact tracking stalls or loses the planned contact, the pushed object fails to
+satisfy the corresponding geometric task predicate within its rollout budget,
+or the observed post-push geometry invalidates the remaining schedule/WCCG
+connectivity.}
+
+\item The Supplementary Material reports the current contact-position threshold
+(0.10~m) and stall check (less than 0.05~m motion over 0.25~s), together with the
+task-predicate logic.
+\end{itemize}
+
+\newpage
+%========================================
+\section*{To Reviewer 4}
+%========================================
+\begin{shaded*}
+\noindent \textbf{Q:}
+{\itshape
+Overall, I think the approach is technically reasonable and the
+experiments support the proposed method. My comments are mainly about
+clarification rather than major technical concerns, and I would support
+acceptance after these revisions.
+}
+\end{shaded*}
+
+\noindent \textbf{A:}
+We sincerely thank the reviewer for the positive assessment and for identifying
+four places where the original presentation was insufficiently explicit. The
+revision addresses each point directly, as detailed below.
+
+%==============================
+\begin{shaded*}
+\noindent \textbf{Q:}
+{\itshape
+First, the WCCG connectivity condition is important since it is used
+throughout the search and also determines termination. The intuition is
+reasonably clear, but I think the paper would benefit from a little
+more justification here, or perhaps a comparison with a standard
+configuration-space connectivity check. This seems especially relevant
+when the obstacles are non-convex.
+}
+\end{shaded*}
+
+\noindent \textbf{A:}
+We agree. The revised Sec.~III-A now makes the configuration-space interpretation
+explicit and adds the suggested independent comparison.
+
+For a vehicle represented by a radius-$W/2$ enclosing disk, inflating obstacle
+geometry by $W/2$ converts every pair of boundary components separated by less
+than $W$ into overlapping clearance barriers. WCCG bridge--bridge edges encode
+these narrow barriers. Non-convex obstacles are first decomposed into
+clearance-relevant convex components/boundary segments before the closest-point
+bridges are inserted. The same-face condition is therefore interpreted as a
+topological query on the planar regions not separated by these inflated barriers.
+
+Because implementation details and degenerate non-convex cases still matter, we
+also add an empirical check against a conventional rasterized configuration-space
+flood-fill reference, including dedicated non-convex scenes.
+\todo{Insert final trial count, resolution, agreement, and false-positive/false-negative results.}
+
+\noindent\textbf{Changes in the revised manuscript:}
+\begin{itemize}
+\item Sec.~III-A2 now adds:
+\change{The geometric interpretation follows the standard configuration-space
+inflation for the vehicle-center point. Expanding every obstacle boundary by a
+disk of radius $W/2$ transforms a pair of boundary components whose closest
+distance is below $W$ into overlapping clearance barriers. The corresponding
+WCCG bridge--bridge edge records this non-traversable bottleneck.}
+
+\item The previous statement that WCCG ``eliminates resolution-induced errors''
+was softened. The revised remark states that WCCG avoids choosing a workspace
+grid resolution but still depends on correct decomposition/bridge construction.
+
+\item Sec.~IV-A3 and Supplementary Sec.~S2 add the requested C-space comparison.
+\todo{Insert final result.}
+\end{itemize}
+
+%==============================
+\begin{shaded*}
+\noindent \textbf{Q:}
+{\itshape
+Second, I was a little confused about the relationship between Eq. (5)
+and the actual search procedure. Eq. (5) is written as an optimization
+problem, while the implementation uses sampled pushing directions,
+limited lookahead, and a heuristic best-first search that terminates
+once a feasible solution is found. The authors should clarify whether
+any optimality or completeness claim is intended. If not, it may be
+better to describe Eq. (5) as the objective used to guide the search.
+}
+\end{shaded*}
+
+\noindent \textbf{A:}
+We agree completely with this interpretation and have revised the formulation
+accordingly. Eq.~(5) now defines the clearance cost
+$\mathcal J_{\mathrm{clr}}(\pi)$ used to guide candidate ranking. PIHS is
+explicitly described as a feasibility-oriented heuristic search with finite
+sampling, bounded lookahead, non-admissible heuristic ranking, and first-feasible
+termination. No global optimality or completeness claim is intended.
+
+\noindent\textbf{Changes in the revised manuscript:}
+\begin{itemize}
+\item Sec.~II-D replaces the minimization display by the objective definition:
+\change{$\mathcal{J}_{\mathrm{clr}}(\pi)\triangleq
+T+\alpha\sum_{k=1}^{K}J(m_k,\boldsymbol\xi_k,\mathbf{s}(t_k)).$}
+
+\item Sec.~III-D explicitly states the absence of global optimality/completeness
+guarantees and notes that the remaining-cost term is not required to be
+admissible.
+\end{itemize}
+
+%==============================
+\begin{shaded*}
+\noindent \textbf{Q:}
+{\itshape
+Third, it is not completely clear how the optimized contact forces are
+used on the hardware. The pushing mode includes both contact points and
+forces, but the execution section mainly describes moving the robots to
+the contact configuration and then following the desired pushing
+direction. It would be useful to briefly explain the low-level
+controller and whether these forces are actually commanded or are
+mainly used to check feasibility. Related to this, I am also not sure
+whether coupled motion between multiple objects, such as in the second
+hardware experiment, is explicitly considered during planning or is
+mostly handled by the physics simulation.
+}
+\end{shaded*}
+
+\noindent \textbf{A:}
+Thank you for identifying both ambiguities. The optimized forces are primarily
+planning-level feasibility variables; they are not sent to the hardware as
+force commands. For a candidate contact tuple, the LP determines whether the
+robots can generate a wrench compatible with the desired object motion within
+the assumed force/friction constraints. The selected hardware mode is then
+executed by closed-loop planar velocity control. Specifically, the Mecanum UGVs
+receive ROS \texttt{geometry\_msgs/Twist} commands while tracking the assigned
+contact poses and a short forward object-motion reference using motion-capture
+feedback.
+
+Coupled object motion is represented through simulation. Although a high-level
+strategy names one directly targeted obstacle, $\mathsf{EvalSim}$ advances all
+robots and all movable bodies. Object--object contacts are therefore resolved by
+the physics engine, and the complete resulting scene state is returned to the
+search. The adjacent T-shaped object moved in hardware Scenario~2 is exactly
+this type of contact-induced motion rather than a separately scripted task.
+
+\noindent\textbf{Changes in the revised manuscript:}
+\begin{itemize}
+\item Sec.~III-C2 now states:
+\change{The optimized force vector is used here to certify and rank wrench
+feasibility under the modeled force limits. On the hardware, the robots execute
+pose/velocity commands that maintain these contact locations rather than
+directly commanding the optimized forces.}
+
+\item Sec.~III-E1 now specifies the hardware interface:
+\change{The controller converts the planned contact geometry and desired object
+motion into planar robot velocity commands (ROS \texttt{Twist}); motion-capture
+poses provide the feedback used to track the moving contact poses.}
+
+\item Sec.~III-C3 now clarifies coupled objects:
+\change{The rollout advances all robots and all movable bodies jointly in the
+physics engine. Consequently, object--object contacts induced by pushing the
+target obstacle are resolved during $\mathsf{EvalSim}$ and their coupled motion
+is retained in the full successor state.}
+\end{itemize}
+
+%==============================
+\begin{shaded*}
+\noindent \textbf{Q:}
+{\itshape
+The experiments are generally convincing. The paper already mentions
+that the baselines use the same W-clearance criterion, object
+distribution, and execution simulator. However, a few more
+implementation details, such as robot reachability checks, timeout
+limits, and computation budget, would make the comparison easier to
+interpret. I would also suggest adding error bars or standard
+deviations, particularly for the scalability experiment where only five
+seeds are used for each obstacle density.
+}
+\end{shaded*}
+
+\noindent \textbf{A:}
+We agree and have expanded both the main setup and the Supplementary protocol.
+
+\begin{itemize}
+\item \textbf{Reachability.} A contact candidate is retained only when the
+associated pre-contact pose is collision free and the transition planner can
+reach it from the current robot configuration. A multi-robot tuple is rejected
+if any assigned robot fails this check.
+
+\item \textbf{Common budgets.} The main 40-trial comparison now includes the
+shared timeout, search/control cap, and parallel-worker count.
+\todo{Verify and insert the exact Scenario-1 values.}
+
+\item \textbf{Density-suite budgets.} The stored evaluation data specify 16
+parallel workers, an 800~s per-trial timeout, and a 20,000-control-step cap. The
+original manuscript's 400~s statement is corrected to 800~s. Failed and
+pruned trials are assigned this same cap in the planning-time statistic.
+
+\item \textbf{Statistics.} The density sweep is expanded from five seeds to
+\todo{insert final count}, and the regenerated figure reports variability
+(mean$\pm$standard deviation or confidence interval) rather than means alone.
+\end{itemize}
+
+\noindent\textbf{Changes in the revised manuscript:}
+\begin{itemize}
+\item Sec.~III-C2 adds the explicit pre-contact reachability criterion.
+
+\item Sec.~IV-A1 now states:
+\change{All compared methods use the same robot footprints, obstacle geometry,
+collision/reachability checks, success criterion, and execution simulator. A
+candidate that requires an unreachable or collision-infeasible pre-contact
+robot configuration is rejected before pushing.}
+
+\item Sec.~IV-A6 now states the density-suite computation budget and replaces
+the original 400~s cap by the correct 800~s timeout. The figure caption also
+requires the expanded-seed error-bar plot.
+\end{itemize}
+
+%==============================
+\end{document}

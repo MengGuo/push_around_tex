@@ -4,7 +4,7 @@
 Numerical experiments are conducted to validate the proposed PIHS algorithm.
 The algorithms are implemented in \texttt{Python3} and \texttt{PyBullet}~\cite{coumans2019}
 on a computer with an Intel Core i9-14900KF and an NVIDIA RTX 4080.
-Simulation and hardware videos are provided in the supplementary material.
+Videos are provided as multimedia attachments.
 
 \subsection{Numerical Simulations}
 \label{subsec:sim}
@@ -12,28 +12,20 @@ Simulation and hardware videos are provided in the supplementary material.
 
 
 \subsubsection{Setup and Configuration}\label{subsec:sim-setup}
-The simulation uses a step of $\Delta t=1/240$\,s
-and a control period of $1/40$\,s.
-Robots are modeled as disk or box pushers with sizes consistent with the
-$W$-clearance definition.
-Movable obstacles have masses uniformly sampled from $[5,15]$\,kg,
-while immovables are modeled with zero mass.
-A trial is successful when a $W$-clear path exists from start to goal and the
-vehicle reaches its goal disc. The nominal scenario consists of an
-$8{\times}5$\,m bounded workspace with two bar obstacles forming bottlenecks
-and a mixed pool of curved and polygonal shapes, including rings, ellipses,
-X/T/L/diamond, arrow-like shapes, rectangles, and cylinders. Two robots start
-in the lower-left and the goal lies on the right, with $10$--$15$ movables
-placed randomly under a minimum separation.
-The per-task simulation horizon is $80$ steps, and up to $64$ candidate push
-tasks are generated per expansion. The node priority follows~\eqref{eq:priority}
-with heuristic factor $10$, and gap sampling follows a softmax distribution
-with temperature~$0.05$.
-Unless otherwise stated, quantitative comparisons and ablations are conducted
-on Scenario~1 with $10$ movable obstacles over $40$ randomized trials, while
-Scenario~2 with $14$ movable obstacles is used as an additional representative
-run in a more cluttered layout.
 
+The simulation uses a step size of $\Delta t=1/240$\,s and a control
+period of $1/40$\,s. Robots are modeled as disk or box pushers consistent
+with the $W$-clearance definition, while movable obstacles have masses
+uniformly sampled from $[5,15]$\,kg. A trial succeeds when the external vehicle
+reaches its goal through a $W$-clear path.
+The nominal scenario uses an $8\times5$\,m workspace with bottleneck-forming
+bar obstacles and randomly distributed movable objects. Two robots clear
+$10$--$15$ movable obstacles under minimum-separation constraints. Unless
+otherwise stated, comparisons and ablations are conducted on Scenario~1 with
+$10$ movable obstacles over $40$ trials, while Scenario~2 with
+$14$ obstacles provides an additional cluttered case. All methods use the same
+robot footprints, obstacle configurations, collision/reachability checks, and
+execution simulator.
 
 %==============================
 \subsubsection{Results}
@@ -57,6 +49,16 @@ face expands after each clearance until a complete $W$-clear path is
 found.
 
 
+
+% ========================================
+\subsubsection{WCCG Connectivity Validation}
+\label{subsec:wccg-validation}
+To validate WCCG connectivity, its prediction is compared with a
+configuration-space occupancy check over~\todo{N} randomly generated
+scenarios containing~\todo{M} movable obstacles. The WCCG achieves
+\todo{XX}\% agreement with~\todo{FP} false positives and~\todo{FN} false
+negatives, confirming that the abstraction preserves the connectivity relevant
+to $W$-clear path planning.
 % ========================================
 \begin{table}[t]
   \centering
@@ -91,7 +93,7 @@ found.
 \begin{figure}[t!]
   \centering
   \vspace{-0.1in}
-  \includegraphics[width=0.75\columnwidth]{figures/compare.png}
+  \includegraphics[width=0.65\columnwidth]{figures/compare.png}
   \vspace{-0.1in}
   \caption{Failure cases by baselines Rec-NAMO, SL-Push and DFS-WCCG.}
   \label{fig:baseline}
@@ -100,22 +102,7 @@ found.
 % ========================================
 
 \subsubsection{Comparisons}\label{subsec:comparisons}
-Four literature-inspired baselines are evaluated on Scenario~1 over $40$
-randomized trials under the same $W$-clearance criterion, object distribution,
-and execution simulator. The baselines include: \textbf{DFS-WCCG}, a
-simulation-in-the-loop depth-first search guided by the WCCG with fixed
-axis-aligned pushes, following the spirit of search-based NAMO and
-Bug-style frontier navigation~\cite{stilman2007manipulation,McGuireCroonTuyls2019};
-\textbf{SL-Push (offline)}, a geometric route-level pushing baseline that
-clears blockers by minimal displacements along a straight or waypointed route
-without physics validation, related to local planning among pushable or movable
-objects~\cite{stilman2005navigation,yao2024local};
-\textbf{SL-Push (sim)}, which validates the same route-level push candidates
-through physics simulation, in line with simulation-based planning for
-non-prehensile manipulation among movable objects~\cite{saxena2023planning};
-and \textbf{Rec-NAMO}, a simulation-free recursive NAMO baseline that combines
-Dijkstra routing with local blocker recursion, following geometric and
-search-based NAMO formulations~\cite{ren2025search}.
+Four baselines are evaluated on Scenario~1 over $40$ randomized trials under the same $W$-clearance criterion, object distribution, and simulator. All methods use the same pre-contact reachability checks. The baselines include \textbf{DFS-WCCG}, a WCCG-guided search with fixed pushes; \textbf{SL-Push (offline)}, geometric pushing without physics validation; \textbf{SL-Push (sim)}, its simulation-validated variant; and \textbf{Rec-NAMO}, a recursive NAMO planner~\cite{stilman2007manipulation,yao2024local,saxena2023planning,ren2025search}.
 Table~\ref{tab:main_ablation} shows that PushAround achieves the highest
 success rate of $97.5\%$ and the lowest combined planning and execution
 time of $38.9$\,s.
@@ -157,32 +144,79 @@ consistent with its role as a warm start rather than a feasibility gate.
 Quick-pass mainly improves efficiency: disabling it increases
 the average number of simulations from $121.5$ to $208.2$ and the planning time
 from $10.3$\,s to $23.6$\,s.
-% Four ablations remove key search components: gap-lookahead, mode-cache,
-% quick-pass, and reinsertion. Table~\ref{tab:main_ablation} shows that
-% success drop to $92.5\%$, consistent with its role as a warm start
-% rather than a feasibility gate. Quick-pass mainly improves efficiency,
-% reducing the number of simulations from $208.2$ to $121.5$ and the
-% planning time from $23.6$\,s to $10.3$\,s.
 
+\subsubsection{Scalability and Robustness Analysis}
+\label{subsec:generalization}
 
-\subsubsection{Density Scalability}\label{subsec:density}
-Density scalability is evaluated in an $8{\times}8\,$m workspace with
-$N\in\{15,20,25,30,35,40,45\}$ movable obstacles and five seeds per density,
-as shown in Fig.~\ref{fig:dense45}. For each seed, denser instances are generated
-by incrementally adding objects.
-Unsuccessful trials, including plan failures and
-timeout-pruned rows, are assigned the $400$\,s cap in planning-time statistics.
-As shown in Fig.~\ref{fig:density_scaling}, PushAround maintains $100\%$
-success up to $N=45$, while its capped mean planning time increases only from
-$2.6$\,s to $49.2$\,s. In contrast, Rec-NAMO fails completely from $N=35$, and
-SL-Push and DFS-WCCG reach only $20\%$ success at $N=45$. The non-recursive
-ablation further drops to $40\%$ success at $N=45$, confirming that recursive
-clearance is critical for the dense scenes.
+The generalization of PushAround is evaluated under obstacle density,
+robot-team size, and physics-model variations. All cases use the same
+$8\times8$\,m scalability workspace with randomly generated movable objects of
+diverse shapes. Table~\ref{tab:generalization} summarizes representative
+results, while Fig.~\ref{fig:dense45} and Fig.~\ref{fig:density_scaling}
+provide detailed evaluations for dense clutter and obstacle-number scaling.
+Increasing obstacle density evaluates search scalability, robot-team scaling
+examines the trade-off between additional manipulation capability and mode
+generation cost, and physics perturbation evaluates the robustness of
+physics-validated modes under execution mismatch.
+
+\begin{table}[t]
+\caption{Representative scalability and robustness results.}
+\label{tab:generalization}
+\centering
+\renewcommand{\arraystretch}{1.05}
+\begin{tabular}{c c c c c c}
+\hline
+Case & $M$ & $N$ & Phys. & Succ.(\%) & $PT$(s)\\
+\hline
+Base & 10 & 2 & Nom. & \todo{} & \todo{}\\
+Dense & 45 & 2 & Nom. & \todo{} & \todo{}\\
+Team & 25 & 2$\rightarrow$4 & Nom. & \todo{} & \todo{}\\
+Physics & 25 & 2 & Pert. & \todo{} & \todo{}\\
+\hline
+\end{tabular}
+\vspace{-1mm}
+\begin{flushleft}
+\footnotesize
+\centering
+$M$: number of movable obstacles; $N$: number of robots; 
+\end{flushleft}
+\vspace{-4mm}
+\end{table}
+
+% \subsubsection{Physics-Model Robustness}\label{subsec:model-robustness}
+% To evaluate robustness against physics-model mismatch, pushing schedules are
+% planned using nominal parameters and executed under perturbed mass, friction,
+% force limits, and contact dynamics. Over~$\todo{N}$ randomized trials with
+% $\todo{XX}$\% parameter perturbation, the proposed method achieves a success
+% rate of~$\todo{XX}\%$, compared with~$\todo{XX}\%$ without online replanning.
+% The results indicate that the physics-validated pushing modes remain effective
+% under moderate model deviations.
+% \subsubsection{Density Scalability}\label{subsec:density}
+% \change{
+% Density scalability is evaluated in an $8{\times}8\,$m workspace with
+% $N\in\{15,20,25,30,35,40,45\}$ movable obstacles. 
+% The revised evaluation expands the original five seeds to~multiple independent seed sequences per density. 
+% Within each seed sequence, denser instances are generated by incrementally adding objects, 
+% while different seeds define independent base layouts. The density suite uses 16 parallel workers, 
+% a per-trial timeout of $800$\,s, and a maximum of $20{,}000$ control steps; 
+% unsuccessful trials, including plan failures and timeout-pruned rows, 
+% are assigned the same $800$\,s cap in planning-time statistics. 
+% Movable-obstacle masses in this density suite are sampled from $[15,30]$\,kg.
+% }
+% \subsubsection{Robot-Team Scalability}\label{subsec:robot-scaling}
+% To evaluate scalability with respect to robot-team size, we vary the number of
+% pushing robots and measure the resulting planning performance. With
+% $N_R=\todo{\{2,3,4,\cdots\}}$ robots, the success rate remains
+% $\todo{\mathrm{XX}}\%$, while the planning time increases from
+% $\todo{\mathrm{XX}}$ to $\todo{\mathrm{XX}}$\,s as additional contact
+% assignments and mode evaluations are introduced. The results demonstrate that
+% the proposed formulation benefits from larger teams while maintaining bounded
+% search complexity through candidate pruning and parallel simulation.
 
 % ========================================
 \begin{figure}[t!]
   \centering
-  \includegraphics[width=0.9 \columnwidth]{figures/dense.png}
+  \includegraphics[width=0.8\columnwidth]{figures/dense.png}
   \vspace{-0.15in}
   \caption{Scalability in dense clutter with $\boldsymbol{45}$ movable objects.
 \textbf{Top:} snapshots during the path clearing of $24.5$~s.
@@ -196,32 +230,25 @@ clearance is critical for the dense scenes.
   \centering
   \includegraphics[width=0.98\columnwidth]{figures/density_comparison.pdf}
   \vspace{-0.15in}
-  \caption{Density scaling in the $8\times 8\,\mathrm{m}$ workspace.
-  The panels report success rate, mean planning time, and mean
-  execution time.}
+  \caption{Density scaling in the $8\times 8\,\mathrm{m}$ workspace.}
   \label{fig:density_scaling}
-  \vspace{-0.2in}
+  \vspace{-3mm}
 \end{figure}
 % ========================================
-
 % ========================================
 \begin{figure*}[t!]
   \centering
-  \includegraphics[width=0.95\linewidth]{figures/hardware.png}
+  \includegraphics[width=0.85\linewidth]{figures/hardware.png}
   \vspace{-4mm}
-  \caption{Real-world pushing experiments with the execution--planning alignment
-    (over~$20$ runs and $2$ scenarios).
-\textbf{Top:} snapshots of two robots pushing obstacles in a \(5{\times}6\,\mathrm{m}\) workspace
-with movable objects and fixed boundaries. \textbf{Bottom:} WCCG overlays with the start face in
-blue. }
+  \caption{Real-world pushing experiments with the execution--planning alignment(over~$20$ runs and $2$ scenarios).
+    \textbf{Top:} snapshots of two robots pushing obstacles in a \(5{\times}6\,\mathrm{m}\) workspace
+    with movable objects and fixed boundaries. \textbf{Bottom:} WCCG overlays with the start face in blue. 
+  }
   \vspace{-4mm}
   \label{fig:hardware}
 \end{figure*}
 % ========================================
-
-% ========================================
 \subsection{Hardware Experiments}\label{subsec:hardware}
-% ========================================
 
 \subsubsection{System Description}\label{subsec:exp-description}
 Experiments are conducted in a $5\,\mathrm{m}\times6\,\mathrm{m}$ workspace assembled from
@@ -230,6 +257,11 @@ Fig.~\ref{fig:hardware}. Each trial employs $2$ UGVs and $6$ movable obstacles
 represented by cardboard boxes covered with colored paper for visual distinction. Both robots and
 movables are equipped with three to four motion-capture markers. A motion-capture system streams
 global poses to \texttt{PyBullet} in real time, enabling policy execution and visualization.
+\change{
+The two Mecanum UGVs are controlled through planar velocity commands, while
+the optimized contact forces are used only for feasibility evaluation rather
+than direct motor control. Motion-capture feedback enables execution
+monitoring and online replanning.}
 Movables are randomly placed for each trial.
 
 \subsubsection{Results}\label{subsec:exp-results}
@@ -246,7 +278,12 @@ In Scenario~2, the proposed method succeeds in $8/10$ trials by generating an av
 $5.2$ pushes. The planning phase takes
 $11.4$\,s on average, and first selects a
 direct push on the blue L-shaped object, which also moves the adjacent T-shaped
-block and opens the first gap into the narrow passage. The complete execution
+block and opens the first gap into the narrow passage. 
+\change{
+This neighboring-object motion is not a separately encoded action 
+but an emergent outcome of the coupled rigid-body rollout in $\mathsf{EvalSim}$. 
+The resulting snapshot is used to update the WCCG and continue replanning.} 
+The complete execution
 takes $77.1$\,s on average with $15.9$\,s deviations.
 The main deviations arise from direction-dependent force limits,
 drifting, and Mecanum-wheel slippage near $45^\circ$ motion directions, which
