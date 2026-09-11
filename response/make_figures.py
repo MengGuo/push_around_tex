@@ -70,6 +70,22 @@ def wilson(k: int, n: int, z: float = 1.959963985) -> tuple[float, float]:
 # --------------------------------------------------------------------------
 # Figure 1: obstacle-density scaling (ours vs. baselines, 10 seeds)
 # --------------------------------------------------------------------------
+def legend_above(fig, axes, handles, labels, rect_top=0.88, pad=0.022, **kw):
+    """Lay out the figure, then anchor a figure-level legend just above the
+    tallest axes title.  Returns (legend, gap_pt) where gap_pt is the measured
+    vertical clearance between the title ink top and the legend ink bottom."""
+    fig.tight_layout(rect=(0, 0, 1, rect_top))
+    fig.canvas.draw()
+    inv = fig.transFigure.inverted()
+    title_top = max(ax.title.get_window_extent().transformed(inv).y1 for ax in axes)
+    leg = fig.legend(handles, labels, loc="lower center",
+                     bbox_to_anchor=(0.5, title_top + pad), **kw)
+    fig.canvas.draw()
+    leg_bottom = leg.get_window_extent().transformed(inv).y0
+    gap_pt = (leg_bottom - title_top) * fig.get_figheight() * 72.0
+    return leg, gap_pt
+
+
 def fig_density() -> None:
     d = pd.read_csv(DATA / "density_scaling" / "summary_scaling_suite.csv")
     order = [
@@ -106,9 +122,9 @@ def fig_density() -> None:
     ax1.set_xticks(range(15, 50, 5))
     ax1.set_title("(b) planning time (10 seeds, mean$\\pm$s.d.)")
     h, l = ax0.get_legend_handles_labels()
-    fig.legend(h, l, loc="upper center", ncol=5, frameon=False,
-               bbox_to_anchor=(0.5, 1.12), columnspacing=1.0, handlelength=1.4)
-    fig.tight_layout(rect=(0, 0, 1, 0.95))
+    _, gap = legend_above(fig, (ax0, ax1), h, l, ncol=5, frameon=False,
+                          columnspacing=1.0, handlelength=1.4)
+    print(f"  resp_density  legend/title gap = {gap:.1f} pt")
     for ext in ("pdf", "png"):
         fig.savefig(OUT / f"resp_density.{ext}", bbox_inches="tight")
     plt.close(fig)
@@ -153,8 +169,6 @@ def fig_mismatch() -> None:
     ax0.set_ylim(0, 118)
     ax0.axvspan(0.5, len(keys) - 0.5, color="0.93", zorder=0)
     ax0.set_title("(a) success under execution-only mismatch (Wilson 95% CI)")
-    ax0.legend(loc="upper center", ncol=3, frameon=False, bbox_to_anchor=(0.5, 1.20),
-               columnspacing=0.9, handlelength=1.2)
 
     # replanning effort of PushAround vs deviation magnitude
     p = pd.read_csv(DATA / "physics_mismatch" / "summary.csv")
@@ -168,7 +182,10 @@ def fig_mismatch() -> None:
     ax1.set_ylabel("mean replans per trial")
     ax1.set_ylim(0, max(grp) * 1.35)
     ax1.set_title("(b) PushAround replanning effort")
-    fig.tight_layout(rect=(0, 0, 1, 0.93))
+    h, l = ax0.get_legend_handles_labels()
+    _, gap = legend_above(fig, (ax0, ax1), h, l, ncol=3, frameon=False,
+                          columnspacing=0.9, handlelength=1.2)
+    print(f"  resp_mismatch legend/title gap = {gap:.1f} pt")
     for ext in ("pdf", "png"):
         fig.savefig(OUT / f"resp_mismatch.{ext}", bbox_inches="tight")
     plt.close(fig)
