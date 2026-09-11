@@ -1,0 +1,64 @@
+Summary of the multimedia material
+======================================================================
+
+This attachment accompanies the manuscript "PushAround: Collaborative Path
+Clearing via Physics-Informed Hybrid Search" together with the author response
+and diff file. It contains two objects.
+
+1) video.mp4
+   A single video showing (i) the simulation of the proposed planner clearing a
+   corridor for a large external vehicle in two scenarios, including the
+   W-clearance connectivity graph overlays during execution, and (ii) the
+   real-world execution of the same framework with two Mecanum-wheel robots
+   pushing cardboard obstacles in a 5x6 m workspace.
+
+   Usage: play with any MP4 player.
+   Value: it shows, in a form that static figures cannot, how the successive
+   planned pushes progressively enlarge the reachable W-clearance region until
+   the start and the goal become connected, and how closed-loop replanning
+   recovers from contact, force and slippage deviations in the hardware runs.
+
+2) evaluation_data/
+   The per-trial records behind every number reported in the revised manuscript
+   and in the author response, together with the resolved configuration of each
+   study:
+
+   * density_scaling/            Obstacle-density sweep: 5 policies x 7
+                                 densities x 10 seeds, with success status,
+                                 planning and execution time, push count,
+                                 simulation count and failure reason per trial.
+   * physics_mismatch/           Planner-execution mismatch study: nominal
+                                 planning with execution-side perturbations of
+                                 obstacle mass, lateral friction, spinning
+                                 friction and robot force limit.
+   * robot_scaling_modefix/      Robot-team scaling (2, 3, 4 robots) on the
+     robot_scaling/              current code revision, and the superseded
+                                 pre-fix revision for reference.
+   * robot_scaling_baselines_postfix/
+                                 The same robot-team study for the two baselines
+                                 on the current revision, including
+                                 diagnostics.csv, which counts how often the
+                                 shared mode-generation rescue paths
+                                 (backtracking contact assignment and temporary
+                                 per-task robot release) were triggered.
+   * wccg_cpp_paper_300/         WCCG connectivity validation against a
+                                 continuous and a rasterized configuration-space
+                                 reference on 300 scenes: agreement counts,
+                                 false positives/negatives and query timings.
+   * baselines_paper_ready/      Machine-readable digest of the baseline
+                                 comparisons for the mismatch and robot-scaling
+                                 studies.
+
+   Usage: open the .csv files with any spreadsheet program. The mapping file
+   evaluation_data/README.md links every record to the corresponding table or
+   figure of the manuscript and of the response letter. Two scripts regenerate
+   the figures from these records: evaluation_data/make_figures.py reproduces
+   every figure of the response letter, and
+   evaluation_data/plot_density_scaling_paper.py reproduces the three-panel
+   obstacle-density figure of the paper.
+   Value: it makes the reported results independently checkable. The exact trial
+   counts, seeds, success and failure composition, planning and execution times
+   and replan/push counts of every condition are provided, so that the claims of
+   the paper, including the robustness margins under physics mismatch and the
+   statistical confidence intervals, can be verified without re-running the
+   simulator.

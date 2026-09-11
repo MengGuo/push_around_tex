@@ -281,3 +281,9 @@ TSWLatexianTemp*
 tex/root.pdf
 rss_response/author_response_wsk.pdf
 ral_tex_backup
+## Local / hygiene (added during R&R revision)
+__pycache__/
+*:Zone.Identifier
+console.log
+*.pid
+_verify*.png

@@ -24,7 +24,7 @@ making prediction and planning substantially more complex.
 %==============================================
 \begin{figure}[t!]
   \centering
-  \includegraphics[width=0.9\linewidth]{figures/cover.png}% or {presearch.pdf}
+  \includegraphics[width=0.8\linewidth]{figures/cover.png}% or {presearch.pdf}
   \vspace{-0.1in}
   \caption{
     Collaborative path clearing in both simulation (\textbf{Top})
@@ -50,7 +50,7 @@ rotating~\cite{stilman2005navigation,stilman2007manipulation}. Later work consid
 %==============================================
 \begin{figure*}[t!]
   \centering
-  \includegraphics[width=0.85\linewidth]{figures/overall.pdf}
+  \includegraphics[width=0.8\linewidth]{figures/overall.pdf}
   \vspace{-0.1in}
 \caption{Overview of the proposed framework.
 \textbf{Top:} Scene inputs, WCCG construction, gap ranking, and sampling of pushing
@@ -63,29 +63,12 @@ modes for breaking frontier gaps;
 %==============================================
 
 
-By employing multiple robots, collaborative pushing provides a potential solution
-for such scenarios
-and has been widely studied in multi-robot manipulation.
-Foundational studies examined the mechanics of pushing and the limit-surface
-model~\cite{goyal1989limit,lynch1992manipulation}. Subsequent work considered
-cooperative transport with robot swarms~\cite{chen2015occlusion}, multi-robot
-box pushing with reinforcement learning~\cite{wang2006multi}, collaborative
-pushing of polytopic objects in cluttered scenes~\cite{tang2026pushingbots},
-and learning-based loco-manipulation for long-horizon quadrupedal
-pushing~\cite{feng2025learning}. These studies demonstrate effective multi-robot cooperation, but typically focus on a prescribed object rather than multi-object corridor clearing.
+Collaborative pushing has been widely studied in multi-robot manipulation:
+foundational work on the mechanics of pushing and limit surfaces~\cite{goyal1989limit,lynch1992manipulation}, cooperative transport with robot swarms~\cite{chen2015occlusion}, multi-robot box pushing with reinforcement learning~\cite{wang2006multi}, collaborative pushing of polytopic objects in cluttered scenes~\cite{tang2026pushingbots}, and learning-based loco-manipulation~\cite{feng2025learning}. These studies focus on a prescribed object rather than multi-object corridor clearing.
 
-Physics-informed planning has emerged to
-incorporate dynamics models, contact reasoning, or simulation feedback into
-motion generation. Learned dynamics have been used for humanoid
-contact planning~\cite{lin2019efficient}, while multi-contact force-control
-methods address physically consistent execution~\cite{rouxel2024multi}.
-For non-prehensile manipulation,
-demonstration-guided optimal control reasons over contact modes and
-pushing dynamics~\cite{xue2023demonstration}, and physics-based simulation is
-interleaved with multi-agent pathfinding for manipulation among movable
-objects~\cite{saxena2023planning,ren2025object}. Neural motion-planning
-methods further use learned physical priors
-for motion generation~\cite{ni2023progressive,liu2025physics}. However, they do not directly address collaborative path clearing with many interacting movable obstacles.
+Physics-informed planning incorporates dynamics models, contact reasoning, or
+simulation feedback into motion generation: learned dynamics for humanoid
+contact planning~\cite{lin2019efficient}, multi-contact force control~\cite{rouxel2024multi}, demonstration-guided optimal control over contact modes~\cite{xue2023demonstration}, physics simulation interleaved with multi-agent pathfinding~\cite{saxena2023planning,ren2025object}, and learned physical priors~\cite{ni2023progressive,liu2025physics}. However, they do not directly address collaborative path clearing with many interacting movable obstacles.
 
 
 %==============================
@@ -94,24 +77,20 @@ for motion generation~\cite{ni2023progressive,liu2025physics}. However, they do 
 As shown in Fig.~\ref{fig:overall},
 this work introduces \textbf{PushAround}, a physics-informed framework for
 collaborative multi-robot pushing that actively constructs traversable
-corridors for large vehicles in cluttered environments. The central novelty is
+corridors for large vehicles in cluttered environments. Its central novelty is
 a hybrid search that jointly determines which obstacles to displace and how to
 push them, coupling the high-level sequence of obstacle clearing with the
 low-level pushing modes that specify contact points, directions, and forces.
 The framework integrates three components: a W--clearance connectivity graph
 (WCCG) that certifies vehicle passage under width constraints, a gap-ranking
-strategy that prioritizes frontier gaps by estimated effort,
-and the pushing mode generation under geometric constraints.
-These components are encapsulated under a search
-procedure that incrementally expands candidate clearing plans while validating their
-physical realizability. This integration yields plans that
-are not only geometrically valid but also feasible under robot dimensions,
-object mass, contact geometry, and coupled pushing dynamics. 
-\change{Since physics validation depends on model fidelity, 
-robustness under execution-model mismatch is also evaluated.} 
-Efficiency is
-achieved by combining compact geometric reasoning with prioritized evaluation.
-Extensive simulations and experiments are conducted for validation.
+strategy that prioritizes frontier gaps by estimated effort, and pushing-mode
+generation under geometric constraints. These are encapsulated in a search
+that incrementally expands candidate clearing plans while validating their
+physical realizability, so the resulting plans are not only geometrically
+valid but also feasible under robot dimensions, object mass, contact geometry,
+and coupled pushing dynamics.
+\change{Since physics validation depends on model fidelity, robustness under
+execution-model mismatch is also evaluated.}
 
 The contributions are twofold: {(I)} it introduces a unified framework that
 couples collaborative pushing with

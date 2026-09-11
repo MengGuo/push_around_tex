@@ -8,6 +8,22 @@
         "documentation": {}
     },
     {
+        "label": "annotations",
+        "importPath": "__future__",
+        "description": "__future__",
+        "isExtraImport": true,
+        "detail": "__future__",
+        "documentation": {}
+    },
+    {
+        "label": "Path",
+        "importPath": "pathlib",
+        "description": "pathlib",
+        "isExtraImport": true,
+        "detail": "pathlib",
+        "documentation": {}
+    },
+    {
         "label": "Path",
         "importPath": "pathlib",
         "description": "pathlib",
@@ -58,6 +74,15 @@
         "importPath": "matplotlib.pyplot",
         "description": "matplotlib.pyplot",
         "detail": "matplotlib.pyplot",
+        "documentation": {}
+    },
+    {
+        "label": "json",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "json",
+        "description": "json",
+        "detail": "json",
         "documentation": {}
     },
     {
@@ -157,6 +182,105 @@
         "description": "ral_tex.scripts.plot_density_scaling",
         "peekOfCode": "KEEP_COUNTS = None\ndef _safe_numeric(series: pd.Series) -> pd.Series:\n    return pd.to_numeric(series, errors=\"coerce\")\ndef _trial_timeout_caps(group: pd.DataFrame) -> np.ndarray:\n    caps = _safe_numeric(group.get(\"trial_timeout_sec\", pd.Series(np.nan, index=group.index))).to_numpy(float)\n    finite = caps[np.isfinite(caps) & (caps > 0)]\n    fallback = float(np.nanmax(finite)) if finite.size else float(\"nan\")\n    if math.isfinite(fallback):\n        caps = np.where(np.isfinite(caps) & (caps > 0), caps, fallback)\n    return caps",
         "detail": "ral_tex.scripts.plot_density_scaling",
+        "documentation": {}
+    },
+    {
+        "label": "wilson",
+        "kind": 2,
+        "importPath": "response.make_figures",
+        "description": "response.make_figures",
+        "peekOfCode": "def wilson(k: int, n: int, z: float = 1.959963985) -> tuple[float, float]:\n    \"\"\"Wilson score interval for a binomial proportion.\"\"\"\n    if n == 0:\n        return (math.nan, math.nan)\n    p = k / n\n    d = 1.0 + z * z / n\n    c = p + z * z / (2 * n)\n    h = z * math.sqrt(p * (1 - p) / n + z * z / (4 * n * n))\n    return ((c - h) / d, (c + h) / d)\n# --------------------------------------------------------------------------",
+        "detail": "response.make_figures",
+        "documentation": {}
+    },
+    {
+        "label": "fig_density",
+        "kind": 2,
+        "importPath": "response.make_figures",
+        "description": "response.make_figures",
+        "peekOfCode": "def fig_density() -> None:\n    d = pd.read_csv(DATA / \"density_scaling\" / \"summary_scaling_suite.csv\")\n    order = [\n        (\"PushAround\", \"ours\", \"PushAround (ours)\"),\n        (\"PushAround w/o rec.\", \"norec\", \"PushAround w/o rec.\"),\n        (\"SL-Push (sim)\", \"slpush\", \"SL-Push (sim)\"),\n        (\"DFS-WCCG\", \"dfs\", \"DFS-WCCG\"),\n        (\"Rec-NAMO\", \"rec\", \"Rec-NAMO\"),\n    ]\n    fig, (ax0, ax1) = plt.subplots(1, 2, figsize=(6.9, 2.35))",
+        "detail": "response.make_figures",
+        "documentation": {}
+    },
+    {
+        "label": "fig_mismatch",
+        "kind": 2,
+        "importPath": "response.make_figures",
+        "description": "response.make_figures",
+        "peekOfCode": "def fig_mismatch() -> None:\n    dig = json.load(open(DATA / \"baselines_paper_ready\" / \"baseline_supplement_data.json\"))\n    conds = dig[\"physics_mismatch\"][\"conditions\"]\n    keys = [\"nominal\", \"mass_0p6\", \"mass_1p4\", \"friction_0p6\", \"friction_1p4\",\n            \"spin_0p6\", \"spin_1p4\", \"force_0p6\", \"force_1p4\"]\n    pretty = {\"nominal\": \"nominal\", \"mass_0p6\": \"mass\\n$\\\\times0.6$\", \"mass_1p4\": \"mass\\n$\\\\times1.4$\",\n              \"friction_0p6\": \"lat. fric.\\n$\\\\times0.6$\", \"friction_1p4\": \"lat. fric.\\n$\\\\times1.4$\",\n              \"spin_0p6\": \"spin fric.\\n$\\\\times0.6$\", \"spin_1p4\": \"spin fric.\\n$\\\\times1.4$\",\n              \"force_0p6\": \"force\\n$\\\\times0.6$\", \"force_1p4\": \"force\\n$\\\\times1.4$\"}\n    by = {c[\"condition\"]: c for c in conds}",
+        "detail": "response.make_figures",
+        "documentation": {}
+    },
+    {
+        "label": "fig_robot",
+        "kind": 2,
+        "importPath": "response.make_figures",
+        "description": "response.make_figures",
+        "peekOfCode": "def fig_robot() -> None:\n    dig = json.load(open(DATA / \"baselines_paper_ready\" / \"baseline_supplement_data.json\"))\n    cells = dig[\"robot_scaling\"][\"cells\"]\n    pre = {c[\"robot_num\"]: c for c in cells[\"pusharound_prefix_10seeds\"]}\n    sl = {c[\"robot_num\"]: c for c in cells[\"slpush_5seeds\"]}\n    df = {c[\"robot_num\"]: c for c in cells[\"dfs_5seeds\"]}\n    r = pd.read_csv(DATA / \"robot_scaling_modefix\" / \"raw_results_all.csv\")\n    post = {}\n    for n in (2, 3, 4):\n        s = r[r.robot_num == n]",
+        "detail": "response.make_figures",
+        "documentation": {}
+    },
+    {
+        "label": "fig_wccg",
+        "kind": 2,
+        "importPath": "response.make_figures",
+        "description": "response.make_figures",
+        "peekOfCode": "def fig_wccg() -> None:\n    w = pd.read_csv(DATA / \"wccg_cpp_paper_300\" / \"paper_summary.csv\")\n    order = [\"convex\", \"mixed\", \"nonconvex\"]\n    w = w.set_index(\"category\").loc[order + [\"all\"]]\n    agree = w.cc_fr_agreement.apply(lambda s: int(s.split(\"/\")[0]))\n    trials = w.trials\n    amb = w.ambiguous\n    fig, (ax0, ax1) = plt.subplots(1, 2, figsize=(6.9, 2.35),\n                                   gridspec_kw={\"width_ratios\": [1.35, 1.0]})\n    x = np.arange(len(w))",
+        "detail": "response.make_figures",
+        "documentation": {}
+    },
+    {
+        "label": "fig_reliability",
+        "kind": 2,
+        "importPath": "response.make_figures",
+        "description": "response.make_figures",
+        "peekOfCode": "def fig_reliability() -> None:\n    groups = {\n        \"(a) main comparison\\n(Scenario 1, 40 trials)\": [\n            (\"PushAround\", 39, 40, \"ours\"), (\"SL-Push (sim)\", 30, 40, \"slpush\"),\n            (\"SL-Push (offline)\", 25, 40, \"slpush\"), (\"Rec-NAMO\", 15, 40, \"rec\"),\n            (\"DFS-WCCG\", 10, 40, \"dfs\"),\n        ],\n        \"(b) density $M{=}45$\\n(10 seeds)\": [\n            (\"PushAround\", 10, 10, \"ours\"), (\"DFS-WCCG\", 0, 10, \"dfs\"),\n            (\"SL-Push (sim)\", 0, 10, \"slpush\"), (\"Rec-NAMO\", 0, 10, \"rec\"),",
+        "detail": "response.make_figures",
+        "documentation": {}
+    },
+    {
+        "label": "ROOT",
+        "kind": 5,
+        "importPath": "response.make_figures",
+        "description": "response.make_figures",
+        "peekOfCode": "ROOT = Path(__file__).resolve().parents[1]\nDATA = ROOT / \"data\"\nOUT = Path(__file__).resolve().parent / \"figures\"\nOUT.mkdir(parents=True, exist_ok=True)\nplt.rcParams.update({\n    \"font.family\": \"serif\",\n    \"font.size\": 8,\n    \"axes.labelsize\": 8,\n    \"axes.titlesize\": 8.5,\n    \"legend.fontsize\": 6.4,",
+        "detail": "response.make_figures",
+        "documentation": {}
+    },
+    {
+        "label": "DATA",
+        "kind": 5,
+        "importPath": "response.make_figures",
+        "description": "response.make_figures",
+        "peekOfCode": "DATA = ROOT / \"data\"\nOUT = Path(__file__).resolve().parent / \"figures\"\nOUT.mkdir(parents=True, exist_ok=True)\nplt.rcParams.update({\n    \"font.family\": \"serif\",\n    \"font.size\": 8,\n    \"axes.labelsize\": 8,\n    \"axes.titlesize\": 8.5,\n    \"legend.fontsize\": 6.4,\n    \"xtick.labelsize\": 7,",
+        "detail": "response.make_figures",
+        "documentation": {}
+    },
+    {
+        "label": "OUT",
+        "kind": 5,
+        "importPath": "response.make_figures",
+        "description": "response.make_figures",
+        "peekOfCode": "OUT = Path(__file__).resolve().parent / \"figures\"\nOUT.mkdir(parents=True, exist_ok=True)\nplt.rcParams.update({\n    \"font.family\": \"serif\",\n    \"font.size\": 8,\n    \"axes.labelsize\": 8,\n    \"axes.titlesize\": 8.5,\n    \"legend.fontsize\": 6.4,\n    \"xtick.labelsize\": 7,\n    \"ytick.labelsize\": 7,",
+        "detail": "response.make_figures",
+        "documentation": {}
+    },
+    {
+        "label": "CLR",
+        "kind": 5,
+        "importPath": "response.make_figures",
+        "description": "response.make_figures",
+        "peekOfCode": "CLR = {\n    \"ours\": \"#1f5c99\",\n    \"ours_pre\": \"#8fb8d9\",\n    \"norec\": \"#7fb2d6\",\n    \"slpush\": \"#c8443f\",\n    \"dfs\": \"#5b4b8a\",\n    \"rec\": \"#9a9a9a\",\n}\nMK = {\"ours\": \"o\", \"ours_pre\": \"s\", \"norec\": \"^\", \"slpush\": \"D\", \"dfs\": \"v\", \"rec\": \"x\"}\ndef wilson(k: int, n: int, z: float = 1.959963985) -> tuple[float, float]:",
+        "detail": "response.make_figures",
+        "documentation": {}
+    },
+    {
+        "label": "MK",
+        "kind": 5,
+        "importPath": "response.make_figures",
+        "description": "response.make_figures",
+        "peekOfCode": "MK = {\"ours\": \"o\", \"ours_pre\": \"s\", \"norec\": \"^\", \"slpush\": \"D\", \"dfs\": \"v\", \"rec\": \"x\"}\ndef wilson(k: int, n: int, z: float = 1.959963985) -> tuple[float, float]:\n    \"\"\"Wilson score interval for a binomial proportion.\"\"\"\n    if n == 0:\n        return (math.nan, math.nan)\n    p = k / n\n    d = 1.0 + z * z / n\n    c = p + z * z / (2 * n)\n    h = z * math.sqrt(p * (1 - p) / n + z * z / (4 * n * n))\n    return ((c - h) / d, (c + h) / d)",
+        "detail": "response.make_figures",
         "documentation": {}
     }
 ]
