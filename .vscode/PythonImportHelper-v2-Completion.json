@@ -16,6 +16,22 @@
         "documentation": {}
     },
     {
+        "label": "annotations",
+        "importPath": "__future__",
+        "description": "__future__",
+        "isExtraImport": true,
+        "detail": "__future__",
+        "documentation": {}
+    },
+    {
+        "label": "Path",
+        "importPath": "pathlib",
+        "description": "pathlib",
+        "isExtraImport": true,
+        "detail": "pathlib",
+        "documentation": {}
+    },
+    {
         "label": "Path",
         "importPath": "pathlib",
         "description": "pathlib",
@@ -185,11 +201,110 @@
         "documentation": {}
     },
     {
+        "label": "build",
+        "kind": 2,
+        "importPath": "ral_tex.scripts.plot_density_scaling_paper",
+        "description": "ral_tex.scripts.plot_density_scaling_paper",
+        "peekOfCode": "def build():\n    \"\"\"Create the figure and return (fig, [ax_a, ax_b, ax_c]).\"\"\"\n    d = pd.read_csv(DATA)\n    # Layout: (a) spans the full column width, (b) and (c) sit side by side\n    # below it.  This keeps every panel wide enough for its labels at the final\n    # print size (0.95 columnwidth of a two-column IEEE paper).\n    fig = plt.figure(figsize=(3.30, 1.70))\n    gs = fig.add_gridspec(2, 2, height_ratios=[0.68, 1.0],\n                          hspace=0.31, wspace=0.26)\n    ax_a = fig.add_subplot(gs[0, :])",
+        "detail": "ral_tex.scripts.plot_density_scaling_paper",
+        "documentation": {}
+    },
+    {
+        "label": "report_overlaps",
+        "kind": 2,
+        "importPath": "ral_tex.scripts.plot_density_scaling_paper",
+        "description": "ral_tex.scripts.plot_density_scaling_paper",
+        "peekOfCode": "def report_overlaps(fig, axes, tol: float = 0.5) -> int:\n    \"\"\"Report every pair of text elements whose bounding boxes overlap.\n    This is the automated check for the \"labels collide\" failure mode: it draws\n    the figure and compares the rendered bboxes (in pixels) of all tick labels,\n    axis labels, the in-panel (a)/(b)/(c) labels, the legend entries and the\n    annotations.\n    \"\"\"\n    fig.canvas.draw()\n    rend = fig.canvas.get_renderer()\n    items = []",
+        "detail": "ral_tex.scripts.plot_density_scaling_paper",
+        "documentation": {}
+    },
+    {
+        "label": "report_geometry",
+        "kind": 2,
+        "importPath": "ral_tex.scripts.plot_density_scaling_paper",
+        "description": "ral_tex.scripts.plot_density_scaling_paper",
+        "peekOfCode": "def report_geometry(fig, axes) -> None:\n    \"\"\"Print the exact spacing (in points) between the legend and panel (a),\n    and between the two panel rows, together with the figure size.\"\"\"\n    fig.canvas.draw()\n    rend = fig.canvas.get_renderer()\n    scale = 72.0 / fig.dpi                       # display px -> pt\n    leg = fig.legends[0].get_window_extent(rend) if fig.legends else None\n    a, b = axes[0].get_window_extent(rend), axes[1].get_window_extent(rend)\n    top_ink = max(t.get_window_extent(rend).y1 for t in axes[0].texts) if axes[0].texts else a.y1\n    w, h = fig.get_size_inches()",
+        "detail": "ral_tex.scripts.plot_density_scaling_paper",
+        "documentation": {}
+    },
+    {
+        "label": "main",
+        "kind": 2,
+        "importPath": "ral_tex.scripts.plot_density_scaling_paper",
+        "description": "ral_tex.scripts.plot_density_scaling_paper",
+        "peekOfCode": "def main() -> None:\n    fig, axes = build()\n    report_overlaps(fig, axes)\n    report_geometry(fig, axes)\n    OUT_PDF.parent.mkdir(parents=True, exist_ok=True)\n    # bbox_inches=\"tight\" is required: the shared legend sits above the axes\n    fig.savefig(OUT_PDF, bbox_inches=\"tight\", pad_inches=0.02)\n    fig.savefig(OUT_PNG, dpi=600, bbox_inches=\"tight\", pad_inches=0.02)\n    plt.close(fig)\n    print(\"wrote\", OUT_PDF.relative_to(ROOT), \"and\", OUT_PNG.name)",
+        "detail": "ral_tex.scripts.plot_density_scaling_paper",
+        "documentation": {}
+    },
+    {
+        "label": "HERE",
+        "kind": 5,
+        "importPath": "ral_tex.scripts.plot_density_scaling_paper",
+        "description": "ral_tex.scripts.plot_density_scaling_paper",
+        "peekOfCode": "HERE = Path(__file__).resolve().parent\nROOT = HERE.parents[1]\n# When the script is shipped inside the multimedia package (evaluation_data/),\n# the records live next to it; inside the repository they live under data/.\n_pkg = HERE / \"density_scaling\" / \"summary_scaling_suite.csv\"\nif _pkg.is_file():\n    DATA = _pkg\n    OUT_DIR = HERE / \"figures\"\nelse:\n    DATA = ROOT / \"data\" / \"density_scaling\" / \"summary_scaling_suite.csv\"",
+        "detail": "ral_tex.scripts.plot_density_scaling_paper",
+        "documentation": {}
+    },
+    {
+        "label": "ROOT",
+        "kind": 5,
+        "importPath": "ral_tex.scripts.plot_density_scaling_paper",
+        "description": "ral_tex.scripts.plot_density_scaling_paper",
+        "peekOfCode": "ROOT = HERE.parents[1]\n# When the script is shipped inside the multimedia package (evaluation_data/),\n# the records live next to it; inside the repository they live under data/.\n_pkg = HERE / \"density_scaling\" / \"summary_scaling_suite.csv\"\nif _pkg.is_file():\n    DATA = _pkg\n    OUT_DIR = HERE / \"figures\"\nelse:\n    DATA = ROOT / \"data\" / \"density_scaling\" / \"summary_scaling_suite.csv\"\n    OUT_DIR = ROOT / \"ral_tex\" / \"figures\"",
+        "detail": "ral_tex.scripts.plot_density_scaling_paper",
+        "documentation": {}
+    },
+    {
+        "label": "_pkg",
+        "kind": 5,
+        "importPath": "ral_tex.scripts.plot_density_scaling_paper",
+        "description": "ral_tex.scripts.plot_density_scaling_paper",
+        "peekOfCode": "_pkg = HERE / \"density_scaling\" / \"summary_scaling_suite.csv\"\nif _pkg.is_file():\n    DATA = _pkg\n    OUT_DIR = HERE / \"figures\"\nelse:\n    DATA = ROOT / \"data\" / \"density_scaling\" / \"summary_scaling_suite.csv\"\n    OUT_DIR = ROOT / \"ral_tex\" / \"figures\"\nOUT_PDF = OUT_DIR / \"density_comparison.pdf\"\nOUT_PNG = OUT_DIR / \"density_comparison.png\"\nSERIES = [",
+        "detail": "ral_tex.scripts.plot_density_scaling_paper",
+        "documentation": {}
+    },
+    {
+        "label": "OUT_PDF",
+        "kind": 5,
+        "importPath": "ral_tex.scripts.plot_density_scaling_paper",
+        "description": "ral_tex.scripts.plot_density_scaling_paper",
+        "peekOfCode": "OUT_PDF = OUT_DIR / \"density_comparison.pdf\"\nOUT_PNG = OUT_DIR / \"density_comparison.png\"\nSERIES = [\n    (\"PushAround\",           \"#1f5c99\", \"o\", 1.5, 2.6, \"PushAround\"),\n    (\"PushAround w/o rec.\",  \"#7fb0d4\", \"^\", 1.0, 2.2, \"w/o rec.\"),\n    (\"SL-Push (sim)\",        \"#c8443f\", \"D\", 1.0, 2.2, \"SL-Push (sim)\"),\n    (\"DFS-WCCG\",             \"#5b4b8a\", \"v\", 1.0, 2.2, \"DFS-WCCG\"),\n    (\"Rec-NAMO\",             \"#8d8d8d\", \"x\", 1.0, 2.4, \"Rec-NAMO\"),\n]\nplt.rcParams.update({",
+        "detail": "ral_tex.scripts.plot_density_scaling_paper",
+        "documentation": {}
+    },
+    {
+        "label": "OUT_PNG",
+        "kind": 5,
+        "importPath": "ral_tex.scripts.plot_density_scaling_paper",
+        "description": "ral_tex.scripts.plot_density_scaling_paper",
+        "peekOfCode": "OUT_PNG = OUT_DIR / \"density_comparison.png\"\nSERIES = [\n    (\"PushAround\",           \"#1f5c99\", \"o\", 1.5, 2.6, \"PushAround\"),\n    (\"PushAround w/o rec.\",  \"#7fb0d4\", \"^\", 1.0, 2.2, \"w/o rec.\"),\n    (\"SL-Push (sim)\",        \"#c8443f\", \"D\", 1.0, 2.2, \"SL-Push (sim)\"),\n    (\"DFS-WCCG\",             \"#5b4b8a\", \"v\", 1.0, 2.2, \"DFS-WCCG\"),\n    (\"Rec-NAMO\",             \"#8d8d8d\", \"x\", 1.0, 2.4, \"Rec-NAMO\"),\n]\nplt.rcParams.update({\n    \"font.family\": \"serif\",",
+        "detail": "ral_tex.scripts.plot_density_scaling_paper",
+        "documentation": {}
+    },
+    {
+        "label": "SERIES",
+        "kind": 5,
+        "importPath": "ral_tex.scripts.plot_density_scaling_paper",
+        "description": "ral_tex.scripts.plot_density_scaling_paper",
+        "peekOfCode": "SERIES = [\n    (\"PushAround\",           \"#1f5c99\", \"o\", 1.5, 2.6, \"PushAround\"),\n    (\"PushAround w/o rec.\",  \"#7fb0d4\", \"^\", 1.0, 2.2, \"w/o rec.\"),\n    (\"SL-Push (sim)\",        \"#c8443f\", \"D\", 1.0, 2.2, \"SL-Push (sim)\"),\n    (\"DFS-WCCG\",             \"#5b4b8a\", \"v\", 1.0, 2.2, \"DFS-WCCG\"),\n    (\"Rec-NAMO\",             \"#8d8d8d\", \"x\", 1.0, 2.4, \"Rec-NAMO\"),\n]\nplt.rcParams.update({\n    \"font.family\": \"serif\",\n    \"font.serif\": [\"Times New Roman\", \"Times\", \"Nimbus Roman\", \"DejaVu Serif\"],",
+        "detail": "ral_tex.scripts.plot_density_scaling_paper",
+        "documentation": {}
+    },
+    {
         "label": "wilson",
         "kind": 2,
         "importPath": "response.make_figures",
         "description": "response.make_figures",
         "peekOfCode": "def wilson(k: int, n: int, z: float = 1.959963985) -> tuple[float, float]:\n    \"\"\"Wilson score interval for a binomial proportion.\"\"\"\n    if n == 0:\n        return (math.nan, math.nan)\n    p = k / n\n    d = 1.0 + z * z / n\n    c = p + z * z / (2 * n)\n    h = z * math.sqrt(p * (1 - p) / n + z * z / (4 * n * n))\n    return ((c - h) / d, (c + h) / d)\n# --------------------------------------------------------------------------",
+        "detail": "response.make_figures",
+        "documentation": {}
+    },
+    {
+        "label": "legend_above",
+        "kind": 2,
+        "importPath": "response.make_figures",
+        "description": "response.make_figures",
+        "peekOfCode": "def legend_above(fig, axes, handles, labels, rect_top=0.88, pad=0.022, **kw):\n    \"\"\"Lay out the figure, then anchor a figure-level legend just above the\n    tallest axes title.  Returns (legend, gap_pt) where gap_pt is the measured\n    vertical clearance between the title ink top and the legend ink bottom.\"\"\"\n    fig.tight_layout(rect=(0, 0, 1, rect_top))\n    fig.canvas.draw()\n    inv = fig.transFigure.inverted()\n    title_top = max(ax.title.get_window_extent().transformed(inv).y1 for ax in axes)\n    leg = fig.legend(handles, labels, loc=\"lower center\",\n                     bbox_to_anchor=(0.5, title_top + pad), **kw)",
         "detail": "response.make_figures",
         "documentation": {}
     },
@@ -216,7 +331,7 @@
         "kind": 2,
         "importPath": "response.make_figures",
         "description": "response.make_figures",
-        "peekOfCode": "def fig_robot() -> None:\n    dig = json.load(open(DATA / \"baselines_paper_ready\" / \"baseline_supplement_data.json\"))\n    cells = dig[\"robot_scaling\"][\"cells\"]\n    pre = {c[\"robot_num\"]: c for c in cells[\"pusharound_prefix_10seeds\"]}\n    sl = {c[\"robot_num\"]: c for c in cells[\"slpush_5seeds\"]}\n    df = {c[\"robot_num\"]: c for c in cells[\"dfs_5seeds\"]}\n    r = pd.read_csv(DATA / \"robot_scaling_modefix\" / \"raw_results_all.csv\")\n    post = {}\n    for n in (2, 3, 4):\n        s = r[r.robot_num == n]",
+        "peekOfCode": "def fig_robot() -> None:\n    \"\"\"Robot-team scaling: PushAround vs baselines, both on the post-fix code.\"\"\"\n    dig = json.load(open(DATA / \"baselines_paper_ready\" / \"baseline_supplement_data.json\"))\n    cells = dig[\"robot_scaling\"][\"cells\"]\n    pre = {c[\"robot_num\"]: c for c in cells[\"pusharound_prefix_10seeds\"]}\n    pre_sl = {c[\"robot_num\"]: c for c in cells[\"slpush_5seeds\"]}\n    pre_df = {c[\"robot_num\"]: c for c in cells[\"dfs_5seeds\"]}\n    # PushAround, current code (n=10)\n    r = pd.read_csv(DATA / \"robot_scaling_modefix\" / \"raw_results_all.csv\")\n    post = {}",
         "detail": "response.make_figures",
         "documentation": {}
     },
@@ -243,7 +358,7 @@
         "kind": 5,
         "importPath": "response.make_figures",
         "description": "response.make_figures",
-        "peekOfCode": "ROOT = Path(__file__).resolve().parents[1]\nDATA = ROOT / \"data\"\nOUT = Path(__file__).resolve().parent / \"figures\"\nOUT.mkdir(parents=True, exist_ok=True)\nplt.rcParams.update({\n    \"font.family\": \"serif\",\n    \"font.size\": 8,\n    \"axes.labelsize\": 8,\n    \"axes.titlesize\": 8.5,\n    \"legend.fontsize\": 6.4,",
+        "peekOfCode": "ROOT = Path(__file__).resolve().parents[1]\nDATA = ROOT / \"data\"\nif not DATA.is_dir():          # when shipped inside the multimedia package\n    DATA = Path(__file__).resolve().parent\nOUT = Path(__file__).resolve().parent / \"figures\"\nOUT.mkdir(parents=True, exist_ok=True)\nplt.rcParams.update({\n    \"font.family\": \"serif\",\n    \"font.size\": 8,\n    \"axes.labelsize\": 8,",
         "detail": "response.make_figures",
         "documentation": {}
     },
@@ -252,7 +367,7 @@
         "kind": 5,
         "importPath": "response.make_figures",
         "description": "response.make_figures",
-        "peekOfCode": "DATA = ROOT / \"data\"\nOUT = Path(__file__).resolve().parent / \"figures\"\nOUT.mkdir(parents=True, exist_ok=True)\nplt.rcParams.update({\n    \"font.family\": \"serif\",\n    \"font.size\": 8,\n    \"axes.labelsize\": 8,\n    \"axes.titlesize\": 8.5,\n    \"legend.fontsize\": 6.4,\n    \"xtick.labelsize\": 7,",
+        "peekOfCode": "DATA = ROOT / \"data\"\nif not DATA.is_dir():          # when shipped inside the multimedia package\n    DATA = Path(__file__).resolve().parent\nOUT = Path(__file__).resolve().parent / \"figures\"\nOUT.mkdir(parents=True, exist_ok=True)\nplt.rcParams.update({\n    \"font.family\": \"serif\",\n    \"font.size\": 8,\n    \"axes.labelsize\": 8,\n    \"axes.titlesize\": 8.5,",
         "detail": "response.make_figures",
         "documentation": {}
     },
