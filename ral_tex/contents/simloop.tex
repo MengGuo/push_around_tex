@@ -42,6 +42,50 @@ is the minimum predicted remaining cost among the unexplored gaps of~$\nu$.
 \change{The remaining-cost term is a heuristic and is not required to be admissible. The score prioritizes nodes by realized cost and promising future actions, but it does not provide an A* optimality guarantee.}
 
 
+
+\begin{figure*}[t!]
+  \centering
+  \includegraphics[width=0.85\linewidth]{figures/sim_fixed.png}
+  \vspace{-2mm}
+  \caption{Execution and planning alignment in Scenario 1 (\textbf{Left})
+    and  Scenario 2 (\textbf{Right}).
+\textbf{Top:} simulated snapshots during path clearing.
+\textbf{Bottom:} corresponding WCCG overlays with the start face in blue.
+The executed pushes progressively expand the reachable $W$--clearance region until the goal is connected.}
+\vspace{-6mm}
+\label{fig:main_result}
+\end{figure*}
+% ========================================
+
+% ========================================
+\subsubsection{Node Expansion with Parallel Simulation}
+Let the selected node be~$\nu \triangleq (\mathbf{s},\pi)$. For each ranked gap
+$g \in \mathsf{Rank}(\nu)$,
+its predicted gap sequence~$\Pi^\star(g)$ in~\eqref{eq:pred_cost}
+is first derived. Then, the mode optimization by~\eqref{eq:mode-feasibility}
+provides a candidate strategy set
+$\Xi_g \triangleq \{(\Omega_m,\mathbf{v},\boldsymbol{\xi})\}$,
+including both the direct push of the adjacent movable obstacles,
+and recursive push of out-layer obstacles.
+Thus, expansion is prioritized first by the gap ordering in
+$\mathsf{Rank}(\nu)$, and then by the candidate ordering within~$\Xi_g$.
+Each candidate strategy~$(\Omega_m,\mathbf{v},\boldsymbol{\xi}) \in \Xi_g$ is first
+checked by a geometric quick-pass and, if it passes, evaluated by the
+short-horizon rollout in~\eqref{eq:sim}. A successful evaluation yields
+$(\mathbf{s}',\delta_{\texttt{T}},\delta_{\texttt{J}})$, from which a child
+node~$\nu' \triangleq (\mathbf{s}',\pi')$ is created by appending
+$\tau \triangleq (\Omega_m,\mathbf{v},\boldsymbol{\xi})$ to the current partial
+schedule~$\pi$.
+The cumulative cost is updated by:
+$\chi(\nu') \triangleq \chi(\nu) + \widehat{\mathsf{C}}(\nu,\tau)$,
+where~$\widehat{\mathsf{C}}(\nu,\tau)\triangleq
+\delta_{\texttt{T}} + \alpha\,\delta_{\texttt{J}}$
+is the realized incremental cost.
+Note that all candidate strategies in the current batch are evaluated
+\emph{concurrently in parallel},
+and a single expansion can produce multiple validated successors.
+
+
 {
 \SetAlFnt{\small}
 \SetAlgoSkip{0pt}
@@ -77,50 +121,6 @@ Init~$\mathcal{Q}$ by~\eqref{eq:priority}\;
 %==============================================
 }
 %==============================
-\begin{figure*}[t!]
-  \centering
-  \includegraphics[width=0.8\linewidth]{figures/sim_fixed.png}
-  \vspace{-0.15in}
-  \caption{Execution and planning alignment in Scenario 1 (\textbf{Left})
-    and  Scenario 2 (\textbf{Right}).
-\textbf{Top:} simulated snapshots during path clearing.
-\textbf{Bottom:} corresponding WCCG overlays with the start face in blue.
-The executed pushes progressively expand the reachable $W$--clearance region until the goal is connected.}
-\vspace{-4mm}
-\label{fig:main_result}
-\end{figure*}
-% ========================================
-
-% ========================================
-\subsubsection{Node Expansion with Parallel Simulation}
-Let the selected node be~$\nu \triangleq (\mathbf{s},\pi)$. For each ranked gap
-$g \in \mathsf{Rank}(\nu)$,
-its predicted gap sequence~$\Pi^\star(g)$ in~\eqref{eq:pred_cost}
-is first derived. Then, the mode optimization by~\eqref{eq:mode-feasibility}
-provides a candidate strategy set
-$\Xi_g \triangleq \{(\Omega_m,\mathbf{v},\boldsymbol{\xi})\}$,
-including both the direct push of the adjacent movable obstacles,
-and recursive push of out-layer obstacles.
-Thus, expansion is prioritized first by the gap ordering in
-$\mathsf{Rank}(\nu)$, and then by the candidate ordering within~$\Xi_g$.
-Each candidate strategy~$(\Omega_m,\mathbf{v},\boldsymbol{\xi}) \in \Xi_g$ is first
-checked by a geometric quick-pass and, if it passes, evaluated by the
-short-horizon rollout in~\eqref{eq:sim}. A successful evaluation yields
-$(\mathbf{s}',\delta_{\texttt{T}},\delta_{\texttt{J}})$, from which a child
-node~$\nu' \triangleq (\mathbf{s}',\pi')$ is created by appending
-$\tau \triangleq (\Omega_m,\mathbf{v},\boldsymbol{\xi})$ to the current partial
-schedule~$\pi$.
-The cumulative cost is updated by:
-$\chi(\nu') \triangleq \chi(\nu) + \widehat{\mathsf{C}}(\nu,\tau)$,
-where~$\widehat{\mathsf{C}}(\nu,\tau)\triangleq
-\delta_{\texttt{T}} + \alpha\,\delta_{\texttt{J}}$
-is the realized incremental cost.
-Note that all candidate strategies in the current batch are evaluated
-\emph{concurrently in parallel},
-and a single expansion can produce multiple validated successors.
-
-
-
 
 \subsubsection{Termination}
 Termination occurs when a node~$\nu$ reaches a state~$\mathbf{s}$ for which a

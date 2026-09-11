@@ -8,7 +8,34 @@ Videos are provided as multimedia attachments.
 \subsection{Numerical Simulations}
 \label{subsec:sim}
 % ========================================
+\begin{table}[t]
+\centering
+\caption{\change{WCCG connectivity validation and mean runtime.}}
+\label{tab:wccg-validation}
+\vspace{-2mm}
+\scriptsize
+\setlength{\tabcolsep}{3.2pt}
+\renewcommand{\arraystretch}{1.0}
+\begin{tabular}{lccccc}
+\hline
+& & & \multicolumn{3}{c}{Time (ms)}\\
+Type & CC=FR & FP/FN$^\dagger$ & CC & FR & WCCG\\
+\hline
+Convex     & 100/100 & 0/0 & 1.23 & 282.9 & \textbf{0.86}\\
+Non-convex & 98/100  & 0/0 & 1.51 & 204.1 & \textbf{1.30}\\
+Mixed      & 98/100  & 0/0 & 1.33 & 242.4 & \textbf{1.05}\\
+\hline
+Total      & 296/300 & \textbf{0/0}
+           & 1.36 & 243.1 & \textbf{1.07}\\
+\hline
+\end{tabular}
 
+\vspace{0.5mm}
+{\scriptsize $^\dagger$WCCG errors on CC--FR-consistent cases. All runtimes are
+measured in one harness over the same $300$ scenes, with WCCG served by its
+compiled backend;}
+\vspace{-5mm}
+\end{table}
 
 \subsubsection{Setup and Configuration}\label{subsec:sim-setup}
 
@@ -56,34 +83,7 @@ FP/FN, and a query costs $1.07$\,ms against $1.36$\,ms (CC) and $243$\,ms (FR),
 while additionally supplying the gap graph needed by PIHS.
 }
 
-\begin{table}[t]
-\centering
-\caption{\change{WCCG connectivity validation and mean runtime.}}
-\label{tab:wccg-validation}
-\vspace{-2mm}
-\scriptsize
-\setlength{\tabcolsep}{3.2pt}
-\renewcommand{\arraystretch}{1.0}
-\begin{tabular}{lccccc}
-\hline
-& & & \multicolumn{3}{c}{Time (ms)}\\
-Type & CC=FR & FP/FN$^\dagger$ & CC & FR & WCCG\\
-\hline
-Convex     & 100/100 & 0/0 & 1.23 & 282.9 & \textbf{0.86}\\
-Non-convex & 98/100  & 0/0 & 1.51 & 204.1 & \textbf{1.30}\\
-Mixed      & 98/100  & 0/0 & 1.33 & 242.4 & \textbf{1.05}\\
-\hline
-Total      & 296/300 & \textbf{0/0}
-           & 1.36 & 243.1 & \textbf{1.07}\\
-\hline
-\end{tabular}
 
-\vspace{0.5mm}
-{\scriptsize $^\dagger$WCCG errors on CC--FR-consistent cases. All runtimes are
-measured in one harness over the same $300$ scenes, with WCCG served by its
-compiled backend;}
-\vspace{-5mm}
-\end{table}
 % ========================================
 \begin{table}[t]
   \centering
@@ -118,7 +118,7 @@ compiled backend;}
 \begin{figure}[t!]
   \centering
   \vspace{-0.1in}
-  \includegraphics[width=0.8\columnwidth]{figures/compare.png}
+  \includegraphics[width=0.7\columnwidth]{figures/compare.png}
   \vspace{-0.1in}
   \caption{Failure cases by baselines Rec-NAMO, SL-Push and DFS-WCCG.}
   \label{fig:baseline}
@@ -156,6 +156,49 @@ clutter. Figure~\ref{fig:baseline} shows representative baseline failures.
 % more pushes, and Rec-NAMO often fails to complete a connected
 % W--clear corridor in dense clutter.
 
+
+\begin{table}[t]
+\caption{\change{Scalability and robustness under obstacle density,
+robot-team size, and execution-side physics mismatch.}}
+\label{tab:generalization}
+\centering
+\footnotesize
+\renewcommand{\arraystretch}{1.0}
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{l c c c c}
+\hline
+Case & Trials & Succ.(\%) & $PT$ (s) & $ET$ (s)\\
+\hline
+\multicolumn{5}{l}{\emph{Obstacle density} (PushAround, $N{=}2$, nominal)}\\
+$M=15$ & 10 & 100  & $2.5\pm0.9$    & $37.1\pm21.0$\\
+$M=30$ & 10 & 100  & $11.7\pm3.7$   & $100.9\pm34.7$\\
+$M=45$ & 10 & 100  & $53.4\pm24.5$  & $272.7\pm97.4$\\
+\hline
+\multicolumn{5}{l}{\emph{Robot-team size} ($M{=}30$, nominal; $10$ trials per cell)}\\
+PushAround, $N{=}3$ & 10 & 100 & $30.0\pm12.7$ & $97.3\pm42.1$\\
+PushAround, $N{=}4$ & 10 & 100 & $29.2\pm8.9$  & $110.1\pm33.1$\\
+SL-Push, $N{=}3$ & 10 & 80 & $30.0\pm46.3$ & $193.3\pm111.3$\\
+SL-Push, $N{=}4$ & 10 & 80 & $23.4\pm18.2$ & $171.7\pm61.2$\\
+DFS-WCCG, $N{=}3$ & 10 & 100 & $142.6\pm183.1$ & $178.1\pm72.1$\\
+DFS-WCCG, $N{=}4$ & 10 & 90 & $101.9\pm103.9$ & $175.9\pm113.6$\\
+\hline
+\multicolumn{5}{l}{\emph{Physics mismatch} ($M{=}30$, $N{=}2$)}\\
+Nominal            & 10  & 100  & $16.8\pm3.4$  & $104.7\pm37.4$\\
+Mass $\times0.6$--$1.4$          & 40  & 100  & $16.8\pm5.4$  & $105.9\pm44.6$\\
+Lateral fric. $\times0.6$--$1.4$ & 40  & 97.5 & $16.5\pm5.7$  & $114.0\pm48.5$\\
+Spin fric. $\times0.6$--$1.4$    & 40  & 97.5 & $15.2\pm3.6$  & $100.1\pm35.7$\\
+Force limit $\times0.6$--$1.4$   & 40  & 95.0 & $18.9\pm10.9$ & $115.9\pm58.5$\\
+All perturbed      & 160 & 97.5 & $16.9\pm7.0$  & $108.9\pm47.4$\\
+\hline
+\end{tabular}
+\vspace{-1mm}
+\begin{flushleft}
+\footnotesize
+Each perturbed physics row scales one execution-side parameter over the
+factor range shown while the others remain nominal.
+\end{flushleft}
+\vspace{-6mm}
+\end{table}
 %==============================
 \subsubsection{Ablation Studies}
 Four internal ablations are conducted: \textbf{w/o gap-lookahead} (frontier
@@ -205,62 +248,21 @@ friction and force reductions) and DFS-WCCG $57.5\%$ at an order of magnitude
 higher planning time.
 
 }
-\begin{table}[t]
-\caption{\change{Scalability and robustness under obstacle density,
-robot-team size, and execution-side physics mismatch.}}
-\label{tab:generalization}
-\centering
-\footnotesize
-\renewcommand{\arraystretch}{1.15}
-\setlength{\tabcolsep}{3pt}
-\begin{tabular}{l c c c c}
-\hline
-Case & Trials & Succ.(\%) & $PT$ (s) & $ET$ (s)\\
-\hline
-\multicolumn{5}{l}{\emph{Obstacle density} (PushAround, $N{=}2$, nominal)}\\
-$M=15$ & 10 & 100  & $2.5\pm0.9$    & $37.1\pm21.0$\\
-$M=30$ & 10 & 100  & $11.7\pm3.7$   & $100.9\pm34.7$\\
-$M=45$ & 10 & 100  & $53.4\pm24.5$  & $272.7\pm97.4$\\
-\hline
-\multicolumn{5}{l}{\emph{Robot-team size} ($M{=}30$, nominal; $10$ trials per cell)}\\
-PushAround, $N{=}3$ & 10 & 100 & $30.0\pm12.7$ & $97.3\pm42.1$\\
-PushAround, $N{=}4$ & 10 & 100 & $29.2\pm8.9$  & $110.1\pm33.1$\\
-SL-Push, $N{=}3$ & 10 & 80 & $30.0\pm46.3$ & $193.3\pm111.3$\\
-SL-Push, $N{=}4$ & 10 & 80 & $23.4\pm18.2$ & $171.7\pm61.2$\\
-DFS-WCCG, $N{=}3$ & 10 & 100 & $142.6\pm183.1$ & $178.1\pm72.1$\\
-DFS-WCCG, $N{=}4$ & 10 & 90 & $101.9\pm103.9$ & $175.9\pm113.6$\\
-\hline
-\multicolumn{5}{l}{\emph{Physics mismatch} ($M{=}30$, $N{=}2$)}\\
-Nominal            & 10  & 100  & $16.8\pm3.4$  & $104.7\pm37.4$\\
-Mass $\times0.6$--$1.4$          & 40  & 100  & $16.8\pm5.4$  & $105.9\pm44.6$\\
-Lateral fric. $\times0.6$--$1.4$ & 40  & 97.5 & $16.5\pm5.7$  & $114.0\pm48.5$\\
-Spin fric. $\times0.6$--$1.4$    & 40  & 97.5 & $15.2\pm3.6$  & $100.1\pm35.7$\\
-Force limit $\times0.6$--$1.4$   & 40  & 95.0 & $18.9\pm10.9$ & $115.9\pm58.5$\\
-All perturbed      & 160 & 97.5 & $16.9\pm7.0$  & $108.9\pm47.4$\\
-\hline
-\end{tabular}
 
-\vspace{-1mm}
-\begin{flushleft}
-\footnotesize
-Each perturbed physics row scales one execution-side parameter over the
-factor range shown while the others remain nominal.
-\end{flushleft}
-\vspace{-4mm}
-\end{table}
+
+
 % ========================================
 \begin{figure}[t!]
   \centering
   \includegraphics[width=0.8\columnwidth]{figures/obs_rob_scale.png}
   \vspace{-0.09in}
   \caption{
-  Scalability of the clearing process.
-  \textbf{Left:} obstacle-density scaling with $M{=}45$ movable objects and two
-  robots, showing snapshots during the clearing (\textbf{top}) and the
-  corresponding WCCG overlays with the start face in blue (\textbf{bottom}).
-  \textbf{Right:} robot-team scaling with $M{=}30$ objects and four robots,
-  showing the global initial and final states (\textbf{top}) and magnified views
-  of one pushing task before contact and during the push (\textbf{bottom}).
+  Scalability of the clearing process. \textbf{Left:} obstacle-density scaling
+  ($M{=}45$ objects, two robots): snapshots during the clearing (\textbf{top})
+  and WCCG overlays with the start face in blue (\textbf{bottom}).
+  \textbf{Right:} robot-team scaling ($M{=}30$ objects, four robots): initial
+  and final states (\textbf{top}) and zoomed views of one push before contact
+  and during execution (\textbf{bottom}).
   }
   \label{fig:scalability_scenes}
   \vspace{-0.1in}
@@ -269,30 +271,29 @@ factor range shown while the others remain nominal.
 % ========================================
 \begin{figure}[t!]
   \centering
-  \includegraphics[width=0.95\columnwidth]{figures/density_comparison.pdf}
+  \includegraphics[width=0.9\columnwidth]{figures/density_comparison.pdf}
   \vspace{-0.15in}
   \caption{
   Obstacle-density scaling ($8\times 8$\,m, $10$ independent seeds per density).
   \textbf{(a)} Success rate; \textbf{(b)} mean planning time, with unsuccessful
   trials capped at the $800$\,s budget (dotted line); \textbf{(c)} mean execution
   time of the successful trials (Rec-NAMO has none beyond $M{=}20$). Error bars
-  denote one standard deviation; PushAround keeps a $100\%$ success rate over the
-  whole range, whereas the baselines degrade sharply.
+  denote one standard deviation.
   }
   \label{fig:density_scaling}
-  \vspace{-3mm}
+  \vspace{-5mm}
 \end{figure}
 % ========================================
 % ========================================
 \begin{figure*}[t!]
   \centering
-  \includegraphics[width=0.8\linewidth]{figures/hardware.png}
-  \vspace{-4mm}
+  \includegraphics[width=0.85\linewidth]{figures/hardware.png}
+  \vspace{-2mm}
   \caption{Real-world pushing experiments with the execution--planning alignment(over~$20$ runs and $2$ scenarios).
     \textbf{Top:} snapshots of two robots pushing obstacles in a \(5{\times}6\,\mathrm{m}\) workspace
     with movable objects and fixed boundaries. \textbf{Bottom:} WCCG overlays with the start face in blue. 
   }
-  \vspace{-4mm}
+  \vspace{-6mm}
   \label{fig:hardware}
 \end{figure*}
 % ========================================
