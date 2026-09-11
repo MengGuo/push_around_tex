@@ -42,7 +42,9 @@ is the minimum predicted remaining cost among the unexplored gaps of~$\nu$.
 \change{The remaining-cost term is a heuristic and is not required to be admissible. The score prioritizes nodes by realized cost and promising future actions, but it does not provide an A* optimality guarantee.}
 
 
-
+{
+\SetAlFnt{\small}
+\SetAlgoSkip{0pt}
 %==============================================
 \begin{algorithm}[t!]
 \caption{Physics-Informed Hybrid Search}\label{alg:pihs}
@@ -73,11 +75,11 @@ Init~$\mathcal{Q}$ by~\eqref{eq:priority}\;
 \Return~$\pi^\star$;
 \end{algorithm}
 %==============================================
-
+}
 %==============================
 \begin{figure*}[t!]
   \centering
-  \includegraphics[width=0.9\linewidth]{figures/sim.pdf}
+  \includegraphics[width=0.8\linewidth]{figures/sim_fixed.png}
   \vspace{-0.15in}
   \caption{Execution and planning alignment in Scenario 1 (\textbf{Left})
     and  Scenario 2 (\textbf{Right}).

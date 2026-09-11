@@ -8,16 +8,15 @@ contact geometry, and required forces, which can lead to strategies that fail
 in execution.
 This work introduces \emph{PushAround}, a physics-informed hybrid search
 framework that incrementally constructs executable clearing plans by coupling
-geometric connectivity reasoning with short-horizon simulation.
-During search, repeated W--clearance connectivity graph (WCCG) queries expose
-frontier gaps where the vehicle corridor must be widened and rank them using
-estimated downstream gap-sequence costs.
-Guided by the selected gap, the search generates direct or recursive pushing
-candidates by choosing which obstacles to displace, in which directions, and
-with which contact points and forces; only physics-validated candidates are
-then admitted into the clearing plan.
-This interleaved geometry--physics screening avoids exhaustive rollout over
+geometric connectivity reasoning with short-horizon simulation. Repeated
+W--clearance connectivity graph (WCCG) queries expose frontier gaps where the
+vehicle corridor must be widened and rank them by estimated downstream costs,
+while the search generates direct or recursive pushing candidates -- choosing
+which obstacles to displace, in which directions, and with which contact
+points and forces -- admitting only physics-validated candidates. This
+interleaved geometry--physics screening avoids exhaustive rollouts over
 obstacle--action combinations while preserving physically grounded plan
-expansion. \change{Additional validation characterizes connectivity-query consistency and sensitivity to physics-model mismatch.} The framework is demonstrated through extensive simulations and hardware
-experiments.
+expansion. \change{Additional validation characterizes connectivity-query
+consistency and sensitivity to physics-model mismatch.} The framework is
+validated by extensive simulations and hardware experiments.
 \end{abstract}

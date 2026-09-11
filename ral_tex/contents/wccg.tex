@@ -3,8 +3,8 @@
 
 The feasibility of routing the vehicle reduces to whether a~$W$-width corridor
 connects~$\mathbf{x}_\texttt{V}^{\texttt{S}}$ and~$\mathbf{x}_\texttt{V}^{\texttt{G}}$.
-A W--clearance connectivity graph (WCCG) is introduced here to encode obstacle adjacencies under clearance~$W$ and enables
-fast encodes obstacle adjacencies under clearance~$W$ and enables \emph{fast connectivity queries}.
+A W--clearance connectivity graph (WCCG) is introduced here to encode obstacle
+adjacencies under clearance~$W$ and enable fast connectivity queries.
 \change{Constructed directly from obstacle geometry rather than a workspace grid, the WCCG does not introduce a grid-resolution parameter in the repeated connectivity queries used during planning.}
 
 \subsubsection{Graph Construction}
@@ -43,8 +43,9 @@ and
 expanding obstacles by a disk of radius $W/2$ turns gaps narrower than $W$ into overlapping barriers. 
 Non-convex obstacles are handled through clearance-relevant decomposition, 
 after which WCCG records the separating bottlenecks.
-The consistency between WCCG connectivity and rasterized configuration-space connectivity 
-is further evaluated in Sec.~\ref{subsec:wccg-validation}}.
+The consistency between WCCG connectivity and continuous and
+rasterized configuration-space references is further evaluated
+in Sec.~\ref{subsec:wccg-validation}}.
 A frontier-tracing procedure, similar to the
 BugPlanner~\cite{McGuireCroonTuyls2019}, is then used to extract a skeleton
 $\Sigma$ as an ordered sequence of centroid and bridge nodes. Starting from

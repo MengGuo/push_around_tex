@@ -1,0 +1,68 @@
+Dear Professor Asfour,
+
+On behalf of my co-authors, I am pleased to resubmit the revised version of our
+manuscript entitled "PushAround: Collaborative Path Clearing via Physics-Informed
+Hybrid Search" for possible publication as a regular paper in IEEE Robotics and
+Automation Letters.
+
+We thank the Associate Editor and both reviewers for the constructive
+evaluation. The reviewers recognized the contribution of the paper and raised two
+formal weaknesses together with a set of clarification requests; the revision
+addresses every one of them, without changing the scope of the method. The main
+additions are:
+
+1. A dedicated planner-execution physics-mismatch study. Planning always uses
+   the nominal model while only the execution simulator is perturbed, one
+   parameter family at a time (obstacle mass, lateral friction, spinning
+   friction and robot force limit) by factors covering +/-20% and +/-40%. Across
+   170 trials PushAround succeeds in 166 (97.5%, and 97.5% at the largest
+   perturbations), whereas under the same +/-40% perturbations the SL-Push (sim)
+   and DFS-WCCG baselines reach only 32.5% and 57.5%.
+
+2. Strengthened statistics for the dense-clutter evaluation. The obstacle-density
+   sweep now uses ten independent seed sequences per density instead of five, and
+   reports dispersion and Wilson confidence intervals. PushAround keeps a 100%
+   success rate for every density from 15 up to 45 movable obstacles at a mean
+   planning time of 2.5-53.4 s, while all baselines degrade to 0% at the highest
+   density.
+
+3. A robot-team scaling study together with the two mode-generation refinements
+   it motivated (bounded backtracking contact assignment and a temporary
+   per-task robot release). Because these refinements belong to the shared mode
+   generator, all compared methods were re-run on the same code revision to keep
+   the comparison on equal footing. PushAround is the only method that solves all
+   ten trials at two, three and four robots, and it does so at the lowest
+   planning time, execution time and push count.
+
+4. A WCCG connectivity validation against both a continuous configuration-space
+   reference and a rasterized reference over 300 random scenes, including
+   non-convex obstacles, showing agreement with the continuous reference in all
+   300 scenes with zero false positives and zero false negatives.
+
+5. Clarifications of the mathematical and implementation interfaces requested by
+   the reviewers: Eq. (5) is now described as the objective guiding the search
+   with no optimality or completeness claim, the meaning of the clearance
+   duration and the manipulation effort is stated explicitly, the optimized
+   contact forces are declared feasibility variables rather than hardware force
+   setpoints, coupled object motion is explained as an outcome of the joint
+   rigid-body rollout, and the execution monitor together with the shared
+   comparison protocol (timeout, control-step budget and reachability checks) is
+   specified.
+
+A detailed point-by-point response to the Associate Editor and to Reviewers 3 and
+4 accompanies this resubmission. All changes in the manuscript are highlighted in
+blue in "root.pdf"; "root_clean.pdf" is the same manuscript without the
+highlighting. Supplementary videos illustrating the planning, simulation and
+hardware execution are provided.
+
+The manuscript is original, has not been published previously, and is not under
+consideration elsewhere. All authors have approved the resubmission.
+
+We thank you very much for the handling of our paper and are looking forward to
+hearing from you.
+
+Sincerely,
+
+Meng Guo
+on behalf of all authors
+Peking University

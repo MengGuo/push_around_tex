@@ -36,7 +36,7 @@ Fig.~\ref{fig:direct_recursive_push}.
 %------------------------------
 \begin{figure}[t!]
   \centering
-  \includegraphics[width=0.85\linewidth]{figures/mode_generation.pdf}
+  \includegraphics[width=0.8\linewidth]{figures/mode_generation.pdf}
   \vspace{-4mm}
   \caption{
 Reachable contacts are filtered by the
@@ -115,21 +115,18 @@ multi-directional force feasibility is:
 +\mathbf{q}_m^\mu(\mathbf{v}_d)
 \| ,
 \end{equation}
-where~$\|\cdot\|$ is a weighted $\ell_1$ wrench norm,
-$\mathcal{D}_m^k$ is a finite perturbation set around~$\mathbf{v}_m^k$,
-and~$\mathbf{q}_m^\mu(\mathbf{v}_d)$ is the quasi-static friction wrench of $\Omega_m$;
-the inner minimization is a small Linear Program (LP)
-over the admissible contact forces~${U}_m(\mathbf{c})$.
+where~$\|\cdot\|$ is a weighted $\ell_1$ wrench norm, the finite set
+$\mathcal{D}_m^k$ perturbs~$\mathbf{v}_m^k$, and
+$\mathbf{q}_m^\mu(\mathbf{v}_d)$ is the quasi-static friction wrench; the inner
+minimization is a small LP over the admissible forces ${U}_m(\mathbf{c})$.
 A state- and direction-dependent contact set
-$\mathcal{A}_m^k(\mathbf{s})\subset\partial\Omega_m$ is obtained from the
+$\mathcal{A}_m^k(\mathbf{s})\subset\partial\Omega_m$ is drawn from the
 robot-reachable boundary of~$\Omega_m$ by velocity--force compatibility
-filtering, as illustrated in Fig.~\ref{fig:mode_generation}.
-Reachability is checked before mode optimization: a contact candidate is retained only if its assigned robots can reach collision-free pre-contact poses. Starting from
-cached layouts, if available, and random initializations in
-$\mathcal{A}_m^k(\mathbf{s})$, the contact tuple is refined by sequential greedy
-replacement. At the $\ell$-th greedy step, let~$\mathbf{c}^{\ell}$ be the
-current tuple, and let~$\mathbf{c}_{r,c}^{\ell}$ be obtained by replacing its
-$r$-th contact with~$c\in \mathbb{R}^2$. The best replacement is derived by:
+filtering (Fig.~\ref{fig:mode_generation}), keeping a contact only if its
+robots reach collision-free pre-contact poses. Starting from cached layouts or
+random initializations, the tuple is refined by sequential greedy replacement:
+at the $\ell$-th step, $\mathbf{c}_{r,c}^{\ell}$ replaces the $r$-th contact
+with $c$, and the best replacement is:
 \begin{equation}
 c^\star
 =
@@ -138,18 +135,19 @@ c^\star
 \bigl(\mathbf{c}_{r,c}^{\ell},\mathbf{v}_m^k\bigr),
 \label{eq:greedy_mode_update}
 \end{equation}
-where the greedy refinement for~$c^\star$ sweeps over contact slots
-until~$\mathrm{J}_{\texttt{MF}}^m$ no longer decreases.
-Among initializations, the
-best local tuple is selected as~$\mathbf{c}_m^{k,\star}$, thus
-$\mathbf{u}_m^k$ is obtained by the inner minimization in
-\eqref{eq:mode-feasibility} for~$\mathbf{v}_m^k$.
-This yields $\boldsymbol{\xi}_m^k=(\mathbf{c}_m^{k,\star},\mathbf{u}_m^k)$.
-The mode is cached as a warm start for similar future queries.
-The best few pairs~$(\mathbf{v}_m^k,\boldsymbol{\xi}_m^k)$ with
-$\boldsymbol{\xi}_m^k\in\Xi_m(\mathbf{s})$ are retained for gap~$g$ and passed
-to simulation evaluation.
-The optimized force vector~$\mathbf{u}_m^k$ certifies wrench feasibility; hardware executes pose/velocity commands that maintain the contact geometry.
+swept over contact slots until $\mathrm{J}_{\texttt{MF}}^m$ no longer
+decreases; a bounded backtracking variant removes the robot-order sensitivity
+of this replacement. If no full-team assignment exists for a task, e.g., on
+small faces or under the pairwise pusher-clearance constraint, one robot is
+released for that single push (charged a penalty when ranking modes, so
+full-team modes are preferred) and the full team is available again afterwards.
+The best tuple over initializations gives
+$\mathbf{c}_m^{k,\star}$, from which $\mathbf{u}_m^k$ follows from the inner
+minimization in~\eqref{eq:mode-feasibility}, yielding
+$\boldsymbol{\xi}_m^k=(\mathbf{c}_m^{k,\star},\mathbf{u}_m^k)$; each mode is
+cached as a warm start. The best few admissible pairs are kept for gap~$g$ and
+passed to simulation; $\mathbf{u}_m^k$ certifies wrench feasibility while
+hardware tracks the contact geometry from pose/velocity commands.
 
 % The best refined mode over all initializations is denoted by
 % $\boldsymbol{\xi}_m^k=(\mathbf{c}_m^k,\mathbf{u}_m^k)$.
@@ -188,13 +186,13 @@ validated before and the swept region of~$\Omega_m$ is collision-free.
 %------------------------------
 \begin{figure}[t!]
   \centering
-  \includegraphics[width=0.85\linewidth]{figures/PIHS.pdf}
+  \includegraphics[width=0.8\linewidth]{figures/PIHS.pdf}
   \vspace{-2mm}
   \caption{
   \textbf{Top:} Core components of the proposed physics-informed hybrid search;
   \textbf{Bottom:} Sampled push tasks are evaluated via parallel simulation, producing updated states
   for search expansion.}
     \label{fig:PIHS}
-   \vspace{-5mm}
+   \vspace{-1mm}
 \end{figure}
 %------------------------------

@@ -3,23 +3,25 @@
 
 \subsubsection{Execution and Online Adaptation}\label{subsec:execute}
 The hybrid search returns a pushing schedule
-$\pi = \{\tau_1,\cdots,\tau_K\}$, where
-$\tau_k \triangleq (\Omega_k,\mathbf{v}_k,\boldsymbol{\xi}_k)$ specifies
-the target obstacle, pushing direction and mode. The schedule is executed
-sequentially in a receding-horizon manner. For each $\tau_k$, the robots move
-to the required mode~$\boldsymbol{\xi}_k$ for obstacle~$\Omega_k$
-and follow the pushing direction~$\mathbf{v}_k$
-from the current state as in~\eqref{eq:sim}. On the hardware, optimized contact forces are used for mode feasibility rather than direct force commands; the controller converts the planned contact geometry and object motion into velocity commands with feedback tracking. During transition, robots
-are reassigned by preserving the circular order of contact points along the
-obstacle boundary~\cite{tang2026pushingbots}, which reduces path crossings
-under sufficient clearance. After each push, the system state is updated from
-observation, and the execution proceeds to $\tau_{k+1}$ if the action succeeds.
-For consistency with execution, the WCCG is rebuilt periodically from
-the current configuration. Execution terminates once a $W$-clear path
+$\pi = \{\tau_1,\cdots,\tau_K\}$, with
+$\tau_k \triangleq (\Omega_k,\mathbf{v}_k,\boldsymbol{\xi}_k)$.
+The schedule is executed in a receding-horizon manner: for each $\tau_k$ the
+robots reach the mode~$\boldsymbol{\xi}_k$ and follow the pushing
+direction~$\mathbf{v}_k$ from the current state, as in~\eqref{eq:sim}. On the
+hardware the optimized contact forces certify feasibility rather than being
+commanded; the controller converts the planned contact geometry and object
+motion into velocity commands with feedback tracking. During transitions,
+robots are reassigned by preserving the circular order of contact points along
+the obstacle boundary~\cite{tang2026pushingbots}, reducing path crossings under
+sufficient clearance. After each push the state is updated from observation,
+the WCCG is rebuilt from the current configuration, and execution continues
+until a $W$-clear path
 $\mathcal{P}^W_\texttt{V}$ connects~$\mathbf{x}_\texttt{V}^{\texttt{S}}$ and
 $\mathbf{x}_\texttt{V}^{\texttt{G}}$.
-Replanning is triggered by observed execution discrepancies, including failed contact establishment, stalled pushing, or invalidated remaining WCCG connectivity. In such cases, Alg.~\ref{alg:pihs} is
-called from the current state to derive the updated pushing schedule.
+Replanning is triggered by observed execution discrepancies -- failed contact
+establishment, stalled pushing, or invalidated WCCG connectivity -- in which
+case Alg.~\ref{alg:pihs} is called from the current state to derive the
+updated schedule.
 
 %----------------------------------------------
 \subsubsection{Computational Complexity}\label{subsubsec:complexity}

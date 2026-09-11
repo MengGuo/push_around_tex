@@ -1,0 +1,2 @@
+43c8d62a269241159e4e41eaebfd8a130ef73d64
+fc857a8 mode generation: fix N_R>=4 failures via backtracking assignment (B) + subset mode fallback (A)

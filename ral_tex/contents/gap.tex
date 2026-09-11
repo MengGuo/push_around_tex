@@ -7,8 +7,8 @@ $\mathbf{x}_\texttt{V}^{\texttt{S}}$ through a~$W$--clear path
 $\mathcal{P}^W_\texttt{V}$.
 In this case, the planner must prioritize
 \emph{blocking gaps} on the reachable frontier of~$\mathcal{G}_W$
-according to their predicted downstream cost.
-the ranked list provides the local clearance targets that guide the hybrid search in the sequel.
+according to their predicted downstream cost, and feed the ranked list to the
+hybrid search as local clearance targets.
 
 \subsubsection{Frontier Extraction and Candidate Gaps}
 A BugPlanner query on~$\mathcal{G}_W$ above
@@ -37,7 +37,7 @@ where~$\lambda_\texttt{t},\lambda_\texttt{p}>0$ weight transition and pushing co
 %------------------------------
 \begin{figure}[t!]
   \centering
-  \includegraphics[width=0.9\linewidth]{figures/direct_recursive_push.pdf}
+  \includegraphics[width=0.82\linewidth]{figures/direct_recursive_push.pdf}
   \vspace{-0.1in}
   \caption{
   \textbf{Direct} pushing moves a gap-side blocker along a gap-opening direction,

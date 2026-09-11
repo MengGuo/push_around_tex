@@ -63,6 +63,11 @@
 \newcommand{\note}[1]{\textcolor{blue}{NOTE: #1}}
 \newcommand{\question}[1]{\textcolor{orange}{Q: #1}}
 \newcommand{\change}[1]{{\color{blue}#1}}
+% Build a clean copy (no revision highlighting) with:
+%   pdflatex -jobname=root_clean "\def\CLEANCOPY{}\input{root.tex}"
+\ifdefined\CLEANCOPY
+  \renewcommand{\change}[1]{#1}
+\fi
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%
