@@ -33,19 +33,7 @@ Fig.~\ref{fig:direct_recursive_push}.
 
 
 
-%------------------------------
-\begin{figure}[t!]
-  \centering
-  \includegraphics[width=0.8\linewidth]{figures/mode_generation.pdf}
-  \vspace{-4mm}
-  \caption{
-Reachable contacts are filtered by the
-  desired object twist, assigned to robots, refined by local replacement,
-  and finally validated by simulation.}
-    \label{fig:mode_generation}
-   \vspace{-4mm}
-\end{figure}
-%------------------------------
+
 
 %==============================================
 % \subsubsection{Pushing Mode Generation}
@@ -155,7 +143,19 @@ hardware tracks the contact geometry from pose/velocity commands.
 % Accepted modes are stored in a persistent \textsc{mode-cache},
 % indexed by discretized shape, mass, available robot force, and pushing direction,
 % and reused as warm starts.
-
+%------------------------------
+\begin{figure}[t!]
+  \centering
+  \includegraphics[width=0.8\linewidth]{figures/mode_generation.pdf}
+  \vspace{-4mm}
+  \caption{
+Reachable contacts are filtered by the
+  desired object twist, assigned to robots, refined by local replacement,
+  and finally validated by simulation.}
+    \label{fig:mode_generation}
+   \vspace{-4mm}
+\end{figure}
+%------------------------------
 %==============================================
 \subsubsection{Pushing Strategy Evaluation}
 
@@ -193,6 +193,6 @@ validated before and the swept region of~$\Omega_m$ is collision-free.
   \textbf{Bottom:} Sampled push tasks are evaluated via parallel simulation, producing updated states
   for search expansion.}
     \label{fig:PIHS}
-   \vspace{-1mm}
+   \vspace{-4mm}
 \end{figure}
 %------------------------------
