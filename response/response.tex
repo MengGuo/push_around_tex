@@ -40,7 +40,6 @@
 \maketitle
 
 %========================================
-\newpage
 \section*{To Associate Editor}
 %========================================
 \begin{shaded*}
@@ -66,22 +65,26 @@ The principal revisions are summarized below.
 \begin{table}[h!]
 \centering
 \scriptsize
-\caption{New and revised experiments at a glance. ``Ours'' is PushAround.}
+\caption{New and revised experiments at a glance. ``PushAround (ours)'' is the
+proposed method; page numbers refer to the revised manuscript.}
 \label{tab:at-a-glance}
+\resizebox{\linewidth}{!}{%
 \setlength{\tabcolsep}{2.2pt}
-\renewcommand{\arraystretch}{1.18}
-\begin{tabular}{@{}l p{4.35cm} c p{3.45cm} l@{}}
+\renewcommand{\arraystretch}{1.06}
+\begin{tabular}{@{}l p{3.7cm} c p{2.95cm} l@{}}
 \toprule
-Study & Setting (workspace, $M$, $N$; trials) & Ours & Strongest baseline & Location\\
+Study & Setting (workspace, $M$, $N$; trials) & PushAround (ours) & Strongest baseline & Location\\
 \midrule
-Main comparison & $8{\times}5$\,m, $M{=}10$, $N{=}2$; 40 trials & \textbf{97.5}\,\% & SL-Push (sim) 75.0\,\% & Table~II\\
+Main comparison & $8{\times}5$\,m, $M{=}10$, $N{=}2$; 40 trials & \textbf{97.5}\,\% & SL-Push (sim) 75.0\,\% & Table~II (Page~6)\\
 Ablations & same scene; 40 trials & 82.5--97.5\,\% & --- & Table~II\\
-Obstacle density & $8{\times}8$\,m, $M{=}15$--45, $N{=}2$; 10 seeds per density & \textbf{100}\,\% (all $M$) & collapses to 0\,\% at $M{=}45$ & Table~III, Fig.~10\\
-Physics mismatch & $8{\times}8$\,m, $M{=}30$, $N{=}2$; $\pm20\%/\pm40\%$; 10 (ours) / 5 (base) seeds & \textbf{97.5}\,\% at $\pm40\%$ & DFS-WCCG 57.5\,\%, SL-Push (sim) 32.5\,\% & Table~III\\
+Obstacle density & $8{\times}8$\,m, $M{=}15$--45, $N{=}2$; 10 seeds per density & \textbf{100}\,\% (all $M$) & collapses to 0\,\% at $M{=}45$ & Table~III (Page~7), Fig.~10 (Page~7)\\
+Physics mismatch & $8{\times}8$\,m, $M{=}30$, $N{=}2$; $\pm20\%/\pm40\%$; 10 (ours) / 5 (base) seeds & \textbf{97.5}\,\% at $\pm40\%$ & DFS-WCCG 57.5\,\%, SL-Push (sim) 32.5\,\% & Table~III (Page~7)\\
 Robot-team scaling & $8{\times}8$\,m, $M{=}30$, $N{=}2$--4; 10 seeds per cell & \textbf{100}\,\% (30/30 trials) & DFS-WCCG 90--100\,\%, SL-Push (sim) 80\,\% ($1.6$--$1.8\times$ slower execution) & Table~III\\
-WCCG validation & 300 random scenes, incl.\ non-convex & 300/300, 0 FP/FN & --- & Table~I\\
+WCCG validation & 300 random scenes, incl.\ non-convex & 300/300, 0 FP/FN & --- & Table~I (Page~6)\\
 \bottomrule
 \end{tabular}
+}
+
 \end{table}
 
 \noindent The principal revisions are:
@@ -232,7 +235,7 @@ retuned model, absorbs the mismatch.}
 \label{fig:resp-mismatch}
 \end{figure}
 
-\noindent\textbf{Changes in the revised manuscript} (Page 7, Sec. IV-A6 and Table III; Page 1, Sec. I-B; Page 7, Sec. IV-A6):
+\noindent\textbf{Changes in the revised manuscript.} The manuscript text was revised as described above and is quoted verbatim below (Page 7, Sec. IV-A6 and Table III; Page 1, Sec. I-B; Page 7, Sec. IV-A6):
 \begin{itemize}
 \item Sec.~IV-A6 introduces the mismatch protocol and reports the results; the
 corresponding rows appear in Table~III, and the density/mismatch protocol
@@ -363,7 +366,17 @@ Rec-NAMO (PT) & 15.8 & 353.5 & 800.0 & 800.0 & 800.0 & 800.0 & 800.0\\
 \end{tabular}
 \end{table}
 
-\noindent\textbf{Changes in the revised manuscript} (Page 7, Sec. IV-A6 and Fig. 10 caption; Page 7, Table III):
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.42\linewidth]{figures/resp_density_scenes.png}
+\caption{Representative dense-clutter scenes of the density sweep ($M{=}45$,
+two robots): snapshots during clearing above and the corresponding WCCG overlays
+with the start face in blue below.}
+\label{fig:resp-density-scenes}
+\end{figure}
+
+\noindent\textbf{Changes in the revised manuscript.} The manuscript text was revised as described above and is quoted verbatim below (Page 7, Sec. IV-A6 and Fig. 10 caption; Page 7, Table III):
 \begin{itemize}
 \item Sec.~IV-A6 and the caption of Fig.~10 now state the seed count, the nested
 construction within a seed, and the dispersion:
@@ -438,7 +451,7 @@ mode-generation bottleneck, we fixed it, and the re-run --- performed on
 fix lives in the shared mode generator rather than being a PushAround-only
 behaviour. The corrected comparison is reported below.
 
-\textbf{(a) Complexity.} The implementation never enumerates joint contact
+Complexity. The implementation never enumerates joint contact
 tuples. With $|\mathcal A|$ reachable contact candidates per robot, exhaustive
 assignment would require $|\mathcal A|^N$ tuples; instead one greedy replacement
 sweep tests at most $N|\mathcal A|$ single-contact substitutions, each solving
@@ -446,7 +459,7 @@ the force LP whose decision vector has dimension $2N$. Larger teams therefore
 enlarge the feasible wrench set but also increase contact-assignment and LP
 cost. Sec.~III-E2 states this explicitly.
 
-\textbf{(b) Bottleneck, fix, and who benefits.} The preliminary $N{=}4$ runs
+Bottleneck, fix, and who benefits. The preliminary $N{=}4$ runs
 failed in 3 of 10 seeds (2 planning failures, 1 budget timeout). Diagnosis: for
 some push tasks \emph{no} full-team contact assignment exists --- small
 pushable faces, or the pairwise pusher-clearance constraint rejecting every
@@ -526,7 +539,17 @@ $183$\,s at $N{=}3$), and $10$--$11$ pushes versus $20$--$31$ for SL-Push
 (sim). The manuscript states this narrower claim rather than a monotone
 team-size trend.
 
-\noindent\textbf{Changes in the revised manuscript} (Page 4, Sec. III-C2; Page 7, Sec. IV-A6 and Table III; Page 5, Sec. III-E2):
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.42\linewidth]{figures/resp_robot_scenes.png}
+\caption{The four-robot study of the same evaluation ($M{=}30$, $N{=}4$):
+global initial and final states above, and two magnified views of a single
+pushing task (before contact and during the push) below.}
+\label{fig:resp-robot-scenes}
+\end{figure}
+
+\noindent\textbf{Changes in the revised manuscript.} The manuscript text was revised as described above and is quoted verbatim below (Page 4, Sec. III-C2; Page 7, Sec. IV-A6 and Table III; Page 5, Sec. III-E2):
 \begin{itemize}
 \item Sec.~III-C2 now describes the two refinements:
 \change{swept over contact slots until $\mathrm{J}_{\texttt{MF}}^m$ no longer
@@ -602,7 +625,19 @@ it is also stated that the objective couples obstacle selection, mode
 generation, and switching into a hybrid combinatorial--continuous problem that
 the implemented search does not solve to global optimality.
 
-\noindent\textbf{Changes in the revised manuscript} (Page 2, Sec. II-D; Page 4, Sec. III-D; Page 5, Sec. III-D, node selection; Page 5, Sec. III-D, termination):
+However, the experiments show that the search is far from enumerating the space.
+Across the density sweep the first physics-validated schedule is returned after a
+median of \textbf{10} node expansions (mean $13$, max $57$), \textbf{47} visited
+snapshots (mean $64$) and \textbf{60} parallel simulations (mean $85$), i.e.\ a
+small fraction of the sampled candidate space, at a median planning time of
+$10.1$\,s. The ablations support the same conclusion from the other side:
+removing gap-lookahead or reinsertion lowers success by more than ten points, so
+the quality of the returned schedule rests on the search components rather than
+on brute force. The returned schedules are also economical in absolute terms ---
+at $M{=}45$ PushAround still returns a successful plan within the budget
+($53.4$\,s of planning), whereas the baselines either fail or exceed it.
+
+\noindent\textbf{Changes in the revised manuscript.} The manuscript text was revised as described above and is quoted verbatim below (Page 2, Sec. II-D; Page 4, Sec. III-D; Page 5, Sec. III-D, node selection; Page 5, Sec. III-D, termination):
 \begin{itemize}
 \item \change{Equation~(5) ranks feasible schedules; PIHS uses
 finite sampling and does not guarantee global optimality of the continuous
@@ -718,20 +753,27 @@ obstacles are non-convex.
 \noindent \textbf{A:}
 We agree, and we provide both a derivation and the suggested empirical check.
 
-\textbf{(a) Why the same-face test is the right query.} For a vehicle whose
-footprint is enclosed by a disk of radius $W/2$, inflating every obstacle
-boundary by $W/2$ turns any pair of boundary components whose closest distance
-is below $W$ into \emph{overlapping} barriers in the configuration space of the
-vehicle centre. A WCCG bridge--bridge edge records exactly such a
-non-traversable bottleneck, and centroid--bridge edges attach the bottleneck to
-the adjacent free regions. Consequently, ``start and goal lie in the same
-planar face'' is equivalent to connectivity in the complement of the inflated
-geometry, i.e.\ to the $W$-clearance condition. Non-convex obstacles require care, which
-is why the construction first performs a clearance-relevant convex
-decomposition and then inserts bridges between the resulting
-components/segments.
+A clearance-connectivity query is conventionally answered by inflating the
+obstacles by $W/2$ and then testing connectivity either on an occupancy grid
+(BFS/A* or a distance transform) or with a sampling-based roadmap
+(PRM/RRT-style). Both are
+correct given sufficient resolution or samples, but each fixes a resolution or a
+sample count, must be rebuilt whenever an obstacle moves during clearing, and
+returns a binary answer only. WCCG is built directly from the obstacle geometry
+instead: every clearance-critical closest-point pair becomes an annotated bridge,
+so a query returns not only whether the start and goal are $W$-clear-connected,
+but also, when they are not, the \emph{bottleneck gap} that separates them and
+the frontier sequence that PIHS should clear next. That gap graph is what the
+search consumes, and a grid or roadmap query would have to be post-processed to
+recover it. The same-face rule is simply the concrete query we apply to this
+graph, and it follows from the standard inflation interpretation: inflating by
+$W/2$ turns every gap narrower than $W$ into an overlapping barrier, so two
+points are $W$-clear-connected exactly when they lie in the same face of the
+embedded graph. Non-convex obstacles are handled by the clearance-relevant
+convex decomposition of Sec.~III-A2 (Page~3), which is why the validation below
+separates convex, mixed and non-convex scenes.
 
-\textbf{(b) Empirical validation on 300 scenes.} Because degenerate geometry
+ Because degenerate geometry
 and decomposition choices still matter in practice, we also compare WCCG
 against two independent references on 300 random scenes stratified into convex,
 mixed, and non-convex obstacles: a continuous configuration-space (CC)
@@ -780,7 +822,7 @@ cost on a logarithmic scale.}
 \label{fig:resp-wccg}
 \end{figure}
 
-\noindent\textbf{Changes in the revised manuscript} (Page 3, Sec. III-A2; Page 6, Sec. IV-A3 and Table I; Page 3, Sec. III-A):
+\noindent\textbf{Changes in the revised manuscript.} The manuscript text was revised as described above and is quoted verbatim below (Page 3, Sec. III-A2; Page 6, Sec. IV-A3 and Table I; Page 3, Sec. III-A):
 \begin{itemize}
 \item \change{The criterion follows the standard
 configuration-space inflation interpretation: expanding obstacles by a disk of
@@ -820,7 +862,22 @@ distinguishes three levels explicitly: (i) the underlying continuous hybrid
 problem, (ii) the finite candidate space actually sampled by PIHS, and (iii)
 the implemented algorithm --- a feasibility-oriented heuristic best-first
 search that stops at the first validated $W$-clear solution. No optimality or
-completeness claim is made at any level. This is now stated in Sec.~II-D
+completeness claim is made at any level.
+
+The distinction matters in both directions. Completeness would require every
+$W$-clear-clearable scene to admit a schedule inside the sampled candidate set,
+which we cannot guarantee: pushing directions, contact assignments and lookahead
+are bounded, so a scene whose only solution needs an unsampled direction or a
+deeper recursion would be reported as unsolved. What we do claim, and verify in
+the experiments, is that any returned schedule is physically validated and
+satisfies the terminal clearance condition, and that in the evaluated scenes a
+schedule is returned whenever the baselines return one. Optimality would require
+solving the continuous hybrid program in Eq.~(5); the priority of Eq.~(14) is a
+heuristic whose remaining-cost term is not admissible, so the first feasible
+schedule is not claimed to minimize $\mathcal J_{\mathrm{clr}}$. The objective
+still provides a consistent ranking that steers the search towards cheap
+clearances, which the ablation study exercises: removing the ranking terms
+degrades success rather than merely slowing the search. This is now stated in Sec.~II-D
 (Page~3), in the node-selection discussion (Page~5, where the remaining-cost
 term is explicitly not required to be admissible) and in the termination
 discussion (Page~5).
@@ -869,7 +926,7 @@ The adjacent T-shaped block moved in hardware Scenario~2 is exactly this
 contact-induced motion, not a separately scripted task --- which is also why
 the revision keeps the coupled rollout as the source of physical validation.
 
-\noindent\textbf{Changes in the revised manuscript} (Page 2, Sec. II-C; Page 4, Sec. III-C3; Pages 5 and 7, Secs. III-E1 and IV-B1; Page 7, Sec. IV-B2; Pages 4 and 6, Secs. III-C2 and IV-A1; Page 6, Sec. IV-A1; Pages 6--7, Secs. IV-A1 and IV-A6):
+\noindent\textbf{Changes in the revised manuscript.} The manuscript text was revised as described above and is quoted verbatim below (Page 2, Sec. II-C; Page 4, Sec. III-C3; Pages 5 and 7, Secs. III-E1 and IV-B1; Page 7, Sec. IV-B2; Pages 4 and 6, Secs. III-C2 and IV-A1; Page 6, Sec. IV-A1; Pages 6--7, Secs. IV-A1 and IV-A6):
 \begin{itemize}
 \item \change{The force vector $\mathbf{u}_m$ serves as a
 feasibility variable to certify wrench generation under the modeled contact and
