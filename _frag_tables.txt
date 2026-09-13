@@ -1,0 +1,243 @@
+\begin{table}[H]
+\centering
+\scriptsize
+\caption{New and revised experiments at a glance. ``Ours'' is PushAround.}
+\label{tab:at-a-glance}
+\setlength{\tabcolsep}{2.2pt}
+\renewcommand{\arraystretch}{1.18}
+\begin{tabular}{@{}l p{4.35cm} c p{3.45cm} l@{}}
+\toprule
+Study & Setting (workspace, $M$, $N$; trials) & Ours & Strongest baseline & Location\\
+\midrule
+Main comparison & $8{\times}5$\,m, $M{=}10$, $N{=}2$; 40 trials & \textbf{97.5}\,\% & SL-Push (sim) 75.0\,\% & Table~II\\
+Ablations & same scene; 40 trials & 82.5--97.5\,\% & --- & Table~II\\
+Obstacle density & $8{\times}8$\,m, $M{=}15$--45, $N{=}2$; 10 seeds per density & \textbf{100}\,\% (all $M$) & collapses to 0\,\% at $M{=}45$ & Table~III, Fig.~9\\
+Physics mismatch & $8{\times}8$\,m, $M{=}30$, $N{=}2$; $\pm20\%/\pm40\%$; 10 (ours) / 5 (base) seeds & \textbf{97.5}\,\% at $\pm40\%$ & DFS-WCCG 57.5\,\%, SL-Push (sim) 32.5\,\% & Table~III\\
+Robot-team scaling & $8{\times}8$\,m, $M{=}30$, $N{=}2$--4; 10 seeds per cell & \textbf{100}\,\% (30/30 trials) & DFS-WCCG 90--100\,\%, SL-Push (sim) 80\,\% ($1.6$--$1.8\times$ slower execution) & Table~III\\
+WCCG validation & 300 random scenes, incl.\ non-convex & 300/300, 0 FP/FN & --- & Table~I\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\footnotesize
+\caption{Density scaling, success rate (\%) and capped mean planning time (s);
+7 densities $\times$ 10 seeds per policy. The full table including execution
+time, push count and failure composition is given in Table~\ref{tab:dens-full}.}
+\label{tab:dens-summary}
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{lccccccc}
+\toprule
+ & $M{=}15$ & 20 & 25 & 30 & 35 & 40 & 45\\
+\midrule
+PushAround (succ.) & 100 & 100 & 100 & 100 & 100 & 100 & \textbf{100}\\
+PushAround (PT) & 2.5 & 4.9 & 8.2 & 11.7 & 26.5 & 38.9 & 53.4\\
+PushAround w/o rec.\ (succ.) & 100 & 100 & 100 & 100 & 100 & 90 & 70\\
+PushAround w/o rec.\ (PT) & 2.1 & 4.3 & 7.7 & 11.4 & 24.7 & 112.0 & 268.9\\
+SL-Push (sim) (succ.) & 100 & 80 & 70 & 70 & 20 & 10 & 0\\
+SL-Push (sim) (PT) & 4.9 & 165.9 & 249.9 & 261.5 & 652.5 & 727.0 & 800.0\\
+DFS-WCCG (succ.) & 100 & 100 & 90 & 90 & 50 & 20 & 0\\
+DFS-WCCG (PT) & 17.3 & 45.9 & 135.5 & 197.7 & 483.8 & 681.7 & 800.0\\
+Rec-NAMO (succ.) & 100 & 60 & 0 & 0 & 0 & 0 & 0\\
+Rec-NAMO (PT) & 15.8 & 353.5 & 800.0 & 800.0 & 800.0 & 800.0 & 800.0\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\begin{threeparttable}
+\footnotesize
+\caption{Robot-team scaling at $M{=}30$ (nominal physics) after the shared
+mode-generation fix. Every cell uses 10 seeds and the same code;
+$PT$/$ET$ are means over successful trials. For reference, the pre-fix history
+is given in the notes.}
+\label{tab:robot}
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{llcccccc}
+\toprule
+Policy & $N$ & Trials & Succ. & $PT$ (s) & $ET$ (s) & pushes & sims\\
+\midrule
+\multirow{3}{*}{PushAround}
+ & 2 & 10 & \textbf{10/10} & $23.9\pm10.9$ & $105.0\pm35.9$ & 11.7 & 81\\
+ & 3 & 10 & \textbf{10/10} & $30.0\pm12.7$ & $97.3\pm42.1$  & 11.1 & 66\\
+ & 4 & 10 & \textbf{10/10} & $29.2\pm8.9$  & $110.1\pm33.1$ & 10.0 & 59\\
+\midrule
+SL-Push (sim) & 3 & 10 & 8/10 & $30.0\pm46.3$ & $193.3\pm111.3$ & 31.1 & 62\\
+SL-Push (sim) & 4 & 10 & 8/10 & $23.4\pm18.2$ & $171.7\pm61.2$  & 20.5 & 41\\
+DFS-WCCG & 3 & 10 & \textbf{10/10} & $142.6\pm183.1$ & $178.1\pm72.1$ & 13.9 & 762\\
+DFS-WCCG & 4 & 10 & 9/10 & $101.9\pm103.9$ & $175.9\pm113.6$ & 14.3 & 498\\
+\bottomrule
+\end{tabular}
+\begin{tablenotes}[flushleft]\footnotesize
+\item Failure composition: SL-Push (sim) $N{=}3$ one plan failure and one
+timeout, $N{=}4$ two timeouts; DFS-WCCG $N{=}4$ one timeout; PushAround none.
+\item Pre-fix history (superseded; baselines $n{=}5$): at $N{=}3$ PushAround
+10/10, SL-Push (sim) 4/5, DFS-WCCG 3/5; at $N{=}4$ PushAround 7/10, SL-Push
+(sim) 0/5 (all plan failures), DFS-WCCG 4/5.
+\end{tablenotes}
+\end{threeparttable}
+\end{table}
+
+\begin{table}[H]
+\centering
+\footnotesize
+\caption{WCCG connectivity validation on 300 random scenes (10 movable
+obstacles, $8{\times}8$\,m, clearance $W{=}1$\,m). FP/FN are WCCG errors with
+respect to the continuous reference. Times are means over 100 scenes per
+category.}
+\label{tab:wccg-response}
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{lcccccccc}
+\toprule
+Category & CC$=$FR & \multicolumn{3}{c}{WCCG vs.\ CC} & \multicolumn{3}{c}{Time (ms)} & FR/WCCG\\
+\cmidrule(lr){3-5}\cmidrule(lr){6-8}
+ & agree & agree & FP & FN & CC & FR & WCCG & \\
+\midrule
+Convex     & 100/100 & 100/100 & 0 & 0 & $1.23\pm0.13$ & $282.9\pm52.3$ & $\mathbf{0.86\pm0.15}$ & 330\\
+Mixed      & 98/100  & 100/100 & 0 & 0 & $1.33\pm0.13$ & $242.4\pm55.7$ & $\mathbf{1.05\pm0.17}$ & 231\\
+Non-convex & 98/100  & 100/100 & 0 & 0 & $1.51\pm0.18$ & $204.1\pm51.4$ & $\mathbf{1.30\pm0.19}$ & 156\\
+\midrule
+\textbf{Total} & \textbf{296/300} & \textbf{300/300} & \textbf{0} & \textbf{0}
+ & $\mathbf{1.36\pm0.19}$ & $\mathbf{243.1\pm62.0}$ & $\mathbf{1.07\pm0.25}$ & \textbf{227}\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\footnotesize
+\caption{Complete obstacle-density grid (10 seeds per cell). Top: success rate
+(\%). Bottom: mean planning time with unsuccessful trials capped at 800\,s.
+PushAround additionally reports execution time and push count.}
+\label{tab:dens-full}
+\scriptsize
+\setlength{\tabcolsep}{2.0pt}
+\begin{tabular}{lccccccc}
+\toprule
+Success (\%) & $M{=}15$ & 20 & 25 & 30 & 35 & 40 & 45\\
+\midrule
+PushAround          & 100 & 100 & 100 & 100 & 100 & 100 & 100\\
+PushAround w/o rec. & 100 & 100 & 100 & 100 & 100 & 90  & 70\\
+SL-Push (sim)       & 100 & 80  & 70  & 70  & 20  & 10  & 0\\
+DFS-WCCG            & 100 & 100 & 90  & 90  & 50  & 20  & 0\\
+Rec-NAMO            & 100 & 60  & 0   & 0   & 0   & 0   & 0\\
+\midrule
+Planning time (s) & $M{=}15$ & 20 & 25 & 30 & 35 & 40 & 45\\
+\midrule
+PushAround          & $2.5\pm0.9$ & $4.9\pm1.7$ & $8.2\pm2.2$ & $11.7\pm3.7$ & $26.5\pm9.3$ & $38.9\pm14.7$ & $53.4\pm24.5$\\
+PushAround w/o rec. & $2.1\pm0.8$ & $4.3\pm1.3$ & $7.7\pm2.1$ & $11.4\pm3.0$ & $24.7\pm8.2$ & $112.0\pm242.0$ & $268.9\pm366.6$\\
+SL-Push (sim)       & $4.9\pm4.8$ & $165.9\pm334.2$ & $249.9\pm379.7$ & $261.5\pm371.9$ & $652.5\pm311.5$ & $727.0\pm230.9$ & 800.0\\
+DFS-WCCG            & $17.3\pm9.1$ & $45.9\pm47.5$ & $135.5\pm241.1$ & $197.7\pm248.4$ & $483.8\pm339.6$ & $681.7\pm253.5$ & 800.0\\
+Rec-NAMO            & $15.8\pm12.4$ & $353.5\pm385.5$ & 800.0 & 800.0 & 800.0 & 800.0 & 800.0\\
+\midrule
+PushAround: $ET$ (s) & 37.1 & 56.9 & 77.3 & 100.9 & 165.4 & 213.2 & 272.7\\
+PushAround: pushes  & 3.5 & 5.8 & 7.9 & 10.5 & 16.6 & 20.7 & 26.1\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\footnotesize
+\caption{Complete planner--execution mismatch grid. PushAround uses 10 seeds
+per condition; the two baselines 5 seeds, evaluated on the nominal condition
+and the eight $\pm40\%$ extremes. $PT$/$ET$ are means over successful trials,
+$\bar R$ the mean number of replans.}
+\label{tab:mismatch-full}
+\scriptsize
+\setlength{\tabcolsep}{2.4pt}
+\begin{tabular}{llccccccccc}
+\toprule
+Family & Factor & \multicolumn{4}{c}{PushAround ($n{=}10$)} & \multicolumn{3}{c}{SL-Push (sim) ($n{=}5$)} & \multicolumn{2}{c}{DFS-WCCG ($n{=}5$)}\\
+\cmidrule(lr){3-6}\cmidrule(lr){7-9}\cmidrule(lr){10-11}
+ & & succ. & $PT$ & $ET$ & $\bar R$ & succ. & $PT$ & $ET$ & succ. & $PT$\\
+\midrule
+Nominal            & 1.0 & \textbf{10/10} & 16.8 & 104.7 & 2.3 & 3/5 & 33.6 & 310.9 & 3/5 & 156.2\\
+Mass               & 0.6 & \textbf{10/10} & 15.9 & 96.2  & 2.3 & 3/5 & 30.9 & 300.4 & 3/5 & 205.6\\
+Mass               & 0.8 & \textbf{10/10} & 15.3 & 95.0  & 3.5 & --- & --- & --- & --- & ---\\
+Mass               & 1.2 & \textbf{10/10} & 16.3 & 108.5 & 2.7 & --- & --- & --- & --- & ---\\
+Mass               & 1.4 & \textbf{10/10} & 19.8 & 124.1 & 4.4 & 1/5 & 40.2 & 319.3 & 1/5 & 136.5\\
+Lateral friction   & 0.6 & 9/10 & 16.5 & 130.2 & 3.4 & 3/5 & 34.4 & 315.6 & 3/5 & 222.1\\
+Lateral friction   & 0.8 & \textbf{10/10} & 14.0 & 100.0 & 2.8 & --- & --- & --- & --- & ---\\
+Lateral friction   & 1.2 & \textbf{10/10} & 15.8 & 110.9 & 2.7 & --- & --- & --- & --- & ---\\
+Lateral friction   & 1.4 & \textbf{10/10} & 19.8 & 116.5 & 4.0 & 0/5 & --- & --- & 2/5 & 323.2\\
+Spin friction      & 0.6 & \textbf{10/10} & 14.1 & 91.1  & 2.7 & 1/5 & 28.9 & 251.4 & 3/5 & 179.7\\
+Spin friction      & 0.8 & \textbf{10/10} & 15.4 & 100.9 & 2.0 & --- & --- & --- & --- & ---\\
+Spin friction      & 1.2 & 9/10 & 14.9 & 98.9  & 2.2 & --- & --- & --- & --- & ---\\
+Spin friction      & 1.4 & \textbf{10/10} & 16.5 & 109.2 & 3.2 & 2/5 & 27.3 & 222.6 & 5/5 & 237.0\\
+Force limit        & 0.6 & 9/10 & 29.7 & 159.6 & 8.1 & 0/5 & --- & --- & 2/5 & 360.3\\
+Force limit        & 0.8 & \textbf{10/10} & 16.9 & 121.3 & 3.0 & --- & --- & --- & --- & ---\\
+Force limit        & 1.2 & 9/10 & 14.7 & 91.4  & 1.5 & --- & --- & --- & --- & ---\\
+Force limit        & 1.4 & \textbf{10/10} & 15.2 & 93.3  & 3.2 & 3/5 & 27.6 & 301.9 & 4/5 & 168.1\\
+\midrule
+\multicolumn{2}{l}{Aggregate $\pm20\%$}  & \textbf{78/80} & 15.4 & 103.4 & 2.6 & --- & --- & --- & --- & ---\\
+\multicolumn{2}{l}{Aggregate $\pm40\%$}  & \textbf{78/80} & 18.4 & 115.0 & 3.9 & 13/40 & 31.5 & 285.2 & 23/40 & 229.1\\
+\multicolumn{2}{l}{Aggregate all}        & \textbf{166/170} & 16.9 & 108.9 & 3.2 & 16/45 & 31.8 & 288.9 & 26/45 & 221.0\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\footnotesize
+\caption{Complete robot-team-scaling grid ($M{=}30$, nominal physics), all
+cells on the post-fix code with 10 seeds. The pre-fix rows are kept only as
+history.}
+\label{tab:robot-full}
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{llcccccc}
+\toprule
+Policy & $N$ & Trials & Succ. & $PT$ (s) & $ET$ (s) & pushes & sims\\
+\midrule
+PushAround (current) & 2 & 10 & 10/10 & $23.9\pm10.9$ & $105.0\pm35.9$ & 11.7 & 81\\
+PushAround (current) & 3 & 10 & 10/10 & $30.0\pm12.7$ & $97.3\pm42.1$  & 11.1 & 66\\
+PushAround (current) & 4 & 10 & 10/10 & $29.2\pm8.9$  & $110.1\pm33.1$ & 10.0 & 59\\
+SL-Push (sim) & 3 & 10 & 8/10 & $30.0\pm46.3$ & $193.3\pm111.3$ & 31.1 & 62\\
+SL-Push (sim) & 4 & 10 & 8/10 & $23.4\pm18.2$ & $171.7\pm61.2$  & 20.5 & 41\\
+DFS-WCCG & 3 & 10 & 10/10 & $142.6\pm183.1$ & $178.1\pm72.1$ & 13.9 & 762\\
+DFS-WCCG & 4 & 10 & 9/10 & $101.9\pm103.9$ & $175.9\pm113.6$ & 14.3 & 498\\
+\midrule
+\multicolumn{8}{l}{\emph{Pre-fix history (superseded; baselines $n{=}5$)}}\\
+PushAround & 2 & 10 & 8/10  & 19.5 & 125.6 & --- & ---\\
+PushAround & 3 & 10 & 10/10 & 21.8 & 100.6 & --- & ---\\
+PushAround & 4 & 10 & 7/10  & 23.3 & 121.3 & --- & ---\\
+SL-Push (sim) & 3 & 5 & 4/5 & 61.7 & 196.7 & --- & ---\\
+SL-Push (sim) & 4 & 5 & 0/5 & --- & --- & --- & ---\\
+DFS-WCCG & 3 & 5 & 3/5 & 164.6 & 199.8 & --- & ---\\
+DFS-WCCG & 4 & 5 & 4/5 & 131.0 & 190.9 & --- & ---\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\begin{threeparttable}
+\footnotesize
+\caption{Protocol and budget summary for all reported studies. All suites share
+the simulator, the success criterion, and the collision/reachability checks.}
+\label{tab:protocol}
+\setlength{\tabcolsep}{3.4pt}
+\begin{tabular}{lllllll}
+\toprule
+Study & Workspace & $M$ & $N$ & Seeds & Timeout / cap & Workers\\
+\midrule
+Main comparison (Table~II) & $8{\times}5$\,m & 10 & 2 & 40 trials & 800\,s / 20k & 8\\
+Density (Table~III, Fig.~9) & $8{\times}8$\,m & 15--45 & 2 & 10 per density & 800\,s / 20k & 8\\
+Mismatch (Table~III) & $8{\times}8$\,m & 30 & 2 & 10 (ours) / 5 (base) & 800\,s / 20k & 8\\
+Robot scaling (Table~III) & $8{\times}8$\,m & 30 & 2--4 & 10 (ours) / 5 (base) & 800\,s / 20k & 8\\
+WCCG validation (Table~I) & $8{\times}8$\,m & 10 & --- & 300 scenes & n/a & 4 (C++)\\
+\bottomrule
+\end{tabular}
+\begin{tablenotes}[flushleft]\footnotesize
+\item Scene generation in the generalization studies uses movable-object masses
+sampled from $[20,30]$\,kg; the Scenario-1 comparison uses $[5,15]$\,kg.
+PushAround's density results are produced with a precomputed mode table
+(\texttt{use\_mode\_table}), whereas the mismatch and robot-scaling studies use
+greedy mode optimization; this explains the small planning-time differences
+between the corresponding nominal rows (e.g.\ $11.7$\,s versus $16.8$\,s at
+$M{=}30$, $N{=}2$) and does not affect success rates.
+\end{tablenotes}
+\end{threeparttable}
+\end{table}

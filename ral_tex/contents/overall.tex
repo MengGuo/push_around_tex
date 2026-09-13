@@ -7,10 +7,14 @@ $\pi = \{\tau_1,\cdots,\tau_K\}$, with
 $\tau_k \triangleq (\Omega_k,\mathbf{v}_k,\boldsymbol{\xi}_k)$.
 The schedule is executed in a receding-horizon manner: for each $\tau_k$ the
 robots reach the mode~$\boldsymbol{\xi}_k$ and follow the pushing
-direction~$\mathbf{v}_k$ from the current state, as in~\eqref{eq:sim}. On the
-hardware the optimized contact forces certify feasibility rather than being
-commanded; the controller converts the planned contact geometry and object
-motion into velocity commands with feedback tracking. During transitions,
+direction~$\mathbf{v}_k$ from the current state, as in~\eqref{eq:sim}.
+\change{On the hardware the optimized contact forces certify feasibility rather
+than being commanded: a mode is retained only if its object wrench lies within
+the robots' actuation limits, and the controller tracks the planned contact
+poses and pushing velocities with feedback. Planning therefore runs in
+simulation through $\mathsf{EvalSim}$, and every executed push returns an
+observed state that re-enters the planner, so that physical execution
+continuously feeds back into the search.} During transitions,
 robots are reassigned by preserving the circular order of contact points along
 the obstacle boundary~\cite{tang2026pushingbots}, reducing path crossings under
 sufficient clearance. After each push the state is updated from observation,
@@ -32,20 +36,12 @@ physics validation. The WCCG update and gap ranking incur
 $\mathcal{O}(M\log M+|\mathcal{V}|+|\mathcal{E}_c|+|\mathcal{E}_b|)$ and
 $\mathcal{O}(|\Gamma_{\mathcal{L}_\nu}|
 \log|\Gamma_{\mathcal{L}_\nu}|)$ costs, respectively, while the dominant
-simulation cost is
-\[
-\mathcal{O}\left(
-\sum_{g\in\mathsf{Rank}(\nu)}
-|\Xi_g|
-\left(
-C_{\mathrm{LP}}+
-\frac{\rho_\nu T_{\mathrm{sim}}}{n_{\texttt{w}}}
-\right)
-\right),
-\]
-Therefore, scalability is mainly determined by validated pushing candidates,
-while quick-pass filtering and parallel simulation reduce the practical
-expansion cost. Robot-team size mainly affects mode generation, where greedy
+\change{The dominant simulation cost
+$\mathcal{O}\big(\sum_{g\in\mathsf{Rank}(\nu)}|\Xi_g|\,\big(C_{\mathrm{LP}}+\rho_\nu T_{\mathrm{sim}}/n_{\texttt{w}}\big)\big)$
+grows with the number of validated candidates and is reduced by the
+$n_{\texttt{w}}$ parallel workers, so that scalability is mainly determined by
+validated pushing candidates, while quick-pass filtering and parallel simulation
+reduce the practical expansion cost.} Robot-team size mainly affects mode generation, where greedy
 contact refinement avoids exhaustive $|\mathcal{A}|^N$ contact assignment and
 evaluates bounded single-contact replacements.
 %% %----------------------------------------------

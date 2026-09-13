@@ -14,18 +14,15 @@ sampled candidate set and therefore does not guarantee global optimality or
 completeness of the underlying continuous hybrid planning problem.
 }
 \subsubsection{Tree and Initialization}
-The search tree~$\mathcal{T}$ is composed of nodes
-$\nu\triangleq(\mathbf{s},\pi)$, where~$\mathbf{s}$ is the current system
-state of all robots and movables in~\eqref{eq:transition},
-and~$\pi$ the partial pushing strategy in~\eqref{eq:problem}.
-Two global functions are
-maintained:~$\mathsf{Rank}(\nu)$ stores ranked candidate gaps~$\Gamma_{\mathcal{L}_\nu}$
-given the frontier loop~$\mathcal{L}_\nu$ associated with node~$\nu$,
-together with their exploration costs by~\eqref{eq:pred_cost};
-and~$\chi(\nu)$ returns the cumulative execution cost
-from the root to~$\nu$.
-The root is initialized as~$\nu_0\triangleq(\mathbf{s}_0,\emptyset)$,
-where~$\mathbf{s}_0$ is the initial system state.
+The search tree~$\mathcal{T}$ holds nodes
+$\nu\triangleq(\mathbf{s},\pi)$, where~$\mathbf{s}$ is the system state of all
+robots and movables in~\eqref{eq:transition} and~$\pi$ the partial pushing
+strategy in~\eqref{eq:problem}. Two global functions are maintained:
+$\mathsf{Rank}(\nu)$ stores the ranked candidate
+gaps~$\Gamma_{\mathcal{L}_\nu}$ of the frontier loop~$\mathcal{L}_\nu$ together
+with their exploration costs by~\eqref{eq:pred_cost}, and~$\chi(\nu)$ returns
+the cumulative execution cost from the root to~$\nu$. The root is
+$\nu_0\triangleq(\mathbf{s}_0,\emptyset)$ with initial state~$\mathbf{s}_0$.
 % At initialization,~$\chi(\nu_0)=0$, and
 % $\mathsf{Rank}(\nu_0)$ is constructed by computing~$\Gamma_{\mathcal{L}_{\nu_0}}$
 % for state~$\mathbf{s}_0$.
@@ -45,13 +42,13 @@ is the minimum predicted remaining cost among the unexplored gaps of~$\nu$.
 
 \begin{figure*}[t!]
   \centering
-  \includegraphics[width=0.85\linewidth]{figures/sim_fixed.png}
+  \includegraphics[width=0.8\linewidth]{figures/sim_fixed.png}
   \vspace{-2mm}
-  \caption{Execution and planning alignment in Scenario 1 (\textbf{Left})
+  \caption{\change{Execution and planning alignment in Scenario 1 (\textbf{Left})
     and  Scenario 2 (\textbf{Right}).
 \textbf{Top:} simulated snapshots during path clearing.
 \textbf{Bottom:} corresponding WCCG overlays with the start face in blue.
-The executed pushes progressively expand the reachable $W$--clearance region until the goal is connected.}
+The executed pushes progressively expand the reachable $W$--clearance region until the goal is connected.}}
 \vspace{-6mm}
 \label{fig:main_result}
 \end{figure*}
@@ -126,7 +123,7 @@ Init~$\mathcal{Q}$ by~\eqref{eq:priority}\;
 Termination occurs when a node~$\nu$ reaches a state~$\mathbf{s}$ for which a
 $W$--clear path~$\mathcal{P}^W_\texttt{V}$ exists from
 $\mathbf{x}_\texttt{V}^{\texttt{S}}$ to~$\mathbf{x}_\texttt{V}^{\texttt{G}}$
-by~\eqref{eq:wccg_criterion}. \change{Thus, the schedule~$\pi$ stored in~$\nu$ is a feasible solution satisfying the terminal clearance condition and the validated pushing transitions. It encodes both the sequence of gaps to clear and the pushing strategies that realize them, without implying that~$\mathcal{J}_{\mathrm{clr}}(\pi)$ is globally minimal.}
+by~\eqref{eq:wccg_criterion}. \change{Thus, the schedule~$\pi$ stored in~$\nu$ is a feasible solution satisfying the terminal clearance condition and the validated pushing transitions. It encodes both the sequence of gaps to clear and the pushing strategies that realize them, without implying that~$\mathcal{J}_{\mathrm{clr}}(\pi)$ is globally minimal. The objective covers the clearing phase only, since the external vehicle traverses the corridor after clearing completes; traversal time is therefore not part of~$T$.}
 
 \begin{remark}\label{remark:simloop}
 Efficiency comes from three lightweight heuristics:
@@ -134,4 +131,6 @@ gap-lookahead reduces unproductive branches,
 \textsc{mode-cache} warm-starts mode optimization,
 and the quick-pass rollout bypass skips simple motions whose mode was previously validated,
 avoiding redundant simulations.
-\hfill$\blacksquare$ \end{remark}
+
+\hfill$\blacksquare$
+\end{remark}

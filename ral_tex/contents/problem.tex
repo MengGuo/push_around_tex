@@ -1,24 +1,20 @@
 \section{Problem Description}\label{sec:problem}
 %==============================
 \subsection{Workspace and Robots}\label{subsec:ws}
-The workspace is a bounded planar region
-$\mathcal{W}\subset\mathbb{R}^2$ that contains two types of
-obstacles. A set~$\mathcal{O}\subset \mathcal{W}$ represents immovable structures,
-while a set of~$M\geq 0$ movable rigid polygons is defined as
+The workspace is a bounded planar region $\mathcal{W}\subset\mathbb{R}^2$
+containing immovable structures~$\mathcal{O}\subset\mathcal{W}$ and $M\geq0$
+movable rigid polygons
 $\boldsymbol{\Omega}\triangleq\{\Omega_1,\cdots,\Omega_M\}\subset\mathcal{W}$.
-Each movable obstacle~$\Omega_m$ is characterized by its mass
-$\mathsf{M}_m$, inertia~$\mathsf{I}_m$, frictional parameters, and state
-$\mathbf{s}_m(t)\triangleq(\mathbf{x}_m(t),\psi_m(t))$,
-where~$\mathbf{x}_m(t)\in\mathbb{R}^2$ is the planar position of its centroid
-and~$\psi_m(t)\in\mathbb{R}$ its orientation. The region occupied
-by~$\Omega_m$ at time~$t$ is denoted~$\Omega_m(t)$.
-Moreover, a small team of~$N$ robots, indexed as
-$\mathcal{R}\triangleq\{R_1,\cdots,R_N\}$, operates as a cooperative unit.
-Each robot~$R_i$ is modeled as a rigid body with state
-$\mathbf{s}_{R_i}(t)\triangleq(\mathbf{x}_{R_i}(t),\psi_{R_i}(t))$,
-where~$\mathbf{x}_{R_i}(t)\in\mathbb{R}^2$ is its position and
-$\psi_{R_i}(t)\in\mathbb{R}$ its orientation. The footprint of~$R_i$ is
-denoted~$R_i(t)$. The instantaneous free space is given by:
+Each movable obstacle~$\Omega_m$ has mass~$\mathsf{M}_m$,
+inertia~$\mathsf{I}_m$, frictional parameters and state
+$\mathbf{s}_m(t)\triangleq(\mathbf{x}_m(t),\psi_m(t))$, with
+$\mathbf{x}_m(t)\in\mathbb{R}^2$ the centroid position and
+$\psi_m(t)\in\mathbb{R}$ the orientation; $\Omega_m(t)$ denotes the region it
+occupies at time~$t$. A team of~$N$ robots,
+$\mathcal{R}\triangleq\{R_1,\cdots,R_N\}$, operates as a cooperative unit. Each
+robot~$R_i$ is a rigid body with state
+$\mathbf{s}_{R_i}(t)\triangleq(\mathbf{x}_{R_i}(t),\psi_{R_i}(t))$ and
+footprint~$R_i(t)$. The instantaneous free space is given by:
 \begin{equation}\label{eq:freespace}
 \widehat{\mathcal{W}}(t)\triangleq\mathcal{W}\setminus\Big(
 \mathcal{O}\cup\{\Omega_m(t)\}_{m=1}^{M}\cup\{R_i(t)\}_{i=1}^{N}
@@ -151,6 +147,7 @@ continuous hybrid objective.
 % ==============================
 \begin{remark}\label{remark:uniqueness}
   \change{The objective and constraints above couple obstacle selection, pushing-mode generation, and switching in one hybrid planning problem, yielding a combinatorial-continuous search space far richer than classical NAMO formulations with simple objects or hand-crafted contact modes~\cite{goyal1989limit,chen2015occlusion,wang2006multi}.}
+
   \hfill~$\blacksquare$
 \end{remark}
 % ==============================

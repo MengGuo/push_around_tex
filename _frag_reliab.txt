@@ -1,0 +1,84 @@
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth]{resp_mismatch.pdf}
+\caption{Planner--execution mismatch. (a) Success rate for PushAround
+($n{=}10$ per condition) and for the two baselines ($n{=}5$) under execution-only
+perturbations; whiskers are Wilson 95\% intervals. (b) Mean number of replans
+per trial for PushAround, showing that online replanning, rather than a
+retuned model, absorbs the mismatch.}
+\label{fig:resp-mismatch}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth]{resp_density.pdf}
+\caption{Obstacle-density scaling with 10 independent seeds per density.
+(a) Success rate; PushAround is the only method that remains at 100\% over the
+whole range. (b) Planning time with failed trials capped at the 800\,s budget;
+whiskers denote one standard deviation over seeds. Rec-NAMO reaches the cap
+from $M{=}25$ onward and DFS-WCCG / SL-Push (sim) from $M{=}45$.}
+\label{fig:resp-density}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth]{resp_robot.pdf}
+\caption{Robot-team scaling after the shared mode-generation fix, with the
+pre-fix runs shown as dashed history. (a) Success rate: the refinement lifts
+$N{=}4$ from 70\% to 100\% for PushAround, from 0\% to 80\% for SL-Push (sim)
+and from 80\% to 90\% for DFS-WCCG. (b) Planning time and (c) execution time of
+successful runs; the annotations in (c) are the push counts of SL-Push (sim),
+which needs twice as many pushes as PushAround.}
+\label{fig:resp-robot}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth]{resp_wccg.pdf}
+\caption{WCCG validation. (a) Agreement per category: CC and FR differ on 4 of
+300 scenes (all raster-unstable), whereas WCCG matches the continuous reference
+on all 300 with zero false positives/negatives. (b) Mean connectivity-query
+cost on a logarithmic scale.}
+\label{fig:resp-wccg}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth]{resp_reliability.pdf}
+\caption{Wilson 95\% confidence intervals of the headline success rates. The
+gaps between PushAround and the baselines are much larger than the interval
+widths, so the conclusions are stable despite the small per-cell sample sizes
+(10 seeds in the robot-team study; 10 for PushAround and 5 for the mismatch
+baseline supplements).}
+\label{fig:resp-reliability}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\subfigure[Original (first submission, Fig.~10): five seeds per density, three panels.]{\includegraphics[width=0.47\linewidth]{old_density.pdf}}
+\hfill
+\subfigure[Revised (Fig.~9, Page~7): the same three panels, ten seeds per density, capped planning time, dispersion on the two timing panels.]{\includegraphics[width=0.47\linewidth]{new_density.pdf}}
+\caption{Obstacle-density scaling, original versus revised.}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\subfigure[Original (first submission, Fig.~7).]{\includegraphics[width=0.47\linewidth]{old_sim.pdf}}
+\hfill
+\subfigure[Revised (Fig.~6, Page~6).]{\includegraphics[width=0.47\linewidth]{new_sim.png}}
+\caption{Execution and planning alignment in the two simulation scenarios, original versus revised.}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.92\linewidth]{old_wccg.pdf}
+\caption{The WCCG and gap-ranking illustration of the first submission, removed in this revision.}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\subfigure[Original (first submission, Fig.~9): the dense-clutter run only.]{\includegraphics[width=0.47\linewidth]{old_dense.png}}
+\hfill
+\subfigure[Revised (Fig.~8, Page~7): the same density panels on the left and the four-robot study on the right.]{\includegraphics[width=0.47\linewidth]{new_obs_rob_scale.png}}
+\caption{Simulation scenes of the scalability evaluation, original versus revised.}
+\end{figure}
