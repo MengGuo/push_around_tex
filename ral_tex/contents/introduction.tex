@@ -24,7 +24,7 @@ making prediction and planning substantially more complex.
 %==============================================
 \begin{figure}[t!]
   \centering
-  \includegraphics[width=0.85\linewidth]{figures/cover.png}% or {presearch.pdf}
+  \includegraphics[width=0.8\linewidth]{figures/cover.png}% or {presearch.pdf}
   \vspace{-0.1in}
   \caption{
     Collaborative path clearing in both simulation (\textbf{Top})
@@ -43,14 +43,15 @@ making prediction and planning substantially more complex.
 
 NAMO extends motion planning to cluttered environments by planning obstacle
 displacements through pushing, pulling, or
-rotating~\cite{stilman2005navigation,stilman2007manipulation}. Later work considers heuristic search, learning-based local planning, physics-based rollouts, and collaborative pushing~\cite{stilman2007manipulation,yao2024local,ren2025search,weeda2025pushing,tang2026pushingbots}. However, many NAMO formulations still simplify robot geometry, actuation limits, object mass, and contact dynamics, leading to physically unrealizable plans.
+rotating~\cite{stilman2005navigation,stilman2007manipulation}. Later work considers heuristic search, learning-based local planning, physics-based rollouts, and collaborative pushing~\cite{stilman2007manipulation,yao2024local,ren2025search,weeda2025pushing,tang2026pushingbots}. \looseness=-1
+However, many NAMO formulations simplify robot geometry, actuation limits, object mass, and contact dynamics, which can yield unrealizable plans.
 
 
 
 %==============================================
 \begin{figure*}[t!]
   \centering
-  \includegraphics[width=0.85\linewidth]{figures/overall.pdf}
+  \includegraphics[width=0.8\linewidth]{figures/overall.pdf}
   \vspace{-0.1in}
 \caption{Overview of the proposed framework.
 \textbf{Top:} Scene inputs, WCCG construction, gap ranking, and sampling of pushing
@@ -68,7 +69,7 @@ foundational work on the mechanics of pushing and limit surfaces~\cite{goyal1989
 
 Physics-informed planning incorporates dynamics models, contact reasoning, or
 simulation feedback into motion generation: learned dynamics for humanoid
-contact planning~\cite{lin2019efficient}, multi-contact force control~\cite{rouxel2024multi}, demonstration-guided optimal control over contact modes~\cite{xue2023demonstration}, physics simulation interleaved with multi-agent pathfinding~\cite{saxena2023planning,ren2025object}, and learned physical priors~\cite{ni2023progressive,liu2025physics}. However, they do not directly address collaborative path clearing with many interacting movable obstacles.
+contact planning~\cite{lin2019efficient}, multi-contact force control~\cite{rouxel2024multi}, demonstration-guided optimal control over contact modes~\cite{xue2023demonstration}, physics simulation interleaved with multi-agent pathfinding~\cite{saxena2023planning,ren2025object}, and learned physical priors~\cite{ni2023progressive,liu2025physics}. \change{These methods nonetheless assume a prescribed manipulation target or few objects, and physical realizability is usually argued rather than validated before execution. Corridor clearing differs on both counts: many movable obstacles are rearranged jointly, and the cleared configuration must remain traversable for a larger vehicle.}
 
 
 %==============================

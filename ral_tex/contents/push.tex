@@ -7,6 +7,11 @@ where~$\mathbf{v} \triangleq (v_x,v_y,\omega)\in\mathbb{R}^3$ is a
 short-horizon pushing direction for the movable obstacle~$\Omega_m$ induced by~$g$, and
 $\boldsymbol{\xi}\triangleq(\mathbf{c}_m,\mathbf{u})$ is the associated pushing
 mode in~\eqref{eq:transition}.
+\change{The wrench feasibility encoded in~$\boldsymbol{\xi}$ acts as a screening
+condition rather than a force setpoint: it certifies that the chosen contact
+configuration can realize the required object motion within the robots'
+actuation limits, after which the candidate is passed to the physics rollout for
+validation.}
 
 
 
@@ -16,19 +21,12 @@ For \emph{direct push}, let~$\Omega_m$ denote one of the two movable obstacles a
 each such obstacle, a small set of candidate body velocities
 $\{\mathbf{v}_m^k\}_{k=1}^{K_m}$ is sampled with a bias toward enlarging the
 gap~$g$, while a few angular components are included to account for local
-geometry.
-However, if the swept region of a direct push intersects
-movable blockers, \emph{recursive push} tasks are further required.
-Namely, for
-each out-layer blocker~$\Omega_m$, the nominal direction moves it away
-from both the swept region
-and the reference gap sequence~$\Pi^\star(g)$,
-with the candidate velocities~$\{\mathbf{v}_m^k\}_{k=1}^{K_m}$.
-The recursive pushes aim to
-move the blocker out of the swept region rather than directly open the gap.
-Recursion therefore creates a bounded dependency chain which prioritizes the
-final blocker~$\Omega_m$, as shown in
-Fig.~\ref{fig:direct_recursive_push}.
+geometry. If the swept region of a direct push intersects movable blockers,
+\emph{recursive push} tasks are required instead: for each out-layer
+blocker~$\Omega_m$, the nominal direction moves it away from both the swept
+region and the reference gap sequence~$\Pi^\star(g)$. Recursion therefore
+creates a bounded dependency chain which prioritizes the final
+blocker~$\Omega_m$, as shown in Fig.~\ref{fig:direct_recursive_push}.
 
 
 
@@ -148,10 +146,10 @@ hardware tracks the contact geometry from pose/velocity commands.
   \centering
   \includegraphics[width=0.8\linewidth]{figures/mode_generation.pdf}
   \vspace{-4mm}
-  \caption{
+  \caption{\change{
 Reachable contacts are filtered by the
   desired object twist, assigned to robots, refined by local replacement,
-  and finally validated by simulation.}
+  and finally validated by simulation.}}
     \label{fig:mode_generation}
    \vspace{-4mm}
 \end{figure}
@@ -186,12 +184,10 @@ validated before and the swept region of~$\Omega_m$ is collision-free.
 %------------------------------
 \begin{figure}[t!]
   \centering
-  \includegraphics[width=0.8\linewidth]{figures/PIHS.pdf}
+  \includegraphics[width=0.8\linewidth]{figures/PIHS_bottom.pdf}
   \vspace{-2mm}
-  \caption{
-  \textbf{Top:} Core components of the proposed physics-informed hybrid search;
-  \textbf{Bottom:} Sampled push tasks are evaluated via parallel simulation, producing updated states
-  for search expansion.}
+  \caption{\change{Sampled push tasks are evaluated via parallel simulation,
+  producing updated states for search expansion.}}
     \label{fig:PIHS}
    \vspace{-4mm}
 \end{figure}
