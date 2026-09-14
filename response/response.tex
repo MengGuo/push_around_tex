@@ -104,7 +104,7 @@ WCCG validation & 300 random scenes, incl.\ non-convex & 300/300, 0 FP/FN & --- 
 perturbed, one parameter family at a time, by factors covering $\pm20\%$ and
 $\pm40\%$. PushAround succeeds in \textbf{156/160} perturbed trials
 (\textbf{97.5\%}), or \textbf{166/170} (\textbf{97.6\%}) including the
-nominal condition, whereas under the same perturbations SL-Push (sim) reaches
+nominal condition, whereas under the same $\pm40\%$ extreme perturbations SL-Push (sim) reaches
 \textbf{13/40} and DFS-WCCG \textbf{23/40} (Sec.~IV-A6, Table~III,
 Fig.~\ref{fig:resp-mismatch}). This study is new: the first submission validated
 feasibility only under nominal physics, so the sensitivity of the method to an
@@ -235,10 +235,10 @@ dynamics etc. is not systematically evaluated.
 \end{shaded*}
 
 \noindent \textbf{A:}
-We agree that this was the most substantive gap, because the feasibility
-validation is simulation based. The original hardware experiments demonstrated
-closed-loop recovery but did not \emph{isolate} sensitivity to individual model
-parameters. The revision therefore adds a dedicated planner--execution
+We agree that the original evaluation did not systematically isolate sensitivity
+to individual model parameters. The hardware experiments demonstrated closed-loop
+recovery but did not separate the effect of individual parameters. The revision
+therefore adds a dedicated planner--execution
 mismatch study designed to separate model mismatch from model re-identification:
 
 \begin{itemize}
@@ -362,7 +362,7 @@ how the results are reported.
 sequences} per density instead of five (7 densities $\times$ 10 seeds $=$ 70
 PushAround trials). For each seed the denser instances are generated
 incrementally, while different seeds are generated independently, so the
-success-rate estimates at neighbouring densities are paired but the seeds
+success-rate estimates at neighboring densities are paired but the seeds
 themselves are not.
 \item Fig.~10 now shows the success rate and
 the mean planning time with one-standard-deviation whiskers; Table~III lists
@@ -781,7 +781,7 @@ planning framework, the recursive-pushing mechanism and the hardware validation
 unchanged, and concentrates on the clarifications and the additional evaluations
 requested in the review. Every number quoted above is reproduced from the
 per-trial records of the revised runs: the evaluation package accompanying this
-response contains the raw logs, the resolved configuration files and the complete
+response contains those records, the resolved configuration files and the complete
 per-condition tables, and Sec.~IV-A1 of the manuscript states the shared protocol
 (timeout, control-step budget and reachability checks) that applies to PushAround
 and to both baselines alike. The recursive-pushing mechanism that the reviewer
@@ -985,7 +985,7 @@ wrench compatible with the desired object motion within the modeled force,
 friction, and unilateral-contact constraints. The optimized force vector is
 therefore a feasibility and ranking variable, not a hardware setpoint. Over the
 next control interval, $\mathsf{EvalSim}$ predicts a short forward reference
-(a few centimetres and a few degrees); the velocity-level controller converts
+(a few centimeters and a few degrees); the velocity-level controller converts
 this reference and the motion-capture pose error into planar velocity commands
 for the Mecanum UGVs. Feedback and replanning absorb the difference between the
 reference and the realized motion.
@@ -1049,7 +1049,7 @@ before averaging planning times, and the failure composition is reported per
 condition.
 \item The density sweep, the robot-team study (all
 policies) and the mismatch study for PushAround use 10 seeds per cell; only the
-\emph{mismatch} baseline supplements use 5 seeds and are labelled as such.
+\emph{mismatch} baseline supplements use 5 seeds and are labeled as such.
 Fig.~\ref{fig:resp-reliability} reports Wilson 95\% intervals for every headline
 number, and Table~III in the manuscript reports mean$\pm$s.d.
 \item The original manuscript stated a 400\,s cap. The stored logs and the
