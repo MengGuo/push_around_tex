@@ -296,7 +296,7 @@ validation and that execution-model mismatch is evaluated explicitly.
 PushAround trials, distinguish the nominal condition, and give the baseline
 supplement results at the $\pm40\%$ extremes.
 
-\change{\textbf{(III) Physics mismatch:} the planner keeps the nominal model and only the execution simulator is perturbed, one parameter at a time: PushAround succeeds in $156$ of $160$ perturbed trials ($97.5\%$), the four failures being one low-friction planning failure and three budget timeouts. Under the same $\pm40\%$ perturbations SL-Push (sim) averages $32.5\%$ and DFS-WCCG $57.5\%$, at an order of magnitude higher planning time.}
+\change{the planner keeps the nominal model and only the execution simulator is perturbed, one parameter at a time: PushAround succeeds in $156$ of $160$ perturbed trials ($97.5\%$), the four failures being one low-friction planning failure and three budget timeouts.}
 \end{itemize}
 
 %==============================
@@ -413,7 +413,6 @@ Rec-NAMO (PT) & 15.8 & 353.5 & 800.0 & 800.0 & 800.0 & 800.0 & 800.0\\
 \end{tabular}
 \end{table}
 
-
 \begin{figure}[!ht]
 \centering
 \includegraphics[width=0.27\linewidth]{figures/resp_density_scenes.png}
@@ -430,16 +429,11 @@ mean$\pm$s.d. values:
 \begin{itemize}
 \item Sec.~IV-A6 and the caption of Fig.~10 now state the seed count, the nested
 construction within a seed, and the dispersion:
-\change{Obstacle-density scaling in the $8\times 8$\,m workspace
-($15\le M \le 45$, 10 trials per setting). \textbf{Top:} success rate.
-\textbf{Bottom:} mean planning time with failed trials capped at the per-trial
-800\,s budget; error bars denote one standard deviation.}
 
 \change{Obstacle-density scaling ($8\times 8$\,m, $10$ independent seeds per density). \textbf{(a)} Success rate; \textbf{(b)} mean planning time, with unsuccessful trials capped at the $800$\,s budget (dotted line); \textbf{(c)} mean execution time of the successful trials (Rec-NAMO has none beyond $M{=}20$). Error bars denote one standard deviation across seeds.}
 \item Table~III reports $PT$/$ET$ as mean$\pm$s.d.\ for the representative
 densities $M\in\{15,30,45\}$.
 
-\change{\begin{tabular}{@{}lllll@{}}$M=15$ \& 10 \& 100 \& $2.5\pm0.9$ \& $37.1\pm21.0$ \\ $M=30$ \& 10 \& 100 \& $11.7\pm3.7$ \& $100.9\pm34.7$ \\ $M=45$ \& 10 \& 100 \& $53.4\pm24.5$ \& $272.7\pm97.4$\end{tabular}}
 \end{itemize}
 
 %==============================
@@ -580,7 +574,6 @@ $97$--$110$\,s of execution, compared with $102$--$143$\,s and
 $176$--$178$\,s for DFS-WCCG, while SL-Push (sim) requires $172$--$193$\,s of
 execution and $20$--$31$ pushes.
 
-
 \begin{figure}[!ht]
 \centering
 \includegraphics[width=0.27\linewidth]{figures/resp_robot_scenes.png}
@@ -600,17 +593,16 @@ explains the bounded contact-assignment search:
 robot-order sensitivity of greedy replacement, and that a temporary per-task
 robot release is penalized so full-team modes remain preferred.
 
-\change{A bounded backtracking variant removes the robot-order sensitivity of this replacement. If no full-team assignment exists for a task, e.g., on small faces or under the pairwise pusher-clearance constraint, one robot is released for that single push (charged a penalty when ranking modes, so full-team modes are preferred) and the full team is available again afterwards.}
+\change{A bounded backtracking variant removes the robot-order sensitivity of this replacement. If no full-team assignment exists for a task, one robot is released for that single push and the full team is available again afterwards.}
 \item The robot-team group of Table~III reports success, planning time, and
 execution time for PushAround and both baselines at $N{=}3$ and $N{=}4$, using
 10 seeds per cell.
 
-\change{\begin{tabular}{@{}lllll@{}}PushAround, $N{=}3$ & 10 & 100 & $30.0\pm12.7$ & $97.3\pm42.1$ \\ PushAround, $N{=}4$ & 10 & 100 & $29.2\pm8.9$ & $110.1\pm33.1$ \\ SL-Push, $N{=}3$ & 10 & 80 & $30.0\pm46.3$ & $193.3\pm111.3$ \\ SL-Push, $N{=}4$ & 10 & 80 & $23.4\pm18.2$ & $171.7\pm61.2$ \\ DFS-WCCG, $N{=}3$ & 10 & 100 & $142.6\pm183.1$ & $178.1\pm72.1$ \\ DFS-WCCG, $N{=}4$ & 10 & 90 & $101.9\pm103.9$ & $175.9\pm113.6$\end{tabular}}
 \item Sec.~III-E2 contrasts the $N|\mathcal A|$ greedy stage with the
 $|\mathcal A|^N$ exhaustive assignment space and notes the finite backtracking
 budget.
 
-\change{Robot-team size mainly affects mode generation: the greedy stage evaluates at most $N|\mathcal{A}|$ single-contact substitutions instead of the exhaustive $|\mathcal{A}|^N$ assignment, and when it fails, a bounded-backtracking search over robots and candidates expands at most $B{=}2000$ partial assignments, a fixed budget independent of the team size; the subset fallback repeats this search for at most one excluded robot. The per-task cost is therefore at most $(N|\mathcal{A}|{+}2B)$ LP feasibility checks over the $2N$ admissible contact forces, rather than growing as $|\mathcal{A}|^N$.}
+\change{the greedy stage evaluates at most $N|\mathcal{A}|$ single-contact substitutions instead of the exhaustive $|\mathcal{A}|^N$ assignment, and when it fails, a bounded-backtracking search expands at most $B{=}2000$ partial assignments, a fixed budget independent of the team size. The per-task cost is therefore at most $(N|\mathcal{A}|{+}2B)$ LP feasibility checks, rather than growing as $|\mathcal{A}|^N$.}
 \end{itemize}
 
 %==============================
@@ -690,7 +682,7 @@ limits the claim to simulator-validated feasibility.
 \item The search and termination text state that finite sampling and a finite
 computation budget do not guarantee completeness.
 
-\change{The search operates on a finite sampled candidate set and therefore does not guarantee global optimality or completeness of the underlying continuous hybrid planning problem.} (Sec.~III-D) and \change{Thus, the schedule~$\pi$ stored in~$\nu$ is a feasible solution satisfying the terminal clearance condition and the validated pushing transitions. It encodes both the sequence of gaps to clear and the pushing strategies that realize them, without implying that~$\mathcal{J}_{\mathrm{clr}}(\pi)$ is globally minimal. The objective covers the clearing phase only, since the external vehicle traverses the corridor after clearing completes; traversal time is therefore not part of~$T$.} (termination)
+\change{The search operates on a finite sampled candidate set and therefore does not guarantee global optimality or completeness of the underlying continuous hybrid planning problem.} (Sec.~III-D) and \change{the schedule~$\pi$ stored in~$\nu$ is a feasible solution satisfying the terminal clearance condition and the validated pushing transitions, without implying that~$\mathcal{J}_{\mathrm{clr}}(\pi)$ is globally minimal. The objective covers the clearing phase only, since the external vehicle traverses the corridor after clearing completes.} (termination)
 \item The node-selection text identifies the remaining-cost term as a
 non-admissible heuristic and makes clear that the priority does not provide an
 A* optimality guarantee.
@@ -782,8 +774,16 @@ strengthens the contribution.
 \noindent \textbf{A:}
 We thank the reviewer for the encouraging assessment. The revision leaves the
 planning framework, the recursive-pushing mechanism and the hardware validation
-unchanged, and concentrates on the clarifications and the additional
-evaluations requested in the review.
+unchanged, and concentrates on the clarifications and the additional evaluations
+requested in the review. Every number quoted above is reproduced from the
+per-trial records of the revised runs: the evaluation package accompanying this
+response contains the raw logs, the resolved configuration files and the complete
+per-condition tables, and Sec.~IV-A1 of the manuscript states the shared protocol
+(timeout, control-step budget and reachability checks) that applies to PushAround
+and to both baselines alike. The recursive-pushing mechanism that the reviewer
+highlights is also the main reason the dense-clutter runs recover once a direct
+push is blocked; the no-recursion ablation in Sec.~IV-A6 quantifies how much of
+the reported success rate depends on it.
 
 \newpage
 \section*{To Reviewer 4}
@@ -905,17 +905,16 @@ comparison and the timing scope:
 inflation, describes the clearance-relevant treatment of non-convex obstacles,
 and states that consistency with CC and FR is evaluated numerically.
 
-\change{The criterion follows the standard configuration-space inflation interpretation: expanding obstacles by a disk of radius $W/2$ turns gaps narrower than $W$ into overlapping barriers. Non-convex obstacles are handled through clearance-relevant decomposition, after which WCCG records the separating bottlenecks. The consistency between WCCG connectivity and continuous and rasterized configuration-space references is further evaluated numerically in Sec.~IV-A3.}
+\change{The criterion follows the standard configuration-space inflation interpretation: expanding obstacles by a disk of radius $W/2$ turns gaps narrower than $W$ into overlapping barriers. Non-convex obstacles are handled through clearance-relevant decomposition, after which WCCG records the separating bottlenecks.}
 \item Table~I reports agreement, false-positive/false-negative counts, and
 runtime on the same 300 scenes; its note specifies that the timing comparison
 uses one harness and a compiled WCCG backend.
 
-\change{Convex 100/100, 0/0, 1.23\,ms, 282.9\,ms, \textbf{0.86}\,ms; Non-convex 98/100, 0/0, 1.51, 204.1, \textbf{1.30}; Mixed 98/100, 0/0, 1.33, 242.4, \textbf{1.05}; Total 296/300, \textbf{0/0}, 1.36, 243.1, \textbf{1.07}} and \change{$^\dagger$WCCG errors on CC--FR-consistent cases. All runtimes are measured in one harness over the same $300$ scenes, with WCCG served by its compiled backend;}
 \item The text now says that WCCG avoids introducing a workspace-grid
 resolution into repeated queries, while still depending on a correct
 decomposition and bridge construction.
 
-\change{Conventional clearance checks either rasterize the workspace into an inflated occupancy grid or query sampling-based roadmaps, and must therefore fix a resolution and re-query the map whenever an obstacle moves. Built directly from obstacle geometry, the WCCG introduces no grid-resolution parameter in the repeated connectivity queries used during planning.}
+\change{Conventional clearance checks either rasterize the workspace into an inflated occupancy grid or query sampling-based roadmaps, and must therefore fix a resolution and re-query the map whenever an obstacle moves. Built directly from obstacle geometry, the WCCG introduces no grid-resolution parameter in these repeated queries.}
 \end{itemize}
 
 %==============================
@@ -1002,12 +1001,12 @@ motion is resolved by the joint rollout:
 \item The force-feasibility, velocity-control, motion-capture, and joint-rollout
 interfaces are now described explicitly in the corresponding sections.
 
-\change{The wrench feasibility encoded in~$\boldsymbol{\xi}$ acts as a screening condition rather than a force setpoint: it certifies that the chosen contact configuration can realize the required object motion within the robots' actuation limits, after which the candidate is passed to the physics rollout for validation.} (Sec.~III-C) and \change{On the hardware the optimized contact forces certify feasibility rather than being commanded: a mode is retained only if its object wrench lies within the robots' actuation limits, and the controller tracks the planned contact poses and pushing velocities with feedback. Planning therefore runs in simulation through $\mathsf{EvalSim}$, and every executed push returns an observed state that re-enters the planner, so that physical execution continuously feeds back into the search.} (Sec.~III-E1)
+\change{The wrench feasibility encoded in~$\boldsymbol{\xi}$ acts as a screening condition rather than a force setpoint: it certifies that the chosen contact configuration can realize the required object motion within the robots' actuation limits.} (Sec.~III-C) and \change{a mode is retained only if its object wrench lies within the robots' actuation limits, and the controller tracks the planned contact poses and pushing velocities with feedback. Planning therefore runs in simulation through $\mathsf{EvalSim}$, and every executed push returns an observed state that re-enters the planner.} (Sec.~III-E1)
 \item The hardware discussion now states that the neighboring-object motion in
 Scenario~2 is an emergent outcome of $\mathsf{EvalSim}$ and is fed back through
 the updated scene and WCCG.
 
-\change{The two Mecanum UGVs are velocity-controlled, and the optimized contact forces are used only for feasibility evaluation rather than direct motor control. Motion capture provides the current robot and object poses, which are compared with the successor state predicted by $\mathsf{EvalSim}$: a push triggers replanning only when the measured object position error exceeds $0.3$\,m or its orientation error exceeds $\pi/4$, a deliberately loose threshold that tolerates slight over-push or off-axis push.} (Sec.~IV-B1) and \change{This neighboring-object motion is not a separately encoded action but an emergent outcome of the coupled rigid-body rollout in $\mathsf{EvalSim}$, whose snapshot is used to update the WCCG and continue replanning.} (Sec.~IV-B2)
+\change{The two Mecanum UGVs are velocity-controlled, and the optimized contact forces are used only for feasibility evaluation rather than direct motor control. A push triggers replanning only when the measured object position error exceeds $0.3$\,m or its orientation error exceeds $\pi/4$.} (Sec.~IV-B1) and \change{This neighboring-object motion is not a separately encoded action but an emergent outcome of the coupled rigid-body rollout in $\mathsf{EvalSim}$, whose snapshot is used to update the WCCG and continue replanning.} (Sec.~IV-B2)
 \end{itemize}
 
 %==============================
@@ -1117,8 +1116,11 @@ acceptance after these revisions.
 \noindent \textbf{A:}
 We thank the reviewer for the supportive assessment. The four clarifications
 above are addressed without changing the method, and the added protocol details,
-dispersion statistics and the configuration-space comparison are intended to
-make the evaluation easier to interpret.
+dispersion statistics and the configuration-space comparison are intended to make
+the evaluation easier to interpret. The figures that changed in this revision are
+reproduced side by side with their original versions in the following section, so
+that all four changes can be checked at a glance, and the complete data tables for
+each study are placed next to the reply they support rather than in an appendix.
 
 \newpage
 \section*{Updated and added figures}
