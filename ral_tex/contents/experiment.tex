@@ -50,7 +50,7 @@ ablations use Scenario~1 ($10$ movable obstacles, $40$ trials), and Scenario~2
 ($14$ obstacles) provides an additional cluttered case. All methods share the
 robot footprints, obstacle configurations, collision and reachability checks,
 and execution simulator, with the same per-trial timeout of $800$\,s and
-planning budget of $20{,}000$ control steps; unsuccessful trials are assigned
+simulator cap of $20{,}000$ control steps; unsuccessful trials are assigned
 the $800$\,s cap in the planning-time statistics.
 
 %==============================
@@ -79,11 +79,11 @@ obstacle and workspace boundaries by~$W/2$ and querying connectivity with a fine
 continuous collision check at $0.01$\,m oracle resolution instead of a fixed
 grid~\cite{lozano1983spatial}; the rasterized reference (FR) discretizes the same
 inflated workspace at $0.02$\,m for an occupancy-grid query. CC and FR disagree
-in $4$ of the $300$ cases, which bounds the ambiguity of the ground truth itself;
-on the $296$ scenes where they agree, WCCG matches CC with zero false positives
-and zero false negatives. A query costs $1.07$\,ms against $1.36$\,ms
-(CC) and $243$\,ms (FR), while additionally supplying the gap graph needed by
-PIHS.
+in $4$ of the $300$ cases, indicating sensitivity of the raster reference near
+narrow or tangential contacts. WCCG matches CC on all $300$ scenes with zero
+false positives and zero false negatives. A query costs $1.07$\,ms against
+$1.36$\,ms (CC) and $243$\,ms (FR), while additionally supplying the gap graph
+needed by PIHS.
 }
 
 
@@ -221,26 +221,27 @@ $10.3$ to $23.6$\,s.
 
 Generalization is further evaluated in the same $8\times8$\,m workspace by
 scaling the obstacle density~$M$, the robot-team size~$N$, and the
-execution-side physics parameters
-(Table~\ref{tab:generalization} and Fig.~\ref{fig:density_scaling}).
+execution-side physics parameters (Table~\ref{tab:generalization} and
+Fig.~\ref{fig:density_scaling}).
 \textbf{(I) Obstacle density:} with two robots and $10$ trials per density,
-PushAround keeps a $100\%$ success rate for all $M\in[15,45]$ while its mean
-planning time grows from $2.5$ to $53.4$\,s, whereas all baselines solve none of
-the $M{=}45$ trials and removing recursive pushes lowers success to $70\%$.
+PushAround maintains a $100\%$ success rate for all $M\in[15,45]$, while its
+mean planning time grows from $2.5$ to $53.4$\,s. At $M{=}45$, the three
+external comparison methods solve none of the trials, whereas the no-recursion
+ablation solves $7/10$.
 \textbf{(II) Robot-team size:} at $M{=}30$, PushAround solves all ten trials at
-$N{=}2$, $3$ and $4$ after two mode-generation refinements: bounded backtracking
-contact assignment removes the robot-order sensitivity of greedy replacement,
-and a temporarily released robot is re-activated once a full-team assignment
-exists, with a penalty favoring full-team modes. The fallback belongs to the
-shared mode generator, so the baselines benefit from it as well, yet at $N{=}4$
-PushAround stays the most economical with $29.2$\,s planning, $110.1$\,s
-execution and $10$ pushes versus $101.9$\,s, $175.9$\,s and $14$ for DFS-WCCG.
-\textbf{(III) Physics mismatch:} the planner keeps the nominal model and only the
-execution simulator is perturbed, one parameter at a time: PushAround succeeds in
-$156$ of $160$ perturbed trials ($97.5\%$), the four failures being one
-low-friction planning failure and three budget timeouts. Under the same $\pm40\%$
-perturbations SL-Push (sim) averages $32.5\%$ and DFS-WCCG $57.5\%$, at an order
-of magnitude higher planning time.
+$N{=}2$, $3$, and $4$ after the shared mode-generation refinements. The
+refinements reduce robot-order sensitivity and allow a temporary per-task
+robot release when a full-team assignment is unavailable; full-team modes are
+preferred through a ranking penalty. At $N{=}4$, PushAround uses $29.2$\,s of
+planning and $110.1$\,s of execution, compared with $101.9$\,s and $175.9$\,s
+for DFS-WCCG.
+\textbf{(III) Physics mismatch:} the planner keeps the nominal model and only
+the execution simulator is perturbed, one parameter at a time. PushAround
+succeeds in $156$ of $160$ perturbed trials ($97.5\%$), with one low-friction
+planning failure and three budget timeouts. Under the same $\pm40\%$
+perturbations, SL-Push (sim) succeeds in $13/40$ trials and DFS-WCCG in
+$23/40$ trials; their mean planning times are $31.5$\,s and $229.1$\,s,
+respectively, compared with $18.4$\,s for PushAround.
 
 }
 

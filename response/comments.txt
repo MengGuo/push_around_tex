@@ -1,0 +1,117 @@
+Review ID	Reviewer number	Comments to the author	Attachment
+539337	3	
+This paper presents PushAround, a physics-informed hybrid search
+framework for collaborative path clearing in environments containing
+multiple movable obstacles. The problem is formulated within NAMO, but
+specifically considers a team of mobile robots that actively rearrange
+obstacles to create a corridor with sufficient clearance for a larger
+external vehicle.
+
+Strengths:
+- Coherent end-to-end framework; The integration of WCCG, gap ranking,
+pushing-mode generation, and physics validation is well designed. The
+method jointly considers which obstacle to move and how to push it,
+while validating candidate actions through simulation.
+
+- Recursive pushing; The planner can first clear movable blockers in
+the swept region and then return to the original gap-opening task. Good
+feature!
+
+- Scalability: The method is evaluated with up to 45 movable obstacles,
+which is a useful demonstration of scalability in dense clutter. The
+reported success remains at 100% at 45 obstacles, although the
+experiment uses five seeds per density.
+
+- Strong simulation results and real-world validation: The proposed
+method substantially outperforms the reported baselines in simulation
+and is also demonstrated with two real robots.
+
+Weaknesses:
+- Physics-model robustness is insufficiently characterized: The method
+relies heavily on simulation-based feasibility validation, but
+sensitivity to uncertainty in mass, friction, force limits, contact
+dynamics etc. is not systematically evaluated. 
+
+- Limited evaluation of more complex scenarios: Although the method is
+tested with up to 45 movable obstacles, the number of independent
+trials is limited.
+
+Interesting follow-up questions:
+- The experiments primarily use two robots. What happens when the
+number of robots increases with the complexity of the task? How does
+the search and the contact/force formulation scale to larger robot
+teams?
+
+- What guarantees, if any, does the hybrid search provide regarding
+solution quality?
+
+- The objective includes the total duration T and the control-effort
+cost J. Is the time needed for the final vehicle to actually traverse
+the cleared corridor included in this objective, or is the objective
+only concerned with clearing the obstacles? Similarly, does J only
+capture the robots' effort in moving the obstacles?
+
+- The paper demonstrates online replanning when the real execution
+differs from the simulation, How can simple pushing robots evaluate
+this discrepancy?
+
+Conclusion:
+Overall, this is a good contribution to the field and a well-written
+paper. The combination of geometric reasoning, recursive pushing, and
+physics-informed search is interesting, and the real-world validation
+strengthens the contribution. 
+ 
+542395	4	
+This paper presents PushAround, a physics-informed hybrid search method
+for collaborative path clearing. The method uses a W-clearance
+connectivity graph to identify blocking gaps, ranks these gaps, and
+generates multi-robot pushing actions that are checked using
+short-horizon physics simulation. The paper includes simulation
+comparisons, ablation studies, scalability tests, and hardware
+experiments.
+
+Overall, I think the paper addresses an interesting problem and the
+proposed framework is practical. The combination of geometric reasoning
+and physics simulation is useful, and the experimental results are
+encouraging. I would support acceptance after revision, but I think a
+few parts of the method need some clarification.
+
+First, the WCCG connectivity condition is important since it is used
+throughout the search and also determines termination. The intuition is
+reasonably clear, but I think the paper would benefit from a little
+more justification here, or perhaps a comparison with a standard
+configuration-space connectivity check. This seems especially relevant
+when the obstacles are non-convex.
+
+Second, I was a little confused about the relationship between Eq. (5)
+and the actual search procedure. Eq. (5) is written as an optimization
+problem, while the implementation uses sampled pushing directions,
+limited lookahead, and a heuristic best-first search that terminates
+once a feasible solution is found. The authors should clarify whether
+any optimality or completeness claim is intended. If not, it may be
+better to describe Eq. (5) as the objective used to guide the search.
+
+Third, it is not completely clear how the optimized contact forces are
+used on the hardware. The pushing mode includes both contact points and
+forces, but the execution section mainly describes moving the robots to
+the contact configuration and then following the desired pushing
+direction. It would be useful to briefly explain the low-level
+controller and whether these forces are actually commanded or are
+mainly used to check feasibility. Related to this, I am also not sure
+whether coupled motion between multiple objects, such as in the second
+hardware experiment, is explicitly considered during planning or is
+mostly handled by the physics simulation.
+
+The experiments are generally convincing. The paper already mentions
+that the baselines use the same W-clearance criterion, object
+distribution, and execution simulator. However, a few more
+implementation details, such as robot reachability checks, timeout
+limits, and computation budget, would make the comparison easier to
+interpret. I would also suggest adding error bars or standard
+deviations, particularly for the scalability experiment where only five
+seeds are used for each obstacle density.
+
+Overall, I think the approach is technically reasonable and the
+experiments support the proposed method. My comments are mainly about
+clarification rather than major technical concerns, and I would support
+acceptance after these revisions. 

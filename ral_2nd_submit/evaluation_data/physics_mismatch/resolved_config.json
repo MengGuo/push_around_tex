@@ -1,0 +1,220 @@
+{
+  "child_env": {
+    "LOCAL_CLEARANCE_TIMER": "0",
+    "WCCG_PRESEARCH_TIMER": "0"
+  },
+  "conditions": [
+    {
+      "deviation_pct": 0.0,
+      "execution_physics_overrides": {},
+      "factor": 1.0,
+      "family": "nominal",
+      "label": "Nominal",
+      "name": "nominal"
+    },
+    {
+      "deviation_pct": 40.0,
+      "execution_physics_overrides": {
+        "obstacle_mass_scale": 0.6
+      },
+      "factor": 0.6,
+      "family": "mass",
+      "label": "Mass ×0.6",
+      "name": "mass_0p6"
+    },
+    {
+      "deviation_pct": 20.0,
+      "execution_physics_overrides": {
+        "obstacle_mass_scale": 0.8
+      },
+      "factor": 0.8,
+      "family": "mass",
+      "label": "Mass ×0.8",
+      "name": "mass_0p8"
+    },
+    {
+      "deviation_pct": 20.0,
+      "execution_physics_overrides": {
+        "obstacle_mass_scale": 1.2
+      },
+      "factor": 1.2,
+      "family": "mass",
+      "label": "Mass ×1.2",
+      "name": "mass_1p2"
+    },
+    {
+      "deviation_pct": 40.0,
+      "execution_physics_overrides": {
+        "obstacle_mass_scale": 1.4
+      },
+      "factor": 1.4,
+      "family": "mass",
+      "label": "Mass ×1.4",
+      "name": "mass_1p4"
+    },
+    {
+      "deviation_pct": 40.0,
+      "execution_physics_overrides": {
+        "obstacle_lateral_friction_scale": 0.6
+      },
+      "factor": 0.6,
+      "family": "friction",
+      "label": "Lateral friction ×0.6",
+      "name": "friction_0p6"
+    },
+    {
+      "deviation_pct": 20.0,
+      "execution_physics_overrides": {
+        "obstacle_lateral_friction_scale": 0.8
+      },
+      "factor": 0.8,
+      "family": "friction",
+      "label": "Lateral friction ×0.8",
+      "name": "friction_0p8"
+    },
+    {
+      "deviation_pct": 20.0,
+      "execution_physics_overrides": {
+        "obstacle_lateral_friction_scale": 1.2
+      },
+      "factor": 1.2,
+      "family": "friction",
+      "label": "Lateral friction ×1.2",
+      "name": "friction_1p2"
+    },
+    {
+      "deviation_pct": 40.0,
+      "execution_physics_overrides": {
+        "obstacle_lateral_friction_scale": 1.4
+      },
+      "factor": 1.4,
+      "family": "friction",
+      "label": "Lateral friction ×1.4",
+      "name": "friction_1p4"
+    },
+    {
+      "deviation_pct": 40.0,
+      "execution_physics_overrides": {
+        "robot_force_limit_scale": 0.6
+      },
+      "factor": 0.6,
+      "family": "force_limit",
+      "label": "Force limit ×0.6",
+      "name": "force_0p6"
+    },
+    {
+      "deviation_pct": 20.0,
+      "execution_physics_overrides": {
+        "robot_force_limit_scale": 0.8
+      },
+      "factor": 0.8,
+      "family": "force_limit",
+      "label": "Force limit ×0.8",
+      "name": "force_0p8"
+    },
+    {
+      "deviation_pct": 20.0,
+      "execution_physics_overrides": {
+        "robot_force_limit_scale": 1.2
+      },
+      "factor": 1.2,
+      "family": "force_limit",
+      "label": "Force limit ×1.2",
+      "name": "force_1p2"
+    },
+    {
+      "deviation_pct": 40.0,
+      "execution_physics_overrides": {
+        "robot_force_limit_scale": 1.4
+      },
+      "factor": 1.4,
+      "family": "force_limit",
+      "label": "Force limit ×1.4",
+      "name": "force_1p4"
+    },
+    {
+      "deviation_pct": 40.0,
+      "execution_physics_overrides": {
+        "obstacle_spinning_friction_scale": 0.6
+      },
+      "factor": 0.6,
+      "family": "contact_dynamics",
+      "label": "Spin friction ×0.6",
+      "name": "spin_0p6"
+    },
+    {
+      "deviation_pct": 20.0,
+      "execution_physics_overrides": {
+        "obstacle_spinning_friction_scale": 0.8
+      },
+      "factor": 0.8,
+      "family": "contact_dynamics",
+      "label": "Spin friction ×0.8",
+      "name": "spin_0p8"
+    },
+    {
+      "deviation_pct": 20.0,
+      "execution_physics_overrides": {
+        "obstacle_spinning_friction_scale": 1.2
+      },
+      "factor": 1.2,
+      "family": "contact_dynamics",
+      "label": "Spin friction ×1.2",
+      "name": "spin_1p2"
+    },
+    {
+      "deviation_pct": 40.0,
+      "execution_physics_overrides": {
+        "obstacle_spinning_friction_scale": 1.4
+      },
+      "factor": 1.4,
+      "family": "contact_dynamics",
+      "label": "Spin friction ×1.4",
+      "name": "spin_1p4"
+    }
+  ],
+  "ensure_mode_table": false,
+  "env_overrides": {
+    "max_mass": 30.0,
+    "min_mass": 20.0
+  },
+  "max_control_steps": 20000,
+  "mode_table_coverage": "exact",
+  "num_parallel_workers": 8,
+  "obstacle_count": 30,
+  "output_dir": "outputs/revision/physics_mismatch",
+  "parent_timeout_margin_sec": 80,
+  "policy_overrides": {
+    "enable_root_task_variation": true,
+    "load_mode_table": false,
+    "mode_gen_via_greedy_opt": true,
+    "mode_gen_via_table_query": false,
+    "mode_table_file_dir": "mode_tables/physics_mismatch",
+    "open_predict_gui": false,
+    "planning_timeout_sec": 800,
+    "recursive_depth_presearch": 0,
+    "recursive_depth_task_sample": 2,
+    "root_task_variations_per_side": 2,
+    "search_debug": true
+  },
+  "python_exe": "python",
+  "resume": true,
+  "robot_num": 2,
+  "seeds": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
+  ],
+  "trial_heartbeat_sec": 30,
+  "trial_timeout_sec": 800,
+  "use_mode_table": false,
+  "world_height": 8.0,
+  "world_width": 8.0
+}

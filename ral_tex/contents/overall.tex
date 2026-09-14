@@ -35,15 +35,18 @@ expansion in Alg.~\ref{alg:pihs} is dominated by candidate generation and
 physics validation. The WCCG update and gap ranking incur
 $\mathcal{O}(M\log M+|\mathcal{V}|+|\mathcal{E}_c|+|\mathcal{E}_b|)$ and
 $\mathcal{O}(|\Gamma_{\mathcal{L}_\nu}|
-\log|\Gamma_{\mathcal{L}_\nu}|)$ costs, respectively, while the dominant
+\log|\Gamma_{\mathcal{L}_\nu}|)$ costs, respectively.
 \change{The dominant simulation cost
 $\mathcal{O}\big(\sum_{g\in\mathsf{Rank}(\nu)}|\Xi_g|\,\big(C_{\mathrm{LP}}+\rho_\nu T_{\mathrm{sim}}/n_{\texttt{w}}\big)\big)$
 grows with the number of validated candidates and is reduced by the
 $n_{\texttt{w}}$ parallel workers, so that scalability is mainly determined by
 validated pushing candidates, while quick-pass filtering and parallel simulation
-reduce the practical expansion cost.} Robot-team size mainly affects mode generation, where greedy
-contact refinement avoids exhaustive $|\mathcal{A}|^N$ contact assignment and
-evaluates bounded single-contact replacements.
+reduce the practical expansion cost.} \change{Robot-team size mainly affects mode
+generation: the greedy stage evaluates at most $N|\mathcal{A}|$ single-contact
+substitutions instead of the exhaustive $|\mathcal{A}|^N$ assignment, and the
+bounded-backtracking stage examines at most $B$ additional partial assignments
+for a fixed budget~$B$, so the per-task cost is $(N|\mathcal{A}|+B)$ LP
+feasibility tests, each over $2N$ force variables.}
 %% %----------------------------------------------
 %% \subsubsection{Generalization}\label{subsec:general}
 %% The framework admits several extensions:
