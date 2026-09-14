@@ -1,0 +1,5 @@
+policy,robot_num,n_trials,n_success,success_rate,success_ci95_low,success_ci95_high,planning_time_mean_success_s,planning_time_std_success_s,exec_time_mean_success_s,exec_time_std_success_s,pushes_mean_success,replans_mean_all,total_sims_mean_success,fail_task_done,fail_plan_fail,fail_timeout,fail_error,fail_other,failure_reasons
+dfs,3,10,10,1.0,0.7225,1.0,142.58,183.08,178.13,72.09,13.9,1.5,761.6,10,0,0,0,0,task_done=10
+dfs,4,10,9,0.9,0.5958,0.9821,101.93,103.93,175.87,113.55,14.33,2.9,497.78,9,0,1,0,0,task_done=9; timeout=1
+slpush,3,10,8,0.8,0.4902,0.9433,30.01,46.25,193.29,111.28,31.12,2.1,62.25,8,1,1,0,0,task_done=8; plan_fail=1; timeout=1
+slpush,4,10,8,0.8,0.4902,0.9433,23.38,18.21,171.72,61.23,20.5,2.5,41.0,8,0,2,0,0,task_done=8; timeout=2

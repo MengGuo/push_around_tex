@@ -52,34 +52,31 @@ have some concerns that need to be addressed.
 
 \noindent \textbf{A:}
 We sincerely thank the Associate Editor for the careful handling of our
-submission and for summarizing the reviewers' constructive comments. Both
-reviewers explicitly support the contribution and frame their comments as
-clarifications rather than technical objections, so the revision keeps the scope
-of the method unchanged. In response, we have substantially revised the
-manuscript to clarify the methodological details, implementation choices, and
-experimental limitations identified by the reviewers: the two formal weaknesses
-of Reviewer~3 are closed with dedicated experiments, and all follow-up questions
-and clarifications of both reviewers are answered explicitly in the manuscript.
-The principal revisions are summarized below.
+submission and for summarizing the reviewers' constructive comments. In
+response, we have substantially revised the manuscript to clarify the
+methodological details, implementation choices, and experimental limitations
+identified by the reviewers. We also added targeted evaluations of
+planner--execution mismatch, obstacle-density scaling, robot-team scaling, and
+WCCG connectivity. The principal revisions are summarized below.
 
 \begin{table}[h!]
 \centering
 \scriptsize
-\caption{New and revised experiments at a glance. ``PushAround (ours)'' is the
-proposed method; page numbers refer to the revised manuscript.}
+\caption{New and revised experiments at a glance. PushAround is the proposed
+method; page numbers refer to the revised manuscript.}
 \label{tab:at-a-glance}
 \resizebox{\linewidth}{!}{%
 \setlength{\tabcolsep}{2.2pt}
 \renewcommand{\arraystretch}{1.06}
 \begin{tabular}{@{}l p{3.7cm} c p{2.95cm} l@{}}
 \toprule
-Study & Setting (workspace, $M$, $N$; trials) & PushAround (ours) & Strongest baseline & Location\\
+Study & Setting (workspace, $M$, $N$; trials) & PushAround & Strongest baseline & Location\\
 \midrule
 Main comparison & $8{\times}5$\,m, $M{=}10$, $N{=}2$; 40 trials & \textbf{97.5}\,\% & SL-Push (sim) 75.0\,\% & Table~II (Page~6)\\
-Ablations & same scene; 40 trials & 82.5--97.5\,\% & --- & Table~II\\
-Obstacle density & $8{\times}8$\,m, $M{=}15$--45, $N{=}2$; 10 seeds per density & \textbf{100}\,\% (all $M$) & collapses to 0\,\% at $M{=}45$ & Table~III (Page~7), Fig.~10 (Page~7)\\
-Physics mismatch & $8{\times}8$\,m, $M{=}30$, $N{=}2$; $\pm20\%/\pm40\%$; 10 (ours) / 5 (base) seeds & \textbf{97.5}\,\% at $\pm40\%$ & DFS-WCCG 57.5\,\%, SL-Push (sim) 32.5\,\% & Table~III (Page~7)\\
-Robot-team scaling & $8{\times}8$\,m, $M{=}30$, $N{=}2$--4; 10 seeds per cell & \textbf{100}\,\% (30/30 trials) & DFS-WCCG 90--100\,\%, SL-Push (sim) 80\,\% ($1.6$--$1.8\times$ slower execution) & Table~III\\
+Ablations & Scenario~1; 40 trials & 82.5--97.5\,\% & --- & Table~II (Page~6)\\
+Obstacle density & $8{\times}8$\,m, $M{=}15$--45, $N{=}2$; 10 seeds per density & \textbf{100}\,\% (all $M$) & falls to 0/10 at $M{=}45$ & Table~III (Page~7), Fig.~10 (Page~7)\\
+Physics mismatch & $8{\times}8$\,m, $M{=}30$, $N{=}2$; $\pm20\%/\pm40\%$; 10 per cell & \textbf{97.5}\,\% at $\pm40\%$ & DFS-WCCG 57.5\,\%, SL-Push (sim) 32.5\,\% & Table~III (Page~7)\\
+Robot-team scaling & $8{\times}8$\,m, $M{=}30$, $N{=}2$--4; 10 seeds per cell & \textbf{100}\,\% (30/30 trials) & DFS-WCCG 90--100\,\%, SL-Push (sim) 80\,\% ($1.6$--$2.0\times$ slower execution) & Table~III (Page~7)\\
 WCCG validation & 300 random scenes, incl.\ non-convex & 300/300, 0 FP/FN & --- & Table~I (Page~6)\\
 \bottomrule
 \end{tabular}
@@ -90,49 +87,43 @@ WCCG validation & 300 random scenes, incl.\ non-convex & 300/300, 0 FP/FN & --- 
 \noindent The principal revisions are:
 
 \begin{itemize}
-\item Planning uses the
-nominal model; only the execution simulator is perturbed, one parameter family
-at a time (obstacle mass, lateral friction, spinning friction, robot force
-limit) by factors $\{0.6,0.8,1.2,1.4\}$, i.e.\ $\pm20\%$ and $\pm40\%$.
-PushAround succeeds in \textbf{166/170} trials overall
-(\textbf{97.5\%} at $\pm40\%$ and \textbf{97.5\%} at $\pm20\%$), whereas under
-the same $\pm40\%$ perturbations SL-Push (sim) drops to \textbf{32.5\%}
-(13/40, including two conditions at $0\%$) and DFS-WCCG to \textbf{57.5\%}
-(23/40) with roughly an order of magnitude larger planning time
-(Sec.~IV-A6, Table~III, Fig.~\ref{fig:resp-mismatch}).
+\item The planner uses the nominal model while the execution simulator perturbs
+one parameter family at a time (obstacle mass, lateral friction, spinning
+friction, or robot force limit) by factors $\{0.6,0.8,1.2,1.4\}$, i.e.,
+$\pm20\%$ and $\pm40\%$. PushAround succeeds in \textbf{156/160} perturbed
+trials (\textbf{97.5\%}); including the nominal condition, it succeeds in
+\textbf{166/170} trials (\textbf{97.6\%}). Under the same $\pm40\%$
+perturbations, SL-Push (sim) succeeds in \textbf{13/40} trials (32.5\%) and
+DFS-WCCG in \textbf{23/40} trials (57.5\%). DFS-WCCG also requires about
+$12\times$ more planning time than PushAround (Sec.~IV-A6, Table~III,
+Fig.~\ref{fig:resp-mismatch}).
 
-\item The density
-sweep now uses \textbf{10 independent seed sequences} per density (previously
-5). PushAround keeps \textbf{100\%} success for every $M\in[15,45]$ with mean
-planning time growing from $2.5$ to $53.4$\,s, while all four baselines
-degrade sharply (Fig.~\ref{fig:resp-density}); the reported statistics include
-dispersion and Wilson confidence intervals
+\item The density sweep now uses \textbf{10 independent seed sequences} per
+density instead of five. PushAround maintains \textbf{100\%} success for every
+$M\in[15,45]$, with mean planning time increasing from $2.5$ to $53.4$\,s;
+the comparison methods fall to $0/10$ at $M{=}45$ (the no-recursion ablation
+achieves $7/10$). Dispersion and Wilson confidence intervals are now reported
 (Sec.~IV-A6, Table~III, Fig.~\ref{fig:resp-reliability}).
 
-\item Two
-mode-generation refinements were added: bounded backtracking contact assignment
-and a temporary per-task robot release when no full-team contact assignment
-exists. Because both belong to the \emph{shared} mode generator, all policies
-benefit --- at $N{=}4$ success rises from $70\%$ to \textbf{100\%} for
-PushAround, from $0\%$ to $80\%$ for SL-Push (sim) and from $80\%$ to $90\%$
-for DFS-WCCG --- as confirmed by instrumentation that counts $6{,}017$ releases
-and $10{,}904$ backtracking assignments in the baseline logs. PushAround
-remains the only method that solves all ten trials at every team size, and the
-most economical ($24$--$30$\,s planning, $97$--$110$\,s execution,
-$10$--$11$ pushes) versus DFS-WCCG ($102$--$143$\,s, $172$--$193$\,s) and
-SL-Push (sim) ($171$--$193$\,s execution, $20$--$31$ pushes). See Sec.~III-C2,
-Sec.~IV-A6, Table~III, the right half of Fig.~9 (Page~7) of the manuscript, and
-Fig.~\ref{fig:resp-robot}.
+\item Two mode-generation refinements were added: bounded backtracking contact
+assignment and a temporary per-task robot release when no full-team assignment
+exists. Both are in the shared mode generator and were used for all policies.
+At $N{=}4$, the observed success rates change from $70\%$ to \textbf{100\%}
+for PushAround, from $0\%$ to $80\%$ for SL-Push (sim), and from $80\%$ to
+$90\%$ for DFS-WCCG. PushAround succeeds in all $30$ team-size trials; at
+$N{=}3,4$ it uses $29$--$30$\,s of planning and $97$--$110$\,s of execution,
+whereas DFS-WCCG uses $102$--$143$\,s of planning and $176$--$178$\,s of
+execution, and SL-Push (sim) uses $172$--$193$\,s of execution and $20$--$31$
+pushes (Sec.~III-C2, Sec.~IV-A6, Table~III, Fig.~9, and
+Fig.~\ref{fig:resp-robot}).
 
-\item Sec.~III-A2 now derives the
-criterion from $W/2$ configuration-space inflation with explicit non-convex
-decomposition, and a new experiment compares WCCG against continuous C-space
-(CC) and a rasterized reference (FR) on 300 scenes. CC and FR agree in
-\textbf{296/300} cases, whereas WCCG agrees with CC in \textbf{300/300} cases
-and produces \textbf{0 FP/FN}. Its mean query time is \textbf{1.07}\,ms,
-against $1.36$\,ms for CC and $243.1$\,ms for FR, i.e.\ it is
-$\mathbf{227\times}$ faster than the raster reference (Table~I and
-Fig.~\ref{fig:resp-wccg}).
+\item Sec.~III-A2 now derives the criterion from $W/2$ configuration-space
+inflation with explicit non-convex decomposition. On 300 scenes, WCCG agrees
+with the continuous reference in \textbf{300/300} cases with \textbf{0 FP/FN};
+the continuous and rasterized references agree in 296/300 cases. In the timing
+harness, WCCG averages \textbf{1.07}\,ms per query versus $1.36$\,ms for CC and
+$243.1$\,ms for FR (an implementation-level ratio of $227\times$ versus FR)
+(Table~I and Fig.~\ref{fig:resp-wccg}).
 
 \item Eq.~(5) is now presented
 as the schedule cost guiding the search; the paper states explicitly that PIHS
@@ -151,16 +142,27 @@ workers), with unsuccessful trials assigned the 800\,s cap in planning-time
 statistics. The previous 400\,s statement is corrected.
 \end{itemize}
 
+The detailed responses below provide the manuscript locations and revised text
+for each reviewer comment. The supplementary evaluation package has also been
+updated with the per-trial records and configuration files backing the reported
+statistics.
+
 %========================================
+
+\newpage
 \section*{To Reviewer 3}
 %========================================
+
+%==============================
 \begin{shaded*}
 \noindent \textbf{Q:}
 {\itshape
-Overall, this is a good contribution to the field and a well-written
-paper. The combination of geometric reasoning, recursive pushing, and
-physics-informed search is interesting, and the real-world validation
-strengthens the contribution.
+This paper presents PushAround, a physics-informed hybrid search
+framework for collaborative path clearing in environments containing
+multiple movable obstacles. The problem is formulated within NAMO, but
+specifically considers a team of mobile robots that actively rearrange
+obstacles to create a corridor with sufficient clearance for a larger
+external vehicle.
 }
 \end{shaded*}
 
@@ -170,25 +172,65 @@ for recognizing the end-to-end integration, recursive pushing, dense-clutter
 scalability, and hardware validation. The revision addresses the two stated
 weaknesses and the four follow-up questions without changing the central
 planning framework. The detailed responses below explain these revisions
-point by point and provide the exact modified text highlighted in blue.
+point by point and provide the exact modified text highlighted in blue. The
+supplementary evaluation package, including the updated simulation and hardware
+materials, has also been updated.
+
+%==============================
 
 %==============================
 \begin{shaded*}
 \noindent \textbf{Q:}
 {\itshape
-The method relies heavily on simulation-based feasibility validation, but
-sensitivity to uncertainty in mass, friction, force limits, contact
-dynamics etc.\ is not systematically evaluated.
+Strengths:
+- Coherent end-to-end framework; The integration of WCCG, gap ranking,
+pushing-mode generation, and physics validation is well designed. The
+method jointly considers which obstacle to move and how to push it,
+while validating candidate actions through simulation.
+
+- Recursive pushing; The planner can first clear movable blockers in
+the swept region and then return to the original gap-opening task. Good
+feature!
+
+- Scalability: The method is evaluated with up to 45 movable obstacles,
+which is a useful demonstration of scalability in dense clutter. The
+reported success remains at 100\% at 45 obstacles, although the
+experiment uses five seeds per density.
+
+- Strong simulation results and real-world validation: The proposed
+method substantially outperforms the reported baselines in simulation
+and is also demonstrated with two real robots.
 }
 \end{shaded*}
 
 \noindent \textbf{A:}
-We agree that this was the most substantive gap, because physics validation is
-the distinguishing element of the method. The original hardware experiments
-demonstrated closed-loop recovery but did not \emph{isolate} sensitivity to
-individual model parameters. The revision therefore adds a dedicated
-planner--execution mismatch study with two properties that make the claim
-falsifiable:
+We thank the reviewer for these observations. The revision keeps the
+end-to-end structure unchanged and strengthens the three aspects that the
+revision touches: the recursive-pushing mechanism is now illustrated by its own
+figure (Fig.~4, Page~4) and remains a distinguishing feature of the planner; the
+dense-clutter evaluation now uses ten independent seed sequences per density
+instead of five (Sec.~IV-A6, Page~7), which addresses the caveat attached to the
+scalability result; and the two-robot hardware demonstration, including the WCCG
+overlays of the executed runs, is retained in Fig.~11 (Page~8) with the execution
+monitor now specified explicitly.
+
+%==============================
+\begin{shaded*}
+\noindent \textbf{Q:}
+{\itshape
+Physics-model robustness is insufficiently characterized: The method
+relies heavily on simulation-based feasibility validation, but
+sensitivity to uncertainty in mass, friction, force limits, contact
+dynamics etc. is not systematically evaluated.
+}
+\end{shaded*}
+
+\noindent \textbf{A:}
+We agree that this was the most substantive gap, because the feasibility
+validation is simulation based. The original hardware experiments demonstrated
+closed-loop recovery but did not \emph{isolate} sensitivity to individual model
+parameters. The revision therefore adds a dedicated planner--execution
+mismatch study designed to separate model mismatch from model re-identification:
 
 \begin{itemize}
 \item The planner always uses the nominal
@@ -201,28 +243,26 @@ $\{0.6,0.8,1.2,1.4\}$, i.e.\ $\pm20\%$ and $\pm40\%$, using the same scene
 seeds as the nominal condition.
 \end{itemize}
 
-\noindent Over 17 conditions ($M{=}30$, $N{=}2$, 10 seeds
-each, 170 trials) PushAround succeeds in \textbf{166/170 (97.6\%)}, and
-importantly the success rate does \emph{not} degrade with the perturbation
-magnitude: \textbf{78/80 (97.5\%)} at $\pm20\%$ and \textbf{78/80 (97.5\%)} at
-$\pm40\%$, versus 10/10 nominal. The four failures are one mid-execution
-planning failure (lateral friction $\times0.6$) and three trials that exceeded
-the per-trial budget (spin friction $\times1.2$, force limit $\times0.6$ and
-$\times1.2$). Replanning absorbs the remainder: mean replans rise from $2.3$
-(nominal) to $3.9$ ($\pm40\%$ average; up to $8.1$ under force limit
-$\times0.6$), where the weaker pushing force shortens the reachable force range
-and lengthens execution from $104.7$\,s to $159.6$\,s.
+\noindent Across 17 conditions ($M{=}30$, $N{=}2$, 10 seeds each, 170 trials),
+PushAround succeeds in \textbf{166/170 (97.6\%)}. The perturbed subset contains
+\textbf{156/160 successes (97.5\%)}: the aggregate rate is 78/80 (97.5\%) at
+$\pm20\%$ and 78/80 (97.5\%) at $\pm40\%$, compared with 10/10 nominal. The
+four failures comprise one mid-execution planning failure (lateral friction
+$\times0.6$) and three trials that exceeded the per-trial budget (spin friction
+$\times1.2$, force limit $\times0.6$ and $\times1.2$). Mean replans increase
+from $2.3$ (nominal) to $3.9$ (averaged over the $\pm40\%$ conditions; up to
+$8.1$ under force limit $\times0.6$), while mean execution time increases from
+$104.7$\,s to $159.6$\,s in the latter condition.
 
-\noindent Second, to show that
-this robustness is a property of the method rather than of the scene, we ran
-SL-Push (sim) and DFS-WCCG under the same protocol (nominal planning,
-execution-only perturbation, 5 seeds per condition). Under the identical
-$\pm40\%$ perturbations, SL-Push (sim) attains \textbf{13/40 (32.5\%)} --- with
-$0\%$ under lateral friction $\times1.4$ and force limit $\times0.6$ --- and
-DFS-WCCG \textbf{23/40 (57.5\%)}, while requiring ${\sim}12\times$ more
-planning time (mean $229$\,s versus $18$\,s). Both baselines are already weaker
-at nominal physics (3/5 each versus 10/10), which is consistent with the main
-comparison in Table~II.
+\noindent For context, SL-Push (sim) and DFS-WCCG were also evaluated under
+nominal planning and execution-only perturbations, using five seeds per
+condition. Under the eight $\pm40\%$ extremes, SL-Push (sim) succeeds in
+\textbf{13/40 trials (32.5\%)} and DFS-WCCG in \textbf{23/40 trials (57.5\%)}.
+Their mean planning times are $31.5$\,s and $229.1$\,s, respectively, compared
+with $18.4$\,s for PushAround. Because the baseline supplement uses fewer seeds
+and has lower nominal success (3/5 for each baseline), these results provide
+end-to-end context rather than a normalized estimate of each method's
+degradation from its own nominal performance.
 
 \begin{figure}[h!]
 \centering
@@ -235,23 +275,15 @@ retuned model, absorbs the mismatch.}
 \label{fig:resp-mismatch}
 \end{figure}
 
-\noindent\textbf{Changes in the revised manuscript.} The manuscript text was revised as described above and is quoted verbatim below (Page 7, Sec. IV-A6 and Table III; Page 1, Sec. I-B; Page 7, Sec. IV-A6):
+\noindent\textbf{Changes in the revised manuscript.} Sec.~I-B (Page~1) now
+motivates the mismatch evaluation, while Sec.~IV-A6 and Table~III (Page~7)
+define the protocol and report the perturbed and nominal aggregates:
 \begin{itemize}
-\item Sec.~IV-A6 introduces the mismatch protocol and reports the results; the
-corresponding rows appear in Table~III, and the density/mismatch protocol
-details are listed in the appendix tables of this letter because the
-manuscript is page-limited.
-\item Sec.~I-B now states that physics validation is model dependent and that
-the revision quantifies the sensitivity:
-\change{Because physics validation depends on model fidelity, robustness under
-execution-model mismatch is also evaluated.}
-\item The claim is stated as:
-\change{The planner keeps the nominal model and only the execution simulator
-is perturbed, one parameter at a time: PushAround succeeds in 156 of 160
-perturbed trials (97.5\%), the four failures being one low-friction planning
-failure and three budget timeouts. Under the same $\pm40\%$ perturbations
-SL-Push (sim) averages 32.5\% and DFS-WCCG 57.5\%, at an order of magnitude
-higher planning time.}
+\item The revised introduction now states that model fidelity affects physics
+validation and that execution-model mismatch is evaluated explicitly.
+\item Sec.~IV-A6 and Table~III report 156/160 successes for the perturbed
+PushAround trials, distinguish the nominal condition, and give the baseline
+supplement results at the $\pm40\%$ extremes.
 \end{itemize}
 
 %==============================
@@ -298,11 +330,13 @@ Force limit        & 1.4 & \textbf{10/10} & 15.2 & 93.3  & 3.2 & 3/5 & 27.6 & 30
 \end{tabular}
 \end{table}
 
+%==============================
 \begin{shaded*}
 \noindent \textbf{Q:}
 {\itshape
-Although the method is tested with up to 45 movable obstacles, the number of
-independent trials is limited.
+Limited evaluation of more complex scenarios: Although the method is
+tested with up to 45 movable obstacles, the number of independent
+trials is limited.
 }
 \end{shaded*}
 
@@ -333,10 +367,10 @@ density it is $[0,27.8]\%$ from 0/10.
 \centering
 \includegraphics[width=\linewidth]{resp_density.pdf}
 \caption{Obstacle-density scaling with 10 independent seeds per density.
-(a) Success rate; PushAround is the only method that remains at 100\% over the
-whole range. (b) Planning time with failed trials capped at the 800\,s budget;
-whiskers denote one standard deviation over seeds. Rec-NAMO reaches the cap
-from $M{=}25$ onward and DFS-WCCG / SL-Push (sim) from $M{=}45$.}
+(a) Success rate; PushAround remains at 100\% over the whole range. (b) Planning
+time with failed trials capped at the 800\,s budget; whiskers denote one
+standard deviation over seeds. Rec-NAMO reaches the cap from $M{=}25$ onward,
+and DFS-WCCG and SL-Push (sim) reach it at $M{=}45$.}
 \label{fig:resp-density}
 \end{figure}
 
@@ -376,7 +410,10 @@ with the start face in blue below.}
 \label{fig:resp-density-scenes}
 \end{figure}
 
-\noindent\textbf{Changes in the revised manuscript.} The manuscript text was revised as described above and is quoted verbatim below (Page 7, Sec. IV-A6 and Fig. 10 caption; Page 7, Table III):
+\noindent\textbf{Changes in the revised manuscript.} Sec.~IV-A6 and the
+caption of Fig.~10 (Page~7) now state the seed count, nested construction within
+a seed, and dispersion. Table~III (Page~7) reports the corresponding
+mean$\pm$s.d. values:
 \begin{itemize}
 \item Sec.~IV-A6 and the caption of Fig.~10 now state the seed count, the nested
 construction within a seed, and the dispersion:
@@ -389,18 +426,6 @@ densities $M\in\{15,30,45\}$.
 \end{itemize}
 
 %==============================
-
-% ---- 数据表/图移到对应回复处 ----
-\begin{figure}[H]
-\centering
-\includegraphics[width=\linewidth]{resp_reliability.pdf}
-\caption{Wilson 95\% confidence intervals of the headline success rates. The
-gaps between PushAround and the baselines are much larger than the interval
-widths, so the conclusions are stable despite the small per-cell sample sizes
-(10 seeds in the robot-team study; 10 for PushAround and 5 for the mismatch
-baseline supplements).}
-\label{fig:resp-reliability}
-\end{figure}
 
 \begin{table}[H]
 \centering
@@ -435,32 +460,32 @@ PushAround: pushes  & 3.5 & 5.8 & 7.9 & 10.5 & 16.6 & 20.7 & 26.1\\
 \end{tabular}
 \end{table}
 
+%==============================
 \begin{shaded*}
 \noindent \textbf{Q:}
 {\itshape
-The experiments primarily use two robots. What happens when the number of
-robots increases with the complexity of the task? How does the search and the
-contact/force formulation scale to larger robot teams?
+The experiments primarily use two robots. What happens when the
+number of robots increases with the complexity of the task? How does
+the search and the contact/force formulation scale to larger robot
+teams?
 }
 \end{shaded*}
 
 \noindent \textbf{A:}
-This question turned out to be more productive than expected. It exposed a
-mode-generation bottleneck, we fixed it, and the re-run --- performed on
-\emph{both} PushAround and the baselines with identical code --- shows that the
-fix lives in the shared mode generator rather than being a PushAround-only
-behaviour. The corrected comparison is reported below.
+This comment revealed a bottleneck in the shared mode-generation module. We
+added two local refinements and re-ran PushAround and both baselines with the
+same updated generator; the resulting comparison is reported below.
 
-Complexity. The implementation never enumerates joint contact
-tuples. With $|\mathcal A|$ reachable contact candidates per robot, exhaustive
-assignment would require $|\mathcal A|^N$ tuples; instead one greedy replacement
-sweep tests at most $N|\mathcal A|$ single-contact substitutions, each solving
-the force LP whose decision vector has dimension $2N$. Larger teams therefore
-enlarge the feasible wrench set but also increase contact-assignment and LP
-cost. Sec.~III-E2 states this explicitly.
+For complexity, with $|\mathcal A|$ reachable contact candidates per robot, an
+exhaustive joint assignment would require $|\mathcal A|^N$ tuples. The greedy
+stage instead tests at most $N|\mathcal A|$ single-contact substitutions, each
+solving a force LP with a $2N$-dimensional decision vector; the bounded
+backtracking stage adds only its specified finite budget. Larger teams therefore
+increase both the contact-assignment and LP costs, even though the full joint
+assignment space is not enumerated. Sec.~III-E2 states this distinction.
 
-Bottleneck, fix, and who benefits. The preliminary $N{=}4$ runs
-failed in 3 of 10 seeds (2 planning failures, 1 budget timeout). Diagnosis: for
+The preliminary $N{=}4$ runs failed in 3 of 10 seeds (2 planning failures and
+1 budget timeout). The diagnosis was that, for
 some push tasks \emph{no} full-team contact assignment exists --- small
 pushable faces, or the pairwise pusher-clearance constraint rejecting every
 remaining candidate of one robot --- and the legacy greedy replacement was
@@ -472,12 +497,12 @@ single push and holds its pose, a penalty is charged during mode ranking so
 full-team modes are preferred, and the full team is re-available for every
 later task).
 
-Both refinements sit in the shared mode generator, so the baselines inherit
-them too --- which is why the baseline cells were re-run on the same code.
-Instrumenting the 40 baseline trial logs (4 cells $\times$ 10 seeds) counts
-$20{,}890$ failed greedy replacements, $10{,}904$ backtracking assignments
-(rescuing $739$ of them) and $6{,}017$ per-task robot releases. The effect is
-therefore not PushAround-specific:
+Both refinements are in the shared mode generator, so the baseline cells were
+re-run with the same code. Across their 40 trial logs, instrumentation records
+$20{,}890$ failed greedy replacements, $10{,}904$ bounded-backtracking
+assignments (of which $739$ rescue a failed greedy replacement), and $6{,}017$
+per-task robot releases. These counts confirm that the added paths are exercised
+by the baselines as well as by PushAround:
 
 \begin{table}[h!]
 \centering
@@ -517,27 +542,23 @@ timeout, $N{=}4$ two timeouts; DFS-WCCG $N{=}4$ one timeout; PushAround none.
 \begin{figure}[h!]
 \centering
 \includegraphics[width=\linewidth]{resp_robot.pdf}
-\caption{Robot-team scaling after the shared mode-generation fix, with the
-pre-fix runs shown as dashed history. (a) Success rate: the refinement lifts
-$N{=}4$ from 70\% to 100\% for PushAround, from 0\% to 80\% for SL-Push (sim)
-and from 80\% to 90\% for DFS-WCCG. (b) Planning time and (c) execution time of
-successful runs; the annotations in (c) are the push counts of SL-Push (sim),
-which needs twice as many pushes as PushAround.}
+\caption{Robot-team scaling after the shared mode-generation refinement, with
+the pre-fix runs shown as dashed history. At $N{=}4$, the observed success rate
+is 100\% for PushAround, 80\% for SL-Push (sim), and 90\% for DFS-WCCG.
+(b) Planning time and (c) execution time of successful runs; the annotations
+in (c) are the push counts of SL-Push (sim).}
 \label{fig:resp-robot}
 \end{figure}
 
-\noindent After the fix, all three methods solve
-80--100\% of the team-size trials, so \emph{we no longer claim that the
-baselines degrade with team size}, and the success-rate differences at
-$N{=}3,4$ lie within overlapping Wilson intervals (at $N{=}4$: PushAround
-$[0.72,1.00]$, DFS-WCCG $[0.60,0.98]$, SL-Push (sim) $[0.49,0.94]$). What
-remains separated is (i) \emph{consistency}: PushAround is the only method with
-$30/30$ successes over $N{=}2,3,4$; and (ii) \emph{efficiency}: $24$--$30$\,s
-of planning and $97$--$110$\,s of execution versus $102$--$143$\,s and
-$172$--$193$\,s for DFS-WCCG (whose planning-time standard deviation reaches
-$183$\,s at $N{=}3$), and $10$--$11$ pushes versus $20$--$31$ for SL-Push
-(sim). The manuscript states this narrower claim rather than a monotone
-team-size trend.
+\noindent After the refinement, all three methods solve 80--100\% of the
+team-size trials, and the success-rate intervals at $N{=}3,4$ overlap (at
+$N{=}4$: PushAround $[0.72,1.00]$, DFS-WCCG $[0.60,0.98]$, and SL-Push (sim)
+$[0.49,0.94]$). We therefore make no monotone team-size claim. The observed
+separation is descriptive: PushAround is the only method with $30/30$ successes
+over $N{=}2,3,4$; at $N{=}3,4$ it uses $29$--$30$\,s of planning and
+$97$--$110$\,s of execution, compared with $102$--$143$\,s and
+$176$--$178$\,s for DFS-WCCG, while SL-Push (sim) requires $172$--$193$\,s of
+execution and $20$--$31$ pushes.
 
 
 \begin{figure}[h!]
@@ -549,22 +570,21 @@ pushing task (before contact and during the push) below.}
 \label{fig:resp-robot-scenes}
 \end{figure}
 
-\noindent\textbf{Changes in the revised manuscript.} The manuscript text was revised as described above and is quoted verbatim below (Page 4, Sec. III-C2; Page 7, Sec. IV-A6 and Table III; Page 5, Sec. III-E2):
+\noindent\textbf{Changes in the revised manuscript.} Sec.~III-C2 (Page~4)
+now describes the shared mode-generation refinements and their preference for
+full-team assignments. Sec.~IV-A6 and Table~III (Page~7) report the post-fix
+$N\in\{2,3,4\}$ comparison for all policies, while Sec.~III-E2 (Page~5)
+explains the bounded contact-assignment search:
 \begin{itemize}
-\item Sec.~III-C2 now describes the two refinements:
-\change{swept over contact slots until $\mathrm{J}_{\texttt{MF}}^m$ no longer
-decreases; a bounded backtracking variant removes the robot-order sensitivity
-of this replacement. If no full-team assignment exists for a task, e.g., on
-small faces or under the pairwise pusher-clearance constraint, one robot is
-released for that single push (charged a penalty when ranking modes, so
-full-team modes are preferred) and the full team is available again
-afterwards.}
-\item Sec.~IV-A6 and Table~III report $N\in\{2,3,4\}$; the robot-team group of
-Table~III now lists PushAround and both baseline policies at $N{=}3$ and
-$N{=}4$ (success, $PT$, $ET$), so the equal-footing comparison is visible in the
-table itself rather than only in the text.
-\item Sec.~III-E2 states the $N|\mathcal A|$ versus $|\mathcal A|^N$
-contact-assignment argument.
+\item The revised text explains that bounded backtracking reduces the
+robot-order sensitivity of greedy replacement, and that a temporary per-task
+robot release is penalized so full-team modes remain preferred.
+\item The robot-team group of Table~III reports success, planning time, and
+execution time for PushAround and both baselines at $N{=}3$ and $N{=}4$, using
+10 seeds per cell.
+\item Sec.~III-E2 contrasts the $N|\mathcal A|$ greedy stage with the
+$|\mathcal A|^N$ exhaustive assignment space and notes the finite backtracking
+budget.
 \end{itemize}
 
 %==============================
@@ -602,94 +622,92 @@ DFS-WCCG & 4 & 5 & 4/5 & 131.0 & 190.9 & --- & ---\\
 \end{tabular}
 \end{table}
 
+%==============================
 \begin{shaded*}
 \noindent \textbf{Q:}
 {\itshape
-What guarantees, if any, does the hybrid search provide regarding solution
-quality?
+What guarantees, if any, does the hybrid search provide regarding
+solution quality?
 }
 \end{shaded*}
 
 \noindent \textbf{A:}
-Thank you for insisting on this. No global optimality or completeness guarantee
-is claimed, and the revision now says so explicitly in three places rather than
-leaving it implicit.
+We appreciate this question. No global optimality or completeness guarantee is
+claimed, and the revision now states this explicitly in the formulation,
+node-selection, and termination discussions.
 
 PIHS samples a finite set of pushing directions and contact modes, uses bounded
 gap lookahead, ranks nodes with a heuristic best-first priority whose
 remaining-cost term is \emph{not} required to be admissible, and terminates at
 the first physics-validated $W$-clear solution. The returned schedule is
-therefore a feasible schedule, not a globally minimal one. Consistently,
-Eq.~(5) is presented as the clearance cost that ranks candidate schedules;
-it is also stated that the objective couples obstacle selection, mode
-generation, and switching into a hybrid combinatorial--continuous problem that
-the implemented search does not solve to global optimality.
+therefore a feasible schedule under the evaluation model, not a globally
+minimal one. Eq.~(5) is consequently presented as the clearance cost that ranks
+candidate schedules; it does not turn the implemented search into a solver of
+the underlying continuous hybrid optimization problem.
 
-However, the experiments show that the search is far from enumerating the space.
-Across the density sweep the first physics-validated schedule is returned after a
-median of \textbf{10} node expansions (mean $13$, max $57$), \textbf{47} visited
-snapshots (mean $64$) and \textbf{60} parallel simulations (mean $85$), i.e.\ a
-small fraction of the sampled candidate space, at a median planning time of
-$10.1$\,s. The ablations support the same conclusion from the other side:
-removing gap-lookahead or reinsertion lowers success by more than ten points, so
-the quality of the returned schedule rests on the search components rather than
-on brute force. The returned schedules are also economical in absolute terms ---
-at $M{=}45$ PushAround still returns a successful plan within the budget
-($53.4$\,s of planning), whereas the baselines either fail or exceed it.
+Completeness is also not guaranteed: a feasible scene may require an unsampled
+pushing direction, contact assignment, or deeper recursion, or may exceed the
+finite computation budget. The node-expansion counts and ablations characterize
+empirical search efficiency and solution-finding reliability; they are not
+guarantees of solution quality.
 
-\noindent\textbf{Changes in the revised manuscript.} The manuscript text was revised as described above and is quoted verbatim below (Page 2, Sec. II-D; Page 4, Sec. III-D; Page 5, Sec. III-D, node selection; Page 5, Sec. III-D, termination):
+\noindent\textbf{Changes in the revised manuscript.} Sec.~II-D (Page~2), the
+node-selection discussion (Page~5), and the termination discussion (Page~5)
+now describe Eq.~(5) as a ranking cost and explicitly state the limitations
+introduced by finite sampling, bounded lookahead, a non-admissible heuristic,
+and first-feasible termination:
 \begin{itemize}
-\item \change{Equation~(5) ranks feasible schedules; PIHS uses
-finite sampling and does not guarantee global optimality of the continuous
-hybrid objective.}
-\item \change{The search operates on a finite sampled candidate set
-and therefore does not guarantee global optimality or completeness of the
-underlying continuous hybrid planning problem.}
-\item \change{The remaining-cost term is a heuristic and is not required to be
-admissible. The score prioritizes nodes by realized cost and promising future
-actions, but it does not provide an A* optimality guarantee.}
-\item The returned schedule is described as a
-feasible solution satisfying the terminal clearance condition and validated
-transitions, without implying global minimality of
-$\mathcal J_{\mathrm{clr}}(\pi)$.
+\item The formulation now describes Eq.~(5) as ranking feasible schedules and
+limits the claim to simulator-validated feasibility.
+\item The search and termination text state that finite sampling and a finite
+computation budget do not guarantee completeness.
+\item The node-selection text identifies the remaining-cost term as a
+non-admissible heuristic and makes clear that the priority does not provide an
+A* optimality guarantee.
 \end{itemize}
+
+%==============================
 
 %==============================
 \begin{shaded*}
 \noindent \textbf{Q:}
 {\itshape
-Is the time needed for the final vehicle to actually traverse the cleared
-corridor included in this objective, or is the objective only concerned with
-clearing the obstacles? Similarly, does $J$ only capture the robots' effort in
-moving the obstacles?
+The objective includes the total duration $T$ and the control-effort
+cost $J$. Is the time needed for the final vehicle to actually traverse
+the cleared corridor included in this objective, or is the objective
+only concerned with clearing the obstacles? Similarly, does $J$ only
+capture the robots' effort in moving the obstacles?
 }
 \end{shaded*}
 
 \noindent \textbf{A:}
-The reviewer's reading is exactly the intended one, and the manuscript now
-states both points explicitly for the same reason.
+Yes. The objective covers the robotic clearance operation only, while the
+vehicle traversal appears only through the terminal clearance condition.
 
 \begin{itemize}
-\item $T\triangleq\sum_{k=1}^{K}\Delta t_k$ is the duration of the robotic
-clearance operation \emph{only}. The traversal of the external vehicle is not
-included in $T$; it enters the formulation solely as the terminal
-$W$-clearance condition.
-\item $J(\cdot)$ is the simulation-estimated manipulation effort of the robots
-when moving obstacles. It does not model vehicle traversal cost. In addition, the vehicle does not move concurrently with the clearing operation: it traverses the corridor only after the robots have finished clearing, which is why traversal time plays no role in the objective and appears only in the terminal $W$-clearance condition.
+\item $T\triangleq\sum_{k=1}^{K}\Delta t_k$ is the duration of robotic
+clearance only; the external vehicle is not moving concurrently and traverses
+the corridor after clearing is complete.
+\item $J(\cdot)$ is the simulation-estimated manipulation effort for moving the
+obstacles. Vehicle traversal time is not part of the objective and is represented
+only by the terminal $W$-clearance condition.
 \end{itemize}
 
-\noindent\textbf{Changes in the revised manuscript:} Sec.~II-D now reads
-\change{where $T\triangleq\sum_{k=1}^{K}\Delta t_k$ denotes the robotic
-clearance duration excluding subsequent vehicle traversal, and $J(\cdot)$ is
-the simulation-estimated manipulation effort. Vehicle traversal is considered
-only through the terminal $W$-clearance condition.}
+\noindent\textbf{Changes in the revised manuscript:} Sec.~II-D (Page~2) now
+defines $T$ as the robotic clearance duration, defines $J(\cdot)$ as the
+simulation-estimated manipulation effort, and states that the external vehicle
+traverses only after clearing and is represented through the terminal
+$W$-clearance condition.
+
+%==============================
 
 %==============================
 \begin{shaded*}
 \noindent \textbf{Q:}
 {\itshape
-The paper demonstrates online replanning when the real execution differs from
-the simulation. How can simple pushing robots evaluate this discrepancy?
+The paper demonstrates online replanning when the real execution
+differs from the simulation, How can simple pushing robots evaluate
+this discrepancy?
 }
 \end{shaded*}
 
@@ -711,81 +729,105 @@ off-axis push is accepted rather than aborted, because such deviations are
 routinely recoverable by the subsequent tasks. No onboard force sensing or
 mass/friction estimation is required.
 
-\noindent\textbf{Changes in the revised manuscript:} Sec.~IV-B1 now states
-\change{Motion capture provides the current robot and object poses, which are
-compared with the successor state predicted by $\mathsf{EvalSim}$: a push is
-deemed to deviate and triggers replanning only when the measured object
-position error exceeds 0.3\,m or its orientation error exceeds $\pi/4$. The
-threshold is deliberately loose, tolerating a slight over-push or off-axis
-push.} Sec.~III-E1 additionally lists the non-pose triggers.
+\noindent\textbf{Changes in the revised manuscript:} Sec.~IV-B1 (Page~7)
+now defines the pose-based deviation thresholds used by the motion-capture
+monitor, while Sec.~III-E1 lists the additional contact, stall, task-predicate,
+and connectivity triggers.
 
 %========================================
 \newpage
-\section*{To Reviewer 4}
-%========================================
+
+%==============================
 \begin{shaded*}
 \noindent \textbf{Q:}
 {\itshape
-Overall, I think the approach is technically reasonable and the experiments
-support the proposed method. My comments are mainly about clarification rather
-than major technical concerns, and I would support acceptance after these
-revisions.
+Overall, this is a good contribution to the field and a well-written
+paper. The combination of geometric reasoning, recursive pushing, and
+physics-informed search is interesting, and the real-world validation
+strengthens the contribution.
+}
+\end{shaded*}
+
+\noindent \textbf{A:}
+We thank the reviewer for the encouraging assessment. The revision leaves the
+planning framework, the recursive-pushing mechanism and the hardware validation
+unchanged, and concentrates on the clarifications and the additional
+evaluations requested in the review.
+
+\newpage
+\section*{To Reviewer 4}
+%========================================
+
+%==============================
+\begin{shaded*}
+\noindent \textbf{Q:}
+{\itshape
+This paper presents PushAround, a physics-informed hybrid search method
+for collaborative path clearing. The method uses a W-clearance
+connectivity graph to identify blocking gaps, ranks these gaps, and
+generates multi-robot pushing actions that are checked using
+short-horizon physics simulation. The paper includes simulation
+comparisons, ablation studies, scalability tests, and hardware
+experiments.
+
+Overall, I think the paper addresses an interesting problem and the
+proposed framework is practical. The combination of geometric reasoning
+and physics simulation is useful, and the experimental results are
+encouraging. I would support acceptance after revision, but I think a
+few parts of the method need some clarification.
 }
 \end{shaded*}
 
 \noindent \textbf{A:}
 We thank the reviewer for the supportive assessment and for pinpointing four
 places where the presentation was under-specified. Each is addressed below with
-the corresponding revised text.
+the corresponding revised text. The supplementary evaluation package has also
+been updated where relevant.
+
+%==============================
 
 %==============================
 \begin{shaded*}
 \noindent \textbf{Q:}
 {\itshape
-The WCCG connectivity condition is important since it is used throughout the
-search and also determines termination. The intuition is reasonably clear, but
-the paper would benefit from a little more justification here, or perhaps a comparison with a standard
-configuration-space connectivity check. This seems especially relevant when the
-obstacles are non-convex.
+First, the WCCG connectivity condition is important since it is used
+throughout the search and also determines termination. The intuition is
+reasonably clear, but I think the paper would benefit from a little
+more justification here, or perhaps a comparison with a standard
+configuration-space connectivity check. This seems especially relevant
+when the obstacles are non-convex.
 }
 \end{shaded*}
 
 \noindent \textbf{A:}
-We agree, and we provide both a derivation and the suggested empirical check.
+We agree, and we provide both the requested comparison and an empirical
+validation. Standard alternatives first inflate the obstacles by $W/2$ and then
+test connectivity on an occupancy grid (BFS/A* or a distance transform) or on a
+sampling-based roadmap (PRM/RRT-style). These approaches approximate the answer
+at a chosen grid resolution or sample density and generally return a binary
+connectivity result; the representation must also be updated as obstacles move.
+WCCG instead builds an embedded graph directly from the clearance-relevant
+geometry. Its annotated bridges expose the separating bottleneck and frontier
+sequence that PIHS uses to choose the next obstacle, in addition to answering
+the connectivity query. The same-face test is the graph query used to evaluate
+the terminal condition; its validity follows from the $W/2$ inflation
+interpretation under the stated decomposition. Non-convex obstacles are handled
+by the clearance-relevant convex decomposition described in Sec.~III-A2
+(Page~3).
 
-A clearance-connectivity query is conventionally answered by inflating the
-obstacles by $W/2$ and then testing connectivity either on an occupancy grid
-(BFS/A* or a distance transform) or with a sampling-based roadmap
-(PRM/RRT-style). Both are
-correct given sufficient resolution or samples, but each fixes a resolution or a
-sample count, must be rebuilt whenever an obstacle moves during clearing, and
-returns a binary answer only. WCCG is built directly from the obstacle geometry
-instead: every clearance-critical closest-point pair becomes an annotated bridge,
-so a query returns not only whether the start and goal are $W$-clear-connected,
-but also, when they are not, the \emph{bottleneck gap} that separates them and
-the frontier sequence that PIHS should clear next. That gap graph is what the
-search consumes, and a grid or roadmap query would have to be post-processed to
-recover it. The same-face rule is simply the concrete query we apply to this
-graph, and it follows from the standard inflation interpretation: inflating by
-$W/2$ turns every gap narrower than $W$ into an overlapping barrier, so two
-points are $W$-clear-connected exactly when they lie in the same face of the
-embedded graph. Non-convex obstacles are handled by the clearance-relevant
-convex decomposition of Sec.~III-A2 (Page~3), which is why the validation below
-separates convex, mixed and non-convex scenes.
-
- Because degenerate geometry
-and decomposition choices still matter in practice, we also compare WCCG
-against two independent references on 300 random scenes stratified into convex,
-mixed, and non-convex obstacles: a continuous configuration-space (CC)
-reference and a rasterized reference (FR) at $0.02$\,m, verified at $0.01$\,m.
+Because geometric degeneracies and decomposition choices still matter in
+practice, we compare WCCG against two independent references on 300 random
+scenes stratified into convex, mixed, and non-convex obstacles: a continuous
+configuration-space (CC) reference and a rasterized reference (FR) at
+$0.02$\,m, verified at $0.01$\,m.
 CC and FR disagree in \textbf{4/300} cases, all of which are raster-unstable
 near narrow or tangential contacts. On all 300 scenes, WCCG agrees with the
 continuous reference and produces \textbf{zero false positives and zero false
-negatives} --- a false positive would be the dangerous case, as it could
-terminate PIHS prematurely. WCCG additionally answers a query in
-\textbf{1.07}\,ms on average, comparable to CC ($1.36$\,ms) and
-$\mathbf{227\times}$ faster than FR ($243.1$\,ms), while supplying the gap
-graph that PIHS consumes.
+negatives}; a false positive would be the dangerous case because it could
+terminate PIHS prematurely. WCCG answers a query in \textbf{1.07}\,ms on
+average, compared with $1.36$\,ms for CC and $243.1$\,ms for FR. The latter
+ratio is an implementation-level $\mathbf{227\times}$ speed difference, and
+WCCG additionally supplies the gap graph consumed by PIHS.
 
 \begin{table}[h!]
 \centering
@@ -822,136 +864,125 @@ cost on a logarithmic scale.}
 \label{fig:resp-wccg}
 \end{figure}
 
-\noindent\textbf{Changes in the revised manuscript.} The manuscript text was revised as described above and is quoted verbatim below (Page 3, Sec. III-A2; Page 6, Sec. IV-A3 and Table I; Page 3, Sec. III-A):
+\noindent\textbf{Changes in the revised manuscript.} Sec.~III-A and
+Sec.~III-A2 (Page~3) now identify occupancy-grid and sampling-based connectivity
+checks as the main alternatives and explain why WCCG exposes the bottleneck
+structure needed by PIHS. Sec.~IV-A3 and Table~I (Page~6) add the 300-scene
+comparison and the timing scope:
 \begin{itemize}
-\item \change{The criterion follows the standard
-configuration-space inflation interpretation: expanding obstacles by a disk of
-radius $W/2$ turns gaps narrower than $W$ into overlapping barriers. Non-convex
-obstacles are handled through clearance-relevant decomposition, after which
-WCCG records the separating bottlenecks. The consistency between WCCG
-connectivity and continuous and rasterized configuration-space references is
-further evaluated in Sec.~IV-A3.}
-\item Sec.~IV-A3 and Table~I report the validation above; the runtime columns
-are now backed by the released timing logs rather than by an earlier
-statement, and the table footnote states the measurement scope --- CC, FR and
-WCCG are timed in one harness over the same 300 scenes, with the WCCG query
-served by its compiled backend.
-\item The absolute phrase ``eliminates resolution-induced errors'' was replaced
-by an accurate statement: WCCG avoids introducing a workspace-grid resolution
-into the repeated queries, while still depending on a correct decomposition and
-bridge construction.
+\item The manuscript now derives the criterion from configuration-space
+inflation, describes the clearance-relevant treatment of non-convex obstacles,
+and states that consistency with CC and FR is evaluated numerically.
+\item Table~I reports agreement, false-positive/false-negative counts, and
+runtime on the same 300 scenes; its note specifies that the timing comparison
+uses one harness and a compiled WCCG backend.
+\item The text now says that WCCG avoids introducing a workspace-grid
+resolution into repeated queries, while still depending on a correct
+decomposition and bridge construction.
 \end{itemize}
+
+%==============================
 
 %==============================
 \begin{shaded*}
 \noindent \textbf{Q:}
 {\itshape
-Eq.~(5) is written as an optimization problem, while the implementation uses
-sampled pushing directions, limited lookahead, and a heuristic best-first search
-that terminates once a feasible solution is found. The authors should clarify
-whether any optimality or completeness claim is intended. If not, it may be better to
-describe Eq.~(5) as the objective used to guide the search.
+Second, I was a little confused about the relationship between Eq.~(5)
+and the actual search procedure. Eq.~(5) is written as an optimization
+problem, while the implementation uses sampled pushing directions,
+limited lookahead, and a heuristic best-first search that terminates
+once a feasible solution is found. The authors should clarify whether
+any optimality or completeness claim is intended. If not, it may be
+better to describe Eq.~(5) as the objective used to guide the search.
 }
 \end{shaded*}
 
 \noindent \textbf{A:}
-We agree completely with this reading and have adopted the reviewer's
-suggested framing. Eq.~(5) is now introduced as the clearance cost
-$\mathcal J_{\mathrm{clr}}(\pi)$ that ranks candidate schedules. The text
-distinguishes three levels explicitly: (i) the underlying continuous hybrid
-problem, (ii) the finite candidate space actually sampled by PIHS, and (iii)
-the implemented algorithm --- a feasibility-oriented heuristic best-first
-search that stops at the first validated $W$-clear solution. No optimality or
-completeness claim is made at any level.
+We agree with the reviewer's suggested framing. Eq.~(5) is now introduced as
+the clearance cost $\mathcal J_{\mathrm{clr}}(\pi)$ that ranks candidate
+schedules. PIHS is a feasibility-oriented heuristic best-first search over a
+finite sampled set of pushing directions and contact modes; it uses bounded
+lookahead and stops at the first simulator-validated $W$-clear solution. The
+remaining-cost term is not required to be admissible, so the first feasible
+schedule is not claimed to minimize $\mathcal J_{\mathrm{clr}}$.
 
-The distinction matters in both directions. Completeness would require every
-$W$-clear-clearable scene to admit a schedule inside the sampled candidate set,
-which we cannot guarantee: pushing directions, contact assignments and lookahead
-are bounded, so a scene whose only solution needs an unsampled direction or a
-deeper recursion would be reported as unsolved. What we do claim, and verify in
-the experiments, is that any returned schedule is physically validated and
-satisfies the terminal clearance condition, and that in the evaluated scenes a
-schedule is returned whenever the baselines return one. Optimality would require
-solving the continuous hybrid program in Eq.~(5); the priority of Eq.~(14) is a
-heuristic whose remaining-cost term is not admissible, so the first feasible
-schedule is not claimed to minimize $\mathcal J_{\mathrm{clr}}$. The objective
-still provides a consistent ranking that steers the search towards cheap
-clearances, which the ablation study exercises: removing the ranking terms
-degrades success rather than merely slowing the search. This is now stated in Sec.~II-D
-(Page~2), in the node-selection discussion (Page~5, where the remaining-cost
-term is explicitly not required to be admissible) and in the termination
-discussion (Page~5).
+Completeness is likewise not guaranteed. A feasible scene may require an
+unsampled direction, contact assignment, or deeper recursion, or may exceed the
+finite computation budget. The returned schedule is guaranteed only to satisfy
+the terminal clearance condition and the validated transitions under the
+evaluation model. The empirical node-expansion counts and ablations describe
+search efficiency and solution-finding reliability; they do not constitute a
+formal solution-quality guarantee. These distinctions are now stated in
+Secs.~II-D and III-D (Pages~2 and 5).
+
+%==============================
 
 %==============================
 \begin{shaded*}
 \noindent \textbf{Q:}
 {\itshape
-It is not completely clear how the optimized contact forces are used on the
-hardware. The pushing mode includes both contact points and forces, but the
-execution section mainly describes moving the robots to the contact configuration
-and then following the desired pushing direction. It would be useful to briefly
-explain the low-level controller and whether these forces are actually commanded
-or are mainly used to check feasibility. Related to this, I am also not sure
-whether coupled motion between multiple objects, such as in the second hardware
-experiment, is explicitly considered during planning or is mostly handled by the
-physics simulation.
+Third, it is not completely clear how the optimized contact forces are
+used on the hardware. The pushing mode includes both contact points and
+forces, but the execution section mainly describes moving the robots to
+the contact configuration and then following the desired pushing
+direction. It would be useful to briefly explain the low-level
+controller and whether these forces are actually commanded or are
+mainly used to check feasibility. Related to this, I am also not sure
+whether coupled motion between multiple objects, such as in the second
+hardware experiment, is explicitly considered during planning or is
+mostly handled by the physics simulation.
 }
 \end{shaded*}
 
 \noindent \textbf{A:}
-Thank you for raising both points; we agree that the interface between the
-optimized forces and the actual hardware commands was not made explicit, and we
-have rewritten the relevant paragraph accordingly.
+Thank you for raising both points. The optimized forces are not commanded on
+the hardware; they are used to certify wrench feasibility, while the hardware
+tracks a short-horizon object-motion reference generated by the simulator.
 
-For a candidate contact tuple, the
-LP decides whether the robots can generate a wrench compatible with the desired
-object motion within the modelled force limits, friction cone, and unilateral
-contact constraints. The optimized vector is therefore used to \emph{certify
-and rank} wrench feasibility; it is not sent to the hardware. The Mecanum UGVs
-receive planar velocity commands (\texttt{geometry\_msgs/Twist}) and track the
-mode-defined contact poses. The controller also follows a \emph{short forward
-object-motion reference}: the object displacement and rotation predicted by
-$\mathsf{EvalSim}$ over the next control interval (a few centimetres and a few
-degrees), which the velocity commands are commanded to realize. The optimized
-force therefore never reaches the actuators --- it only determines whether such
-a reference lies inside the feasible wrench set, and the reference itself is what
-the feedback controller tracks, with motion-capture feedback and replanning
-absorbing the difference.
+For a candidate contact tuple, the LP checks whether the robots can generate a
+wrench compatible with the desired object motion within the modeled force,
+friction, and unilateral-contact constraints. The optimized force vector is
+therefore a feasibility and ranking variable, not a hardware setpoint. Over the
+next control interval, $\mathsf{EvalSim}$ predicts a short forward reference
+(a few centimetres and a few degrees); the velocity-level controller converts
+this reference and the motion-capture pose error into planar velocity commands
+for the Mecanum UGVs. Feedback and replanning absorb the difference between the
+reference and the realized motion.
 
-Coupled motion is instead an outcome of the rollout. A high-level strategy
-names one directly targeted obstacle, but $\mathsf{EvalSim}$ advances all
-robots and all movable bodies jointly; object--object contacts are resolved by
-the physics engine and the complete successor scene is returned to the search.
-The adjacent T-shaped block moved in hardware Scenario~2 is exactly this
-contact-induced motion, not a separately scripted task --- which is also why
-the revision keeps the coupled rollout as the source of physical validation.
+Coupled motion is handled by the rollout. Although a high-level strategy names
+one directly targeted obstacle, $\mathsf{EvalSim}$ advances all robots and all
+movable bodies jointly; object--object contacts are resolved by the physics
+engine and the complete successor scene is returned to the search. The adjacent
+T-shaped block in hardware Scenario~2 therefore moves as a contact-induced
+outcome rather than as a separately scripted task.
 
-\noindent\textbf{Changes in the revised manuscript.} The manuscript text was revised as described above and is quoted verbatim below (Page 2, Sec. II-C; Page 4, Sec. III-C3; Pages 5 and 7, Secs. III-E1 and IV-B1; Page 7, Sec. IV-B2; Pages 4 and 6, Secs. III-C2 and IV-A1; Page 6, Sec. IV-A1; Pages 6--7, Secs. IV-A1 and IV-A6):
+\noindent\textbf{Changes in the revised manuscript.} The manuscript now
+clarifies, in Secs.~II-C, III-C3, III-E1, and IV-B1--B2 (Pages~2, 4--7), that
+the optimized force is a feasibility variable, the controller tracks a
+short-horizon simulator reference using pose feedback, and coupled object
+motion is resolved by the joint rollout:
 \begin{itemize}
-\item \change{The force vector $\mathbf{u}_m$ serves as a
-feasibility variable to certify wrench generation under the modeled contact and
-actuation constraints rather than a directly commanded control input.}
-\item \change{The rollout jointly simulates all robots and movable
-bodies, thereby capturing contact-induced object interactions.} and
-\change{$\mathbf{u}_m^k$ certifies wrench feasibility while hardware tracks the
-contact geometry from pose/velocity commands.}
-\item Sec.~III-E1 and Sec.~IV-B1 describe the velocity-level controller and the
-motion-capture feedback loop.
-\item \change{This neighboring-object motion is not a separately
-encoded action but an emergent outcome of the coupled rigid-body rollout in
-$\mathsf{EvalSim}$, whose snapshot is used to update the WCCG and continue
-replanning.}
+\item The force-feasibility, velocity-control, motion-capture, and joint-rollout
+interfaces are now described explicitly in the corresponding sections.
+\item The hardware discussion now states that the neighboring-object motion in
+Scenario~2 is an emergent outcome of $\mathsf{EvalSim}$ and is fed back through
+the updated scene and WCCG.
 \end{itemize}
+
+%==============================
 
 %==============================
 \begin{shaded*}
 \noindent \textbf{Q:}
 {\itshape
-A few more implementation details, such as robot reachability checks, timeout
-limits, and computation budget, would make the comparison easier to interpret.
-I would also suggest adding error bars or standard deviations, particularly for
-the scalability experiment where only five seeds are used for each obstacle
-density.
+The experiments are generally convincing. The paper already mentions
+that the baselines use the same W-clearance criterion, object
+distribution, and execution simulator. However, a few more
+implementation details, such as robot reachability checks, timeout
+limits, and computation budget, would make the comparison easier to
+interpret. I would also suggest adding error bars or standard
+deviations, particularly for the scalability experiment where only five
+seeds are used for each obstacle density.
 }
 \end{shaded*}
 
@@ -964,11 +995,11 @@ full protocol is summarized in Table~\ref{tab:protocol}.
 associated pre-contact pose is collision-free and the transition planner can
 reach it from the current robot configuration; a multi-robot tuple is rejected
 if any assigned robot fails this check. All compared methods use this same
-check, together with identical footprints, obstacle realizations, success
+check, together with the same footprints, obstacle realizations, success
 criterion, and execution simulator.
-\item All suites use a per-trial timeout of \textbf{800\,s}, a
-cap of \textbf{20{,}000} control steps, and \textbf{8} parallel workers; plan
-failures, timeouts and timeout-pruned trials are assigned the 800\,s value
+\item All suites use a per-trial timeout of \textbf{800\,s}, a per-trial cap of
+\textbf{20{,}000} simulator control steps, and \textbf{8} parallel workers;
+plan failures, timeouts and timeout-pruned trials are assigned the 800\,s value
 before averaging planning times, and the failure composition is reported per
 condition.
 \item The density sweep, the robot-team study (all
@@ -976,27 +1007,26 @@ policies) and the mismatch study for PushAround use 10 seeds per cell; only the
 \emph{mismatch} baseline supplements use 5 seeds and are labelled as such.
 Fig.~\ref{fig:resp-reliability} reports Wilson 95\% intervals for every headline
 number, and Table~III in the manuscript reports mean$\pm$s.d.
-\item The original manuscript stated a 400\,s cap; the
-stored logs use 800\,s, and the revision corrects this.
+\item The original manuscript stated a 400\,s cap. The stored logs and the
+revised protocol use 800\,s; the earlier statement and the corresponding
+failure-time imputation have been corrected.
 \end{itemize}
 
 \begin{figure}[h!]
 \centering
 \includegraphics[width=\linewidth]{resp_reliability.pdf}
 \caption{Wilson 95\% confidence intervals of the headline success rates. The
-gaps between PushAround and the baselines are much larger than the interval
-widths, so the conclusions are stable despite the small per-cell sample sizes
-(10 seeds in the robot-team study; 10 for PushAround and 5 for the mismatch
-baseline supplements).}
+intervals make sampling uncertainty explicit: the density and mismatch
+comparisons show clear separation, whereas some robot-team cells overlap and
+are interpreted descriptively.}
 \label{fig:resp-reliability}
 \end{figure}
 
-\noindent\textbf{Changes in the revised manuscript:} Sec.~IV-A1 now states
-\change{All methods use the same robot footprints, obstacle configurations,
-collision/reachability checks, and execution simulator, and are given the same
-per-trial timeout of 800\,s and planning budget of 20{,}000 control steps;
-unsuccessful trials are assigned the 800\,s cap in the planning-time
-statistics.}
+\noindent\textbf{Changes in the revised manuscript:} Sec.~IV-A1 (Page~6) now
+specifies the common footprints, scene configurations, collision and
+reachability checks, simulator, 800\,s timeout, and 20,000-step simulator cap.
+It also states how unsuccessful trials enter the capped planning-time
+statistics.
 
 %========================================
 \newpage
@@ -1016,8 +1046,8 @@ Study & Workspace & $M$ & $N$ & Seeds & Timeout / cap & Workers\\
 \midrule
 Main comparison (Table~II) & $8{\times}5$\,m & 10 & 2 & 40 trials & 800\,s / 20k & 8\\
 Density (Table~III, Fig.~10) & $8{\times}8$\,m & 15--45 & 2 & 10 per density & 800\,s / 20k & 8\\
-Mismatch (Table~III) & $8{\times}8$\,m & 30 & 2 & 10 (ours) / 5 (base) & 800\,s / 20k & 8\\
-Robot scaling (Table~III) & $8{\times}8$\,m & 30 & 2--4 & 10 (ours) / 5 (base) & 800\,s / 20k & 8\\
+Mismatch (Table~III) & $8{\times}8$\,m & 30 & 2 & 10 per cell & 800\,s / 20k & 8\\
+Robot scaling (Table~III) & $8{\times}8$\,m & 30 & 2--4 & 10 per cell & 800\,s / 20k & 8\\
 WCCG validation (Table~I) & $8{\times}8$\,m & 10 & --- & 300 scenes & n/a & 4 (C++)\\
 \bottomrule
 \end{tabular}
@@ -1033,7 +1063,24 @@ $M{=}30$, $N{=}2$) and does not affect success rates.
 \end{threeparttable}
 \end{table}
 
-\section*{Updated, added and removed figures}
+%==============================
+\begin{shaded*}
+\noindent \textbf{Q:}
+{\itshape
+Overall, I think the approach is technically reasonable and the
+experiments support the proposed method. My comments are mainly about
+clarification rather than major technical concerns, and I would support
+acceptance after these revisions.
+}
+\end{shaded*}
+
+\noindent \textbf{A:}
+We thank the reviewer for the supportive assessment. The four clarifications
+above are addressed without changing the method, and the added protocol details,
+dispersion statistics and the configuration-space comparison are intended to
+make the evaluation easier to interpret.
+
+\section*{Updated and added figures}
 %========================================
 
 Three figures of the manuscript changed in this revision. In each pair the
@@ -1049,11 +1096,11 @@ revised version; the page refers to the location in the revised manuscript.
 \hfill
 \subfigure[Revised: ten seeds per density, mean$\pm$s.d., 800\,s cap.]{\includegraphics[width=0.47\linewidth]{new_density.pdf}}
 \caption{Obstacle-density scaling, original (left) versus revised (right). The
-panel structure is unchanged, so the two images are directly comparable: the
-revision doubles the number of independent seeds per density, adds
-one-standard-deviation error bars to both timing panels, and caps unsuccessful
-trials at the 800\,s budget instead of 400\,s, so failed runs are no longer
-displayed as favourable planning times.}
+panel structure is unchanged, so the two images are directly comparable. The
+revision doubles the number of independent seeds per density, adds dispersion
+to the timing results, and aligns the failed-trial statistic with the actual
+800\,s per-trial timeout; the earlier manuscript used a 400\,s cap in this
+summary.}
 \end{figure}
 
 %----------------------------------------------------------
@@ -1086,8 +1133,8 @@ obstacle-density axis alone: its left half keeps the representative $M{=}45$,
 two-robot run (snapshots above, WCCG overlays with the start face in blue below),
 while its right half adds the four-robot study ($M{=}30$, $N{=}4$) with the
 global initial and final states above and two magnified views of a single pushing
-task below. This supplies visual evidence for the team-size results of Table~III
-(Page~7), which previously had no accompanying figure.}
+task below. This provides a qualitative illustration of the team-size results in
+Table~III (Page~7), which previously had no accompanying scene figure.}
 \end{figure}
 
 \end{document}
