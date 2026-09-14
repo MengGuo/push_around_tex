@@ -478,11 +478,14 @@ same updated generator; the resulting comparison is reported below.
 
 For complexity, with $|\mathcal A|$ reachable contact candidates per robot, an
 exhaustive joint assignment would require $|\mathcal A|^N$ tuples. The greedy
-stage instead tests at most $N|\mathcal A|$ single-contact substitutions, each
-solving a force LP with a $2N$-dimensional decision vector; the bounded
-backtracking stage adds only its specified finite budget. Larger teams therefore
-increase both the contact-assignment and LP costs, even though the full joint
-assignment space is not enumerated. Sec.~III-E2 states this distinction.
+stage instead tests at most $N|\mathcal A|$ single-contact substitutions; when it
+fails, the bounded-backtracking search expands at most $B{=}2000$ partial
+assignments --- a fixed budget that does not grow with the team size --- and the
+subset fallback repeats that search for at most one excluded robot. Each
+resulting candidate is checked by a force LP with a $2N$-dimensional decision
+vector, so larger teams raise the contact-assignment and LP costs linearly in
+$N$ rather than exponentially. Sec.~III-E2 states this distinction and the
+budget used.
 
 The preliminary $N{=}4$ runs failed in 3 of 10 seeds (2 planning failures and
 1 budget timeout). The diagnosis was that, for

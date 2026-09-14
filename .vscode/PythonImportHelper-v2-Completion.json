@@ -1,5 +1,340 @@
 [
     {
+        "label": "autoconfig",
+        "importPath": "src.config.auto_config",
+        "description": "src.config.auto_config",
+        "isExtraImport": true,
+        "detail": "src.config.auto_config",
+        "documentation": {}
+    },
+    {
+        "label": "autoconfig",
+        "importPath": "src.config.auto_config",
+        "description": "src.config.auto_config",
+        "isExtraImport": true,
+        "detail": "src.config.auto_config",
+        "documentation": {}
+    },
+    {
+        "label": "PrioritizedMotionConfig",
+        "importPath": "src.config.policy_config.transition_config",
+        "description": "src.config.policy_config.transition_config",
+        "isExtraImport": true,
+        "detail": "src.config.policy_config.transition_config",
+        "documentation": {}
+    },
+    {
+        "label": "TransitionAstarConfig",
+        "importPath": "src.config.policy_config.transition_config",
+        "description": "src.config.policy_config.transition_config",
+        "isExtraImport": true,
+        "detail": "src.config.policy_config.transition_config",
+        "documentation": {}
+    },
+    {
+        "label": "TransitionControllerConfig",
+        "importPath": "src.config.policy_config.transition_config",
+        "description": "src.config.policy_config.transition_config",
+        "isExtraImport": true,
+        "detail": "src.config.policy_config.transition_config",
+        "documentation": {}
+    },
+    {
+        "label": "PushingControllerConfig",
+        "importPath": "src.config.policy_config.pushing_config",
+        "description": "src.config.policy_config.pushing_config",
+        "isExtraImport": true,
+        "detail": "src.config.policy_config.pushing_config",
+        "documentation": {}
+    },
+    {
+        "label": "numpy",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "numpy",
+        "description": "numpy",
+        "detail": "numpy",
+        "documentation": {}
+    },
+    {
+        "label": "Dict",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "Optional",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "List",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "Dict",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "Tuple",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "Optional",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "Any",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "BasePolicyConfig",
+        "importPath": "src.config.policy_config.base_policy_config",
+        "description": "src.config.policy_config.base_policy_config",
+        "isExtraImport": true,
+        "detail": "src.config.policy_config.base_policy_config",
+        "documentation": {}
+    },
+    {
+        "label": "os",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "os",
+        "description": "os",
+        "detail": "os",
+        "documentation": {}
+    },
+    {
+        "label": "sys",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "sys",
+        "description": "sys",
+        "detail": "sys",
+        "documentation": {}
+    },
+    {
+        "label": "deepcopy",
+        "importPath": "copy",
+        "description": "copy",
+        "isExtraImport": true,
+        "detail": "copy",
+        "documentation": {}
+    },
+    {
+        "label": "time",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "time",
+        "description": "time",
+        "detail": "time",
+        "documentation": {}
+    },
+    {
+        "label": "ReducedObjectState",
+        "importPath": "src.env.object",
+        "description": "src.env.object",
+        "isExtraImport": true,
+        "detail": "src.env.object",
+        "documentation": {}
+    },
+    {
+        "label": "Robot",
+        "importPath": "src.env.object",
+        "description": "src.env.object",
+        "isExtraImport": true,
+        "detail": "src.env.object",
+        "documentation": {}
+    },
+    {
+        "label": "Obstacle",
+        "importPath": "src.env.object",
+        "description": "src.env.object",
+        "isExtraImport": true,
+        "detail": "src.env.object",
+        "documentation": {}
+    },
+    {
+        "label": "EnvBase",
+        "importPath": "src.env.env",
+        "description": "src.env.env",
+        "isExtraImport": true,
+        "detail": "src.env.env",
+        "documentation": {}
+    },
+    {
+        "label": "EnvBase",
+        "importPath": "src.env.env",
+        "description": "src.env.env",
+        "isExtraImport": true,
+        "detail": "src.env.env",
+        "documentation": {}
+    },
+    {
+        "label": "ClutterBreaker_Config",
+        "importPath": "src.config.policy_config.clutterbreaker_config",
+        "description": "src.config.policy_config.clutterbreaker_config",
+        "isExtraImport": true,
+        "detail": "src.config.policy_config.clutterbreaker_config",
+        "documentation": {}
+    },
+    {
+        "label": "ClutterBreaker_Config",
+        "importPath": "src.config.policy_config.clutterbreaker_config",
+        "description": "src.config.policy_config.clutterbreaker_config",
+        "isExtraImport": true,
+        "detail": "src.config.policy_config.clutterbreaker_config",
+        "documentation": {}
+    },
+    {
+        "label": "*",
+        "importPath": "src.policy.clutterbreaker_policy.common_structures",
+        "description": "src.policy.clutterbreaker_policy.common_structures",
+        "isExtraImport": true,
+        "detail": "src.policy.clutterbreaker_policy.common_structures",
+        "documentation": {}
+    },
+    {
+        "label": "Mode",
+        "importPath": "src.policy.clutterbreaker_policy.common_structures",
+        "description": "src.policy.clutterbreaker_policy.common_structures",
+        "isExtraImport": true,
+        "detail": "src.policy.clutterbreaker_policy.common_structures",
+        "documentation": {}
+    },
+    {
+        "label": "TaskObjectGroup",
+        "importPath": "src.policy.clutterbreaker_policy.common_structures",
+        "description": "src.policy.clutterbreaker_policy.common_structures",
+        "isExtraImport": true,
+        "detail": "src.policy.clutterbreaker_policy.common_structures",
+        "documentation": {}
+    },
+    {
+        "label": "*",
+        "importPath": "src.policy.clutterbreaker_policy.collaborative_pusher.arc_transition",
+        "description": "src.policy.clutterbreaker_policy.collaborative_pusher.arc_transition",
+        "isExtraImport": true,
+        "detail": "src.policy.clutterbreaker_policy.collaborative_pusher.arc_transition",
+        "documentation": {}
+    },
+    {
+        "label": "CostEstimator",
+        "importPath": "src.policy.clutterbreaker_policy.collaborative_pusher.cost_estimator",
+        "description": "src.policy.clutterbreaker_policy.collaborative_pusher.cost_estimator",
+        "isExtraImport": true,
+        "detail": "src.policy.clutterbreaker_policy.collaborative_pusher.cost_estimator",
+        "documentation": {}
+    },
+    {
+        "label": "CostEstimator",
+        "importPath": "src.policy.clutterbreaker_policy.collaborative_pusher.cost_estimator",
+        "description": "src.policy.clutterbreaker_policy.collaborative_pusher.cost_estimator",
+        "isExtraImport": true,
+        "detail": "src.policy.clutterbreaker_policy.collaborative_pusher.cost_estimator",
+        "documentation": {}
+    },
+    {
+        "label": "ModeTable",
+        "importPath": "src.policy.clutterbreaker_policy.collaborative_pusher.mode_table",
+        "description": "src.policy.clutterbreaker_policy.collaborative_pusher.mode_table",
+        "isExtraImport": true,
+        "detail": "src.policy.clutterbreaker_policy.collaborative_pusher.mode_table",
+        "documentation": {}
+    },
+    {
+        "label": "shape_min_distance",
+        "importPath": "src.utils.polygon_minimal_distance",
+        "description": "src.utils.polygon_minimal_distance",
+        "isExtraImport": true,
+        "detail": "src.utils.polygon_minimal_distance",
+        "documentation": {}
+    },
+    {
+        "label": "random",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "random",
+        "description": "random",
+        "detail": "random",
+        "documentation": {}
+    },
+    {
+        "label": "matplotlib.pyplot",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "matplotlib.pyplot",
+        "description": "matplotlib.pyplot",
+        "detail": "matplotlib.pyplot",
+        "documentation": {}
+    },
+    {
+        "label": "matplotlib.collections",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "matplotlib.collections",
+        "description": "matplotlib.collections",
+        "detail": "matplotlib.collections",
+        "documentation": {}
+    },
+    {
+        "label": "ModeGenerator",
+        "importPath": "src.policy.clutterbreaker_policy.collaborative_pusher.mode_generator",
+        "description": "src.policy.clutterbreaker_policy.collaborative_pusher.mode_generator",
+        "isExtraImport": true,
+        "detail": "src.policy.clutterbreaker_policy.collaborative_pusher.mode_generator",
+        "documentation": {}
+    },
+    {
+        "label": "find_reachable_contact_points",
+        "importPath": "src.policy.clutterbreaker_policy.collaborative_pusher.reachable_contact_points",
+        "description": "src.policy.clutterbreaker_policy.collaborative_pusher.reachable_contact_points",
+        "isExtraImport": true,
+        "detail": "src.policy.clutterbreaker_policy.collaborative_pusher.reachable_contact_points",
+        "documentation": {}
+    },
+    {
+        "label": "Polygon",
+        "importPath": "matplotlib.patches",
+        "description": "matplotlib.patches",
+        "isExtraImport": true,
+        "detail": "matplotlib.patches",
+        "documentation": {}
+    },
+    {
+        "label": "BaseScenario",
+        "importPath": "src.env.scenarios.base_scenario",
+        "description": "src.env.scenarios.base_scenario",
+        "isExtraImport": true,
+        "detail": "src.env.scenarios.base_scenario",
+        "documentation": {}
+    },
+    {
         "label": "annotations",
         "importPath": "__future__",
         "description": "__future__",
@@ -98,15 +433,6 @@
         "documentation": {}
     },
     {
-        "label": "numpy",
-        "kind": 6,
-        "isExtraImport": true,
-        "importPath": "numpy",
-        "description": "numpy",
-        "detail": "numpy",
-        "documentation": {}
-    },
-    {
         "label": "pandas",
         "kind": 6,
         "isExtraImport": true,
@@ -125,12 +451,66 @@
         "documentation": {}
     },
     {
-        "label": "matplotlib.pyplot",
+        "label": "BasePolicyConfig",
         "kind": 6,
-        "isExtraImport": true,
-        "importPath": "matplotlib.pyplot",
-        "description": "matplotlib.pyplot",
-        "detail": "matplotlib.pyplot",
+        "importPath": "code_related.base_policy_config",
+        "description": "code_related.base_policy_config",
+        "peekOfCode": "class BasePolicyConfig:\n    robot_num = 2\n    real_world = False\n    random_seed = 0\n    open_predict_gui = False\n    # 8 workers measured faster than 16 on the 32-thread i9-13900HX benchmark\n    # host (rollout batches are per-sim bound; 16+ workers contend for cores,\n    # especially under throttled/silent power modes).\n    num_parallel_workers = 8\n    planning_timeout_sec = 800.0",
+        "detail": "code_related.base_policy_config",
+        "documentation": {}
+    },
+    {
+        "label": "ClutterBreaker_Config",
+        "kind": 6,
+        "importPath": "code_related.clutterbreaker_config",
+        "description": "code_related.clutterbreaker_config",
+        "peekOfCode": "class ClutterBreaker_Config(BasePolicyConfig):\n    robot_num = 2\n    real_world = False\n    random_seed = 0\n    # Search\n    search_debug = True\n    search_heuristic_weight = 5.0\n    search_max_depth = 50\n    search_presearch_beam_width = 100\n    search_presearch_max_depth = 50",
+        "detail": "code_related.clutterbreaker_config",
+        "documentation": {}
+    },
+    {
+        "label": "ModeGenerator",
+        "kind": 6,
+        "importPath": "code_related.mode_generator",
+        "description": "code_related.mode_generator",
+        "peekOfCode": "class ModeGenerator:\n    def __init__(   self,\n                    config: ClutterBreaker_Config,\n                    group: TaskObjectGroup =None,\n                    scenario_name: str = \"base\",):\n        self.group = group\n        self.config = config\n        self.cost_estimator = CostEstimator(\n            group=self.group,\n            config=self.config",
+        "detail": "code_related.mode_generator",
+        "documentation": {}
+    },
+    {
+        "label": "_MiniEnv",
+        "kind": 6,
+        "importPath": "code_related.mode_generator",
+        "description": "code_related.mode_generator",
+        "peekOfCode": "class _MiniEnv:\n    \"\"\"只需要 robot_list / obstacle_list；其它不动\"\"\"\n    def __init__(self, robots, obstacles):\n        self.robot_list = robots\n        self.obstacle_list = obstacles\nfrom src.env.scenarios.base_scenario import BaseScenario\n# ========= 主测试 =========\ndef run_mode_generator_demo(\n    scenario_class=None,\n    scenario_kwargs={},",
+        "detail": "code_related.mode_generator",
+        "documentation": {}
+    },
+    {
+        "label": "run_mode_generator_demo",
+        "kind": 2,
+        "importPath": "code_related.mode_generator",
+        "description": "code_related.mode_generator",
+        "peekOfCode": "def run_mode_generator_demo(\n    scenario_class=None,\n    scenario_kwargs={},\n    policy_cfg=None,\n    seeds = list(range(100, 200)),\n    draw=True\n):\n    plt.ion()\n    fig, ax = plt.subplots(figsize=(9, 7))\n    # 1) 造场景",
+        "detail": "code_related.mode_generator",
+        "documentation": {}
+    },
+    {
+        "label": "INF",
+        "kind": 5,
+        "importPath": "code_related.mode_generator",
+        "description": "code_related.mode_generator",
+        "peekOfCode": "INF = 1e10\n_DIAG = os.environ.get(\"DEBUG_MODEGEN_DIAG\") == \"1\"\ndef _diag(msg: str) -> None:\n    \"\"\"Env-gated mode-generation diagnostics (no-op unless DEBUG_MODEGEN_DIAG=1).\"\"\"\n    if _DIAG:\n        print(f\"[ModeGenDiag] {msg}\", flush=True)\n# ====== 如果你的 Mode 类没有 is_equal_to，可加一个mixin或替代实现 ======\ndef _mode_equal(m1: Mode, m2: Mode, tol: float = 1e-6) -> bool:\n    \"\"\"宽松比较两个模式是否等价：逐机器人接触点坐标近似相等\"\"\"\n    if m1 is None or m2 is None:",
+        "detail": "code_related.mode_generator",
+        "documentation": {}
+    },
+    {
+        "label": "_DIAG",
+        "kind": 5,
+        "importPath": "code_related.mode_generator",
+        "description": "code_related.mode_generator",
+        "peekOfCode": "_DIAG = os.environ.get(\"DEBUG_MODEGEN_DIAG\") == \"1\"\ndef _diag(msg: str) -> None:\n    \"\"\"Env-gated mode-generation diagnostics (no-op unless DEBUG_MODEGEN_DIAG=1).\"\"\"\n    if _DIAG:\n        print(f\"[ModeGenDiag] {msg}\", flush=True)\n# ====== 如果你的 Mode 类没有 is_equal_to，可加一个mixin或替代实现 ======\ndef _mode_equal(m1: Mode, m2: Mode, tol: float = 1e-6) -> bool:\n    \"\"\"宽松比较两个模式是否等价：逐机器人接触点坐标近似相等\"\"\"\n    if m1 is None or m2 is None:\n        return False",
+        "detail": "code_related.mode_generator",
         "documentation": {}
     },
     {
