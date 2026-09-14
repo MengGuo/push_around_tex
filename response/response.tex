@@ -21,6 +21,16 @@
 
 \newtheorem{remark}{Remark}
 \colorlet{shadecolor}{Thistle3!50}
+\setlength{\FrameSep}{1.5pt}
+\setcounter{topnumber}{3}
+\setcounter{bottomnumber}{2}
+\setcounter{totalnumber}{5}
+\renewcommand{\topfraction}{0.92}
+\renewcommand{\bottomfraction}{0.5}
+\renewcommand{\textfraction}{0.07}
+\renewcommand{\floatpagefraction}{0.7}
+
+\setlength{\OuterFrameSep}{0.15em}
 \newcommand{\change}[1]{{\color{blue}#1}}
 \newcommand{\todo}[1]{{\color{red}#1}}
 \graphicspath{{figures/}}
@@ -59,7 +69,7 @@ identified by the reviewers. We also added targeted evaluations of
 planner--execution mismatch, obstacle-density scaling, robot-team scaling, and
 WCCG connectivity. The principal revisions are summarized below.
 
-\begin{table}[h!]
+\begin{table}[!ht]
 \centering
 \scriptsize
 \caption{New and revised experiments at a glance. PushAround is the proposed
@@ -87,42 +97,34 @@ WCCG validation & 300 random scenes, incl.\ non-convex & 300/300, 0 FP/FN & --- 
 \noindent The principal revisions are:
 
 \begin{itemize}
-\item The planner uses the nominal model while the execution simulator perturbs
-one parameter family at a time (obstacle mass, lateral friction, spinning
-friction, or robot force limit) by factors $\{0.6,0.8,1.2,1.4\}$, i.e.,
-$\pm20\%$ and $\pm40\%$. PushAround succeeds in \textbf{156/160} perturbed
-trials (\textbf{97.5\%}); including the nominal condition, it succeeds in
-\textbf{166/170} trials (\textbf{97.6\%}). Under the same $\pm40\%$
-perturbations, SL-Push (sim) succeeds in \textbf{13/40} trials (32.5\%) and
-DFS-WCCG in \textbf{23/40} trials (57.5\%). DFS-WCCG also requires about
-$12\times$ more planning time than PushAround (Sec.~IV-A6, Table~III,
+\item The planner uses the nominal model while only the execution simulator is
+perturbed, one parameter family at a time, by factors covering $\pm20\%$ and
+$\pm40\%$. PushAround succeeds in \textbf{156/160} perturbed trials
+(\textbf{97.5\%}), or \textbf{166/170} (\textbf{97.6\%}) including the
+nominal condition, whereas under the same perturbations SL-Push (sim) reaches
+\textbf{13/40} and DFS-WCCG \textbf{23/40} (Sec.~IV-A6, Table~III,
 Fig.~\ref{fig:resp-mismatch}).
 
 \item The density sweep now uses \textbf{10 independent seed sequences} per
 density instead of five. PushAround maintains \textbf{100\%} success for every
-$M\in[15,45]$, with mean planning time increasing from $2.5$ to $53.4$\,s;
-the comparison methods fall to $0/10$ at $M{=}45$ (the no-recursion ablation
-achieves $7/10$). Dispersion and Wilson confidence intervals are now reported
-(Sec.~IV-A6, Table~III, Fig.~\ref{fig:resp-reliability}).
+$M\in[15,45]$ with mean planning time rising from $2.5$ to $53.4$\,s, while the
+comparison methods fall to $0/10$ at $M{=}45$; dispersion and Wilson intervals
+are now reported (Sec.~IV-A6, Table~III, Fig.~\ref{fig:resp-reliability}).
 
-\item Two mode-generation refinements were added: bounded backtracking contact
-assignment and a temporary per-task robot release when no full-team assignment
-exists. Both are in the shared mode generator and were used for all policies.
-At $N{=}4$, the observed success rates change from $70\%$ to \textbf{100\%}
-for PushAround, from $0\%$ to $80\%$ for SL-Push (sim), and from $80\%$ to
-$90\%$ for DFS-WCCG. PushAround succeeds in all $30$ team-size trials; at
-$N{=}3,4$ it uses $29$--$30$\,s of planning and $97$--$110$\,s of execution,
-whereas DFS-WCCG uses $102$--$143$\,s of planning and $176$--$178$\,s of
-execution, and SL-Push (sim) uses $172$--$193$\,s of execution and $20$--$31$
-pushes (Sec.~III-C2, Sec.~IV-A6, Table~III, Fig.~9, and
-Fig.~\ref{fig:resp-robot}).
+\item Two mode-generation refinements were added to the shared generator, which
+all policies use: bounded backtracking contact assignment and a temporary
+per-task robot release. At $N{=}4$ the observed success rates change from $70\%$
+to \textbf{100\%} for PushAround, from $0\%$ to $80\%$ for SL-Push (sim) and
+from $80\%$ to $90\%$ for DFS-WCCG. PushAround succeeds in all $30$ team-size
+trials at $29$--$30$\,s of planning and $97$--$110$\,s of execution, versus
+$102$--$143$\,s and $176$--$178$\,s for DFS-WCCG (Sec.~III-C2, Sec.~IV-A6,
+Table~III, Fig.~9, and Fig.~\ref{fig:resp-robot}).
 
-\item Sec.~III-A2 now derives the criterion from $W/2$ configuration-space
-inflation with explicit non-convex decomposition. On 300 scenes, WCCG agrees
-with the continuous reference in \textbf{300/300} cases with \textbf{0 FP/FN};
-the continuous and rasterized references agree in 296/300 cases. In the timing
-harness, WCCG averages \textbf{1.07}\,ms per query versus $1.36$\,ms for CC and
-$243.1$\,ms for FR (an implementation-level ratio of $227\times$ versus FR)
+\item Sec.~III-A2 derives the criterion from $W/2$ configuration-space inflation
+with explicit non-convex decomposition. On 300 scenes WCCG agrees with the
+continuous reference in \textbf{300/300} cases with \textbf{0 FP/FN}, while the
+continuous and rasterized references agree in 296/300 cases; WCCG averages
+\textbf{1.07}\,ms per query versus $1.36$\,ms (CC) and $243.1$\,ms (FR)
 (Table~I and Fig.~\ref{fig:resp-wccg}).
 
 \item Eq.~(5) is now presented
@@ -149,7 +151,7 @@ statistics.
 
 %========================================
 
-\newpage
+\vspace{0.6em}\hrule\vspace{0.4em}
 \section*{To Reviewer 3}
 %========================================
 
@@ -264,7 +266,7 @@ and has lower nominal success (3/5 for each baseline), these results provide
 end-to-end context rather than a normalized estimate of each method's
 degradation from its own nominal performance.
 
-\begin{figure}[h!]
+\begin{figure}[!ht]
 \centering
 \includegraphics[width=\linewidth]{resp_mismatch.pdf}
 \caption{Planner--execution mismatch. (a) Success rate for PushAround
@@ -363,7 +365,7 @@ the interval is $[72.2,100]\%$ from 10/10; for the baselines at the same
 density it is $[0,27.8]\%$ from 0/10.
 \end{itemize}
 
-\begin{figure}[h!]
+\begin{figure}[!ht]
 \centering
 \includegraphics[width=\linewidth]{resp_density.pdf}
 \caption{Obstacle-density scaling with 10 independent seeds per density.
@@ -374,7 +376,7 @@ and DFS-WCCG and SL-Push (sim) reach it at $M{=}45$.}
 \label{fig:resp-density}
 \end{figure}
 
-\begin{table}[h!]
+\begin{table}[!ht]
 \centering
 \footnotesize
 \caption{Density scaling, success rate (\%) and capped mean planning time (s);
@@ -401,9 +403,9 @@ Rec-NAMO (PT) & 15.8 & 353.5 & 800.0 & 800.0 & 800.0 & 800.0 & 800.0\\
 \end{table}
 
 
-\begin{figure}[h!]
+\begin{figure}[!ht]
 \centering
-\includegraphics[width=0.42\linewidth]{figures/resp_density_scenes.png}
+\includegraphics[width=0.27\linewidth]{figures/resp_density_scenes.png}
 \caption{Representative dense-clutter scenes of the density sweep ($M{=}45$,
 two robots): snapshots during clearing above and the corresponding WCCG overlays
 with the start face in blue below.}
@@ -507,7 +509,7 @@ assignments (of which $739$ rescue a failed greedy replacement), and $6{,}017$
 per-task robot releases. These counts confirm that the added paths are exercised
 by the baselines as well as by PushAround:
 
-\begin{table}[h!]
+\begin{table}[!ht]
 \centering
 \begin{threeparttable}
 \footnotesize
@@ -542,7 +544,7 @@ timeout, $N{=}4$ two timeouts; DFS-WCCG $N{=}4$ one timeout; PushAround none.
 \end{threeparttable}
 \end{table}
 
-\begin{figure}[h!]
+\begin{figure}[!ht]
 \centering
 \includegraphics[width=\linewidth]{resp_robot.pdf}
 \caption{Robot-team scaling after the shared mode-generation refinement, with
@@ -564,9 +566,9 @@ $176$--$178$\,s for DFS-WCCG, while SL-Push (sim) requires $172$--$193$\,s of
 execution and $20$--$31$ pushes.
 
 
-\begin{figure}[h!]
+\begin{figure}[!ht]
 \centering
-\includegraphics[width=0.42\linewidth]{figures/resp_robot_scenes.png}
+\includegraphics[width=0.27\linewidth]{figures/resp_robot_scenes.png}
 \caption{The four-robot study of the same evaluation ($M{=}30$, $N{=}4$):
 global initial and final states above, and two magnified views of a single
 pushing task (before contact and during the push) below.}
@@ -738,7 +740,6 @@ monitor, while Sec.~III-E1 lists the additional contact, stall, task-predicate,
 and connectivity triggers.
 
 %========================================
-\newpage
 
 %==============================
 \begin{shaded*}
@@ -757,7 +758,7 @@ planning framework, the recursive-pushing mechanism and the hardware validation
 unchanged, and concentrates on the clarifications and the additional
 evaluations requested in the review.
 
-\newpage
+\vspace{0.6em}\hrule\vspace{0.4em}
 \section*{To Reviewer 4}
 %========================================
 
@@ -832,7 +833,7 @@ average, compared with $1.36$\,ms for CC and $243.1$\,ms for FR. The latter
 ratio is an implementation-level $\mathbf{227\times}$ speed difference, and
 WCCG additionally supplies the gap graph consumed by PIHS.
 
-\begin{table}[h!]
+\begin{table}[!ht]
 \centering
 \footnotesize
 \caption{WCCG connectivity validation on 300 random scenes (10 movable
@@ -857,7 +858,7 @@ Non-convex & 98/100  & 100/100 & 0 & 0 & $1.51\pm0.18$ & $204.1\pm51.4$ & $\math
 \end{tabular}
 \end{table}
 
-\begin{figure}[h!]
+\begin{figure}[!ht]
 \centering
 \includegraphics[width=\linewidth]{resp_wccg.pdf}
 \caption{WCCG validation. (a) Agreement per category: CC and FR differ on 4 of
@@ -1015,7 +1016,7 @@ revised protocol use 800\,s; the earlier statement and the corresponding
 failure-time imputation have been corrected.
 \end{itemize}
 
-\begin{figure}[h!]
+\begin{figure}[!ht]
 \centering
 \includegraphics[width=\linewidth]{resp_reliability.pdf}
 \caption{Wilson 95\% confidence intervals of the headline success rates. The
@@ -1032,7 +1033,6 @@ It also states how unsuccessful trials enter the capped planning-time
 statistics.
 
 %========================================
-\newpage
 
 % ---- 数据表/图移到对应回复处 ----
 \begin{table}[H]
@@ -1083,6 +1083,7 @@ above are addressed without changing the method, and the added protocol details,
 dispersion statistics and the configuration-space comparison are intended to
 make the evaluation easier to interpret.
 
+\vspace{0.6em}\hrule\vspace{0.4em}
 \section*{Updated and added figures}
 %========================================
 
@@ -1093,7 +1094,7 @@ revised version; the page refers to the location in the revised manuscript.
 %----------------------------------------------------------
 \subsection*{F1. Obstacle-density scaling: revised Fig.~10 (Page~7)}
 %----------------------------------------------------------
-\begin{figure}[h!]
+\begin{figure}[!ht]
 \centering
 \subfigure[Original: five seeds per density, mean only, 400\,s cap.]{\includegraphics[width=0.47\linewidth]{old_density.pdf}}
 \hfill
@@ -1109,7 +1110,7 @@ summary.}
 %----------------------------------------------------------
 \subsection*{F2. Simulation snapshots: revised Fig.~7 (Page~6)}
 %----------------------------------------------------------
-\begin{figure}[h!]
+\begin{figure}[!ht]
 \centering
 \subfigure[Original: one overlay inset did not match its snapshot.]{\includegraphics[width=0.47\linewidth]{old_sim.pdf}}
 \hfill
@@ -1125,7 +1126,7 @@ caption, the scenario and the message are unchanged.}
 %----------------------------------------------------------
 \subsection*{F3. Scalability scenes: revised Fig.~9 (Page~7)}
 %----------------------------------------------------------
-\begin{figure}[h!]
+\begin{figure}[!ht]
 \centering
 \subfigure[Original: obstacle-density run only.]{\includegraphics[width=0.47\linewidth]{old_dense.png}}
 \hfill
