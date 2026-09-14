@@ -41,13 +41,11 @@ grows with the number of validated candidates and is reduced by the
 $n_{\texttt{w}}$ parallel workers, so scalability is set by validated
 candidates rather than by the enumeration of contact assignments.} \change{Robot-team size mainly affects mode
 generation: the greedy stage evaluates at most $N|\mathcal{A}|$ single-contact
-substitutions instead of the exhaustive $|\mathcal{A}|^N$ assignment, and when it
-fails, a bounded-backtracking search over robots and candidates expands at most
-$B{=}2000$ partial assignments, a fixed budget independent of the team size; the
-subset fallback repeats this search for at most one excluded robot. The number
-of LP feasibility checks per task is therefore at most
-$(N|\mathcal{A}|{+}2B)$, each over the $2N$ admissible contact forces, rather
-than growing as $|\mathcal{A}|^N$.}
+substitutions rather than the exhaustive $|\mathcal{A}|^N$ assignment, and a
+bounded-backtracking fallback with a finite budget examines additional partial
+assignments independently of the team size. Each candidate is checked by an LP
+over the $2N$ admissible contact forces, so exhaustive enumeration of joint
+contact tuples is avoided.}
 %% %----------------------------------------------
 %% \subsubsection{Generalization}\label{subsec:general}
 %% The framework admits several extensions:

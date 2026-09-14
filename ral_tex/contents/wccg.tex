@@ -47,21 +47,21 @@ performed without explicitly computing a geometric path. Let
 $\textsf{Face}(\mathcal{G}_W)$ denote the set of connected planar faces induced
 by the embedded WCCG, i.e., the maximal regions separated by obstacle
 components and WCCG bottleneck edges. The criterion for~\eqref{eq:wclear}
-is given by:
+is given by
 \begin{equation}\label{eq:wccg_criterion}
 \big(\mathbf{x}_\texttt{V}^{\texttt{S}},\mathbf{x}_\texttt{V}^{\texttt{G}}\in
 \mathcal{F}_W(t)\big)
 \wedge
 \big( \exists F\in\textsf{Face}(\mathcal{G}_W):
-{\mathbf{x}_\texttt{V}^{\texttt{S}},\mathbf{x}_\texttt{V}^{\texttt{G}}}\in F \big)
+{\mathbf{x}_\texttt{V}^{\texttt{S}},\mathbf{x}_\texttt{V}^{\texttt{G}}}\in F \big),
 \end{equation}
-\change{The criterion follows the standard configuration-space inflation interpretation: 
-expanding obstacles by a disk of radius $W/2$ turns gaps narrower than $W$ into overlapping barriers. 
-Non-convex obstacles are handled through clearance-relevant decomposition, 
-after which WCCG records the separating bottlenecks.
-The consistency between WCCG connectivity and continuous and
+\change{where the faces follow the standard configuration-space inflation
+interpretation: expanding obstacles by a disk of radius $W/2$ turns gaps
+narrower than $W$ into overlapping barriers, and non-convex obstacles are
+handled through clearance-relevant decomposition, after which WCCG records the
+separating bottlenecks.} The consistency between WCCG connectivity and continuous and
 rasterized configuration-space references is further evaluated numerically
-in Sec.~\ref{subsec:wccg-validation}}.
+in Sec.~\ref{subsec:wccg-validation}.
 A frontier-tracing procedure, similar to the
 BugPlanner~\cite{McGuireCroonTuyls2019}, is then used to extract a skeleton
 $\Sigma$ as an ordered sequence of centroid and bridge nodes. Starting from

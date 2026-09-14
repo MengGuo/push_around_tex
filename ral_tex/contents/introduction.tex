@@ -13,13 +13,11 @@ methods abstract away physical feasibility. Factors such as robot dimensions,
 obstacle size and mass, contact geometry, applied forces and pushing dynamics
 are typically ignored, producing plans that are \emph{geometrically valid but
 physically unrealizable in practice}.
-As shown in Fig.~\ref{fig:snapshots},
-this difficulty is amplified
-when a large robot cannot reach obstacle boundaries, while a small robot lacks
-sufficient pushing force. Cooperative pushing by several small robots is a
-viable alternative, but introduces strong physical coupling since simultaneous
-pushes can trigger chained motions of multiple obstacles,
-making prediction and planning substantially more complex.
+As shown in Fig.~\ref{fig:snapshots}, the difficulty is amplified when a large
+robot cannot reach obstacle boundaries while a small robot lacks pushing force.
+Cooperative pushing by several small robots is a viable alternative, but
+introduces strong physical coupling, since simultaneous pushes can trigger
+chained motions of several obstacles that complicate planning.
 
 %==============================================
 \begin{figure}[t!]

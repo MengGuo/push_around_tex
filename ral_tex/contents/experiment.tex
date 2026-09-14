@@ -15,10 +15,11 @@ Videos are provided as multimedia attachments.
 \vspace{-2mm}
 \scriptsize
 \setlength{\tabcolsep}{3.2pt}
-\renewcommand{\arraystretch}{0.95}
-\change{\begin{tabular}{lccccc}
+\renewcommand{\arraystretch}{0.9}
+\change{\begin{tabular}{cccccc}
 \hline
-& & & \multicolumn{3}{c}{Time (ms)}\\
+\multicolumn{3}{c}{} & \multicolumn{3}{c}{Time (ms)}\\
+\cmidrule(lr){4-6}
 Type & CC=FR & FP/FN$^\dagger$ & CC & FR & WCCG\\
 \hline
 Convex     & 100/100 & 0/0 & 1.23 & 282.9 & \textbf{0.86}\\
@@ -41,7 +42,7 @@ scenes, with WCCG served by its compiled backend;}}
 
 The simulation runs at a step size of $\Delta t=1/240$\,s with a control period
 of $1/40$\,s; robots are disk or box pushers consistent with the $W$-clearance
-definition, and movable obstacles have masses sampled from $[5,15]$\,kg. A trial
+definition, and movable obstacles have masses in $[5,15]$\,kg. A trial
 succeeds when the external vehicle reaches its goal through a $W$-clear path. The
 nominal scenario is an $8\times5$\,m workspace with bottleneck-forming bar
 obstacles, where two robots clear $10$--$15$ movable obstacles under
@@ -56,14 +57,23 @@ the $800$\,s cap in the planning-time statistics.}
 %==============================
 \subsubsection{Results}
 
-
-Two representative simulation runs are shown in Fig.~\ref{fig:main_result}. In
-Scenario~1 the start and goal lie in different $W$-clearance faces, so the
-planner clears the blocked passage with $6$ pushes in $7.4$\,s and execution
-finishes in $42.3$\,s. Scenario~2 requires a $9$-push plan in $11.2$\,s and
-$61.3$\,s of execution. In both cases the executed pushes progressively enlarge
-the reachable $W$-clearance region until a complete $W$--clear path is found, as
-shown by the expanding blue start face in the WCCG overlays.
+\change{PIHS expands a node by ranking the visible frontier gaps by their
+estimated downstream cost. For each gap, the predicted gap sequence is obtained
+and mode optimization generates candidate strategies covering direct pushes of
+adjacent obstacles and recursive pushes of out-layer blockers. Each candidate
+passes a geometric quick-pass and is then evaluated by a short-horizon
+$\mathsf{EvalSim}$ rollout returning the successor state, time cost and
+manipulation effort; validated candidates are appended to the partial schedule
+and inserted as child nodes, and a batch is evaluated in parallel. The search
+terminates once the start and goal share a $W$-clearance face.} Two
+representative runs are shown in Fig.~\ref{fig:main_result}. \change{Scenario~1
+returns a six-task schedule planned in $7.4$\,s and executed in $42.3$\,s, and
+Scenario~2 a nine-task schedule planned in $11.2$\,s and executed in
+$61.3$\,s. During execution the state is updated after each push and the WCCG is
+rebuilt, so the reachable face expands until it contains the goal. The cost of
+these runs is dominated by physics-based validation of candidates, whereas gap
+ranking, quick-pass filtering, cached modes and parallel rollouts keep the
+number of simulations small.}
 
 
 
@@ -135,12 +145,11 @@ $W$-clearance criterion, object distribution and simulator:
 (offline and simulation-validated variants), and \textbf{Rec-NAMO} (recursive
 NAMO)~\cite{stilman2007manipulation,yao2024local,saxena2023planning,ren2025search}.
 Table~\ref{tab:main_ablation} shows that PushAround reaches the highest success
-rate ($97.5\%$) and the lowest combined planning-and-execution time ($38.9$\,s).
-DFS-WCCG needs more than $100$\,s of planning (exponential branching); SL-Push
-(offline) plans in $0.06$\,s but many displacements fail in execution
-($62.5\%$); SL-Push (sim) reaches $75.0\%$ at $18.2$\,s planning; and Rec-NAMO
-usually fails to build a connected $W$--clear corridor in dense clutter, as
-illustrated in Fig.~\ref{fig:baseline}.
+rate ($97.5\%$) at the lowest combined planning-and-execution time ($38.9$\,s).
+DFS-WCCG suffers from exponential branching, the offline SL-Push variant
+produces displacements that fail in execution, and Rec-NAMO usually fails to
+build a connected $W$--clear corridor in dense clutter, as illustrated in
+Fig.~\ref{fig:baseline}.
 
 
 % Four baselines are evaluated on Scenario~1 over $40$ randomized trials
@@ -160,8 +169,7 @@ illustrated in Fig.~\ref{fig:baseline}.
 
 
 \begin{table}[t]
-\caption{\change{Scalability and robustness under obstacle density,
-robot-team size, and execution-side physics mismatch.}}
+\caption{\change{Scalability and robustness.}}
 \label{tab:generalization}
 \centering
 \footnotesize
@@ -208,9 +216,8 @@ modes), \textbf{w/o quick-pass} (all candidates evaluated by rollout), and
 \textbf{w/o reinsertion} (failed nodes not reconsidered).
 Table~\ref{tab:main_ablation} shows that gap-lookahead and reinsertion mainly
 improve robustness (success drops by more than $10\%$ when either is removed),
-whereas mode-cache only lowers success to $92.5\%$; quick-pass affects
-efficiency, with simulations rising from $121.5$ to $208.2$ and planning from
-$10.3$ to $23.6$\,s.
+whereas mode-cache only lowers success to $92.5\%$ and quick-pass affects
+efficiency (simulations rise from $121.5$ to $208.2$).
 
 
 \change{
@@ -223,9 +230,9 @@ scaling the obstacle density~$M$, the robot-team size~$N$, and the
 execution-side physics parameters (Table~\ref{tab:generalization} and
 Fig.~\ref{fig:density_scaling}).
 \textbf{(I) Obstacle density:} with two robots and $10$ trials per density,
-PushAround maintains a $100\%$ success rate for all $M\in[15,45]$ at $2.5$--$53.4$\,s
-of planning, whereas at $M{=}45$ the external methods solve none of the trials and
-the no-recursion ablation solves $7/10$.
+PushAround keeps a $100\%$ success rate for all $M\in[15,45]$ at $2.5$--$53.4$\,s of
+planning, whereas at $M{=}45$ the external methods solve none of the trials and the
+no-recursion ablation solves $7/10$.
 \textbf{(II) Robot-team size:} at $M{=}30$, PushAround solves all ten trials at
 $N{=}2$, $3$, and $4$ after the shared mode-generation refinements, which reduce
 robot-order sensitivity and allow a temporary per-task robot release when no
@@ -234,8 +241,8 @@ planning and $110.1$\,s of execution, compared with $101.9$\,s and $175.9$\,s
 for DFS-WCCG.
 \textbf{(III) Physics mismatch:} the planner keeps the nominal model and only
 the execution simulator is perturbed, one parameter at a time. PushAround
-succeeds in $156$ of $160$ perturbed trials ($97.5\%$). Under the same $\pm40\%$
-perturbations, SL-Push (sim) succeeds in $13/40$ trials and DFS-WCCG in
+succeeds in $156$ of $160$ perturbed trials ($97.5\%$); under the same $\pm40\%$
+perturbations SL-Push (sim) succeeds in $13/40$ and DFS-WCCG in
 $23/40$ trials; their mean planning times are $31.5$\,s and $229.1$\,s,
 respectively, compared with $18.4$\,s for PushAround.
 
@@ -262,7 +269,7 @@ respectively, compared with $18.4$\,s for PushAround.
 % ========================================
 \begin{figure}[t!]
   \centering
-  \includegraphics[width=0.9\columnwidth]{figures/density_comparison.pdf}
+  \includegraphics[width=0.85\columnwidth]{figures/density_comparison.pdf}
   \vspace{-0.15in}
   \caption{\change{
   Obstacle-density scaling ($8\times 8$\,m, $10$ independent seeds per density).
@@ -271,14 +278,14 @@ respectively, compared with $18.4$\,s for PushAround.
   time of the successful trials (Rec-NAMO has none beyond $M{=}20$). Error bars
   denote one standard deviation across seeds.}}
   \label{fig:density_scaling}
-  \vspace{-5mm}
+  \vspace{-7mm}
 \end{figure}
 % ========================================
 % ========================================
 % ========================================
 \begin{figure*}[t!]
   \centering
-  \includegraphics[width=0.89\linewidth]{figures/hardware.png}
+  \includegraphics[width=0.84\linewidth]{figures/hardware.png}
   \vspace{-2mm}
   \caption{\change{Real-world pushing experiments with execution--planning alignment (over~$20$ runs and $2$ scenarios).
     \textbf{Top:} snapshots of two robots pushing obstacles in a \(5{\times}6\,\mathrm{m}\) workspace
@@ -292,8 +299,8 @@ respectively, compared with $18.4$\,s for PushAround.
 \subsubsection{System Description}\label{subsec:exp-description}
 Experiments use a $5\times6$\,m workspace of interlocking $0.6\times0.6$\,m
 foam mats (Fig.~\ref{fig:hardware}), $2$ UGVs and $6$ cardboard-box movable
-obstacles. Robots and movables each carry three to four motion-capture markers
-whose global poses are streamed to \texttt{PyBullet} in real time.
+obstacles; robots and movables carry motion-capture markers whose poses are
+streamed to \texttt{PyBullet} in real time.
 \change{The two Mecanum UGVs are velocity-controlled, and the optimized contact
 forces are used only for feasibility evaluation rather than direct motor control.
 Motion capture provides the current robot and object poses, compared with the
@@ -310,9 +317,8 @@ first rotates the yellow L-shaped object to open a gap near an
 immovable obstacle and then separates the green and orange objects until a
 $W$--clear path is established at $t=52\,$s.
 In Scenario~2, PushAround succeeds in $8/10$ trials with an average of $5.2$
-pushes and $11.4$\,s of planning; it first selects a direct push on the blue
-L-shaped object, which also moves the adjacent T-shaped block and opens the
-first gap into the narrow passage.
+pushes and $11.4$\,s of planning; the first direct push on the blue L-shaped
+object also moves the adjacent T-shaped block and opens the first gap.
 \change{This neighboring-object motion is not a separately encoded action but
 an emergent outcome of the coupled rigid-body rollout in $\mathsf{EvalSim}$,
 whose snapshot is used to update the WCCG and continue replanning.}
