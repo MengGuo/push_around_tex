@@ -1,5 +1,0 @@
-policy,robot_num,n_trial_logs,seq_greedy_fail,subset_fallback_release,backtracking_assignment,backtracking_rescued,trial_log_bytes
-dfs,3,10,7370,2192,4414,178,0
-dfs,4,10,10570,2946,5128,533,0
-slpush,3,10,962,356,431,7,0
-slpush,4,10,1988,523,931,21,0
