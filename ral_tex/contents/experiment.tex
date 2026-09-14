@@ -31,9 +31,9 @@ Total      & 296/300 & \textbf{0/0}
 \end{tabular}}
 
 \vspace{0.5mm}
-{\scriptsize \change{$^\dagger$WCCG errors on CC--FR-consistent cases. All runtimes are
-measured in one harness over the same $300$ scenes, with WCCG served by its
-compiled backend;}}
+{\scriptsize \change{$^\dagger$WCCG errors with respect to the continuous configuration-space
+reference (CC). All runtimes are measured in one harness over the same $300$
+scenes, with WCCG served by its compiled backend;}}
 \vspace{-5mm}
 \end{table}
 
@@ -74,11 +74,10 @@ shown by the expanding blue start face in the WCCG overlays.
 
 WCCG is compared against two references on $300$ random scenes covering convex,
 non-convex and mixed obstacles (Table~\ref{tab:wccg-validation}). The continuous
-reference (CC) follows the classical configuration-space construction, inflating
-obstacle and workspace boundaries by~$W/2$ and querying connectivity with a fine
-continuous collision check at $0.01$\,m oracle resolution instead of a fixed
-grid~\cite{lozano1983spatial}; the rasterized reference (FR) discretizes the same
-inflated workspace at $0.02$\,m for an occupancy-grid query. CC and FR disagree
+reference (CC) inflates obstacle and workspace boundaries by~$W/2$ and queries
+connectivity with a fine continuous collision check at $0.01$\,m oracle
+resolution instead of a fixed grid~\cite{lozano1983spatial}; the rasterized
+reference (FR) discretizes the same workspace at $0.01$\,m on an occupancy grid. CC and FR disagree
 in $4$ of the $300$ cases, indicating sensitivity of the raster reference near
 narrow or tangential contacts. WCCG matches CC on all $300$ scenes with zero
 false positives and zero false negatives. A query costs $1.07$\,ms against
@@ -224,21 +223,18 @@ scaling the obstacle density~$M$, the robot-team size~$N$, and the
 execution-side physics parameters (Table~\ref{tab:generalization} and
 Fig.~\ref{fig:density_scaling}).
 \textbf{(I) Obstacle density:} with two robots and $10$ trials per density,
-PushAround maintains a $100\%$ success rate for all $M\in[15,45]$, while its
-mean planning time grows from $2.5$ to $53.4$\,s. At $M{=}45$, the three
-external comparison methods solve none of the trials, whereas the no-recursion
-ablation solves $7/10$.
+PushAround maintains a $100\%$ success rate for all $M\in[15,45]$ at $2.5$--$53.4$\,s
+of planning, whereas at $M{=}45$ the external methods solve none of the trials and
+the no-recursion ablation solves $7/10$.
 \textbf{(II) Robot-team size:} at $M{=}30$, PushAround solves all ten trials at
-$N{=}2$, $3$, and $4$ after the shared mode-generation refinements. The
-refinements reduce robot-order sensitivity and allow a temporary per-task
-robot release when a full-team assignment is unavailable; full-team modes are
-preferred through a ranking penalty. At $N{=}4$, PushAround uses $29.2$\,s of
+$N{=}2$, $3$, and $4$ after the shared mode-generation refinements, which reduce
+robot-order sensitivity and allow a temporary per-task robot release when no
+full-team assignment exists, with a ranking penalty preferring full-team modes. At $N{=}4$, PushAround uses $29.2$\,s of
 planning and $110.1$\,s of execution, compared with $101.9$\,s and $175.9$\,s
 for DFS-WCCG.
 \textbf{(III) Physics mismatch:} the planner keeps the nominal model and only
 the execution simulator is perturbed, one parameter at a time. PushAround
-succeeds in $156$ of $160$ perturbed trials ($97.5\%$), with one low-friction
-planning failure and three budget timeouts. Under the same $\pm40\%$
+succeeds in $156$ of $160$ perturbed trials ($97.5\%$). Under the same $\pm40\%$
 perturbations, SL-Push (sim) succeeds in $13/40$ trials and DFS-WCCG in
 $23/40$ trials; their mean planning times are $31.5$\,s and $229.1$\,s,
 respectively, compared with $18.4$\,s for PushAround.
@@ -300,11 +296,10 @@ obstacles. Robots and movables each carry three to four motion-capture markers
 whose global poses are streamed to \texttt{PyBullet} in real time.
 \change{The two Mecanum UGVs are velocity-controlled, and the optimized contact
 forces are used only for feasibility evaluation rather than direct motor control.
-Motion capture provides the current robot and object poses, which are compared
-with the successor state predicted by $\mathsf{EvalSim}$: a push triggers
-replanning only when the measured object position error exceeds $0.3$\,m or its
-orientation error exceeds $\pi/4$, a deliberately loose threshold that tolerates
-slight over-push or off-axis push.}
+Motion capture provides the current robot and object poses, compared with the
+successor state predicted by $\mathsf{EvalSim}$: a push triggers replanning only
+when the position error exceeds $0.3$\,m or the orientation error exceeds
+$\pi/4$, a loose threshold that tolerates slight over-push or off-axis push.}
 Movables are randomly placed for each trial.
 
 \subsubsection{Results}\label{subsec:exp-results}

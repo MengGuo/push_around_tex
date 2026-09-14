@@ -10,11 +10,10 @@ robots reach the mode~$\boldsymbol{\xi}_k$ and follow the pushing
 direction~$\mathbf{v}_k$ from the current state, as in~\eqref{eq:sim}.
 \change{On the hardware the optimized contact forces certify feasibility rather
 than being commanded: a mode is retained only if its object wrench lies within
-the robots' actuation limits, and the controller tracks the planned contact
-poses and pushing velocities with feedback. Planning therefore runs in
-simulation through $\mathsf{EvalSim}$, and every executed push returns an
-observed state that re-enters the planner, so that physical execution
-continuously feeds back into the search.} During transitions,
+the robots' actuation limits, and over each control interval $\mathsf{EvalSim}$ predicts a short forward
+object-motion reference (the expected displacement and rotation of the object),
+which the velocity-level controller tracks with motion-capture feedback, and each
+executed push returns an observed state that re-enters the planner.} During transitions,
 robots are reassigned by preserving the circular order of contact points along
 the obstacle boundary~\cite{tang2026pushingbots}, reducing path crossings under
 sufficient clearance. After each push the state is updated from observation,
@@ -45,9 +44,10 @@ generation: the greedy stage evaluates at most $N|\mathcal{A}|$ single-contact
 substitutions instead of the exhaustive $|\mathcal{A}|^N$ assignment, and when it
 fails, a bounded-backtracking search over robots and candidates expands at most
 $B{=}2000$ partial assignments, a fixed budget independent of the team size; the
-subset fallback repeats this search for at most one excluded robot. The per-task
-cost is therefore at most $(N|\mathcal{A}|{+}2B)$ LP feasibility checks over the
-$2N$ admissible contact forces, rather than growing as $|\mathcal{A}|^N$.}
+subset fallback repeats this search for at most one excluded robot. The number
+of LP feasibility checks per task is therefore at most
+$(N|\mathcal{A}|{+}2B)$, each over the $2N$ admissible contact forces, rather
+than growing as $|\mathcal{A}|^N$.}
 %% %----------------------------------------------
 %% \subsubsection{Generalization}\label{subsec:general}
 %% The framework admits several extensions:
