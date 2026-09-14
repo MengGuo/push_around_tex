@@ -122,11 +122,11 @@ c^\star
 \label{eq:greedy_mode_update}
 \end{equation}
 swept over contact slots until $\mathrm{J}_{\texttt{MF}}^m$ no longer
-decreases; a bounded backtracking variant removes the robot-order sensitivity
-of this replacement. If no full-team assignment exists for a task, e.g., on
-small faces or under the pairwise pusher-clearance constraint, one robot is
-released for that single push (charged a penalty when ranking modes, so
-full-team modes are preferred) and the full team is available again afterwards.
+decreases. \change{A bounded backtracking variant removes the robot-order
+sensitivity of this replacement. If no full-team assignment exists for a task,
+e.g., on small faces or under the pairwise pusher-clearance constraint, one
+robot is released for that single push (charged a penalty when ranking modes, so
+full-team modes are preferred) and the full team is available again afterwards.}
 The best tuple over initializations gives
 $\mathbf{c}_m^{k,\star}$, from which $\mathbf{u}_m^k$ follows from the inner
 minimization in~\eqref{eq:mode-feasibility}, yielding
