@@ -97,21 +97,25 @@ WCCG validation & 300 random scenes, incl.\ non-convex & 300/300, 0 FP/FN & --- 
 \noindent The principal revisions are:
 
 \begin{itemize}
-\item The planner uses the nominal model while only the execution simulator is
+\item \textbf{Physics-model mismatch (new experiment).} The planner uses the nominal model while only the execution simulator is
 perturbed, one parameter family at a time, by factors covering $\pm20\%$ and
 $\pm40\%$. PushAround succeeds in \textbf{156/160} perturbed trials
 (\textbf{97.5\%}), or \textbf{166/170} (\textbf{97.6\%}) including the
 nominal condition, whereas under the same perturbations SL-Push (sim) reaches
 \textbf{13/40} and DFS-WCCG \textbf{23/40} (Sec.~IV-A6, Table~III,
-Fig.~\ref{fig:resp-mismatch}).
+Fig.~\ref{fig:resp-mismatch}). This study is new: the first submission validated
+feasibility only under nominal physics, so the sensitivity of the method to an
+incorrect planning model had not been characterized before.
 
-\item The density sweep now uses \textbf{10 independent seed sequences} per
+\item \textbf{Density-scaling statistics (revised experiment).} The density sweep now uses \textbf{10 independent seed sequences} per
 density instead of five. PushAround maintains \textbf{100\%} success for every
 $M\in[15,45]$ with mean planning time rising from $2.5$ to $53.4$\,s, while the
 comparison methods fall to $0/10$ at $M{=}45$; dispersion and Wilson intervals
-are now reported (Sec.~IV-A6, Table~III, Fig.~\ref{fig:resp-reliability}).
+are now reported (Sec.~IV-A6, Table~III, Fig.~\ref{fig:resp-reliability}). The
+no-recursion ablation is reported alongside, since it isolates how much of the
+dense-clutter success is attributable to recursive pushing.
 
-\item Two mode-generation refinements were added to the shared generator, which
+\item \textbf{Robot-team scaling (new experiment and mechanism).} Two mode-generation refinements were added to the shared generator, which
 all policies use: bounded backtracking contact assignment and a temporary
 per-task robot release. At $N{=}4$ the observed success rates change from $70\%$
 to \textbf{100\%} for PushAround, from $0\%$ to $80\%$ for SL-Push (sim) and
@@ -120,14 +124,14 @@ trials at $29$--$30$\,s of planning and $97$--$110$\,s of execution, versus
 $102$--$143$\,s and $176$--$178$\,s for DFS-WCCG (Sec.~III-C2, Sec.~IV-A6,
 Table~III, Fig.~9, and Fig.~\ref{fig:resp-robot}).
 
-\item Sec.~III-A2 derives the criterion from $W/2$ configuration-space inflation
+\item \textbf{WCCG connectivity validation (new experiment).} Sec.~III-A2 derives the criterion from $W/2$ configuration-space inflation
 with explicit non-convex decomposition. On 300 scenes WCCG agrees with the
 continuous reference in \textbf{300/300} cases with \textbf{0 FP/FN}, while the
 continuous and rasterized references agree in 296/300 cases; WCCG averages
 \textbf{1.07}\,ms per query versus $1.36$\,ms (CC) and $243.1$\,ms (FR)
 (Table~I and Fig.~\ref{fig:resp-wccg}).
 
-\item Eq.~(5) is now presented
+\item \textbf{Formulation, guarantees and interfaces.} Eq.~(5) is now presented
 as the schedule cost guiding the search; the paper states explicitly that PIHS
 is a feasibility-oriented heuristic search with finite sampling, bounded
 lookahead, a non-admissible priority, and first-feasible termination, and makes
@@ -136,7 +140,7 @@ declared feasibility variables (not hardware setpoints), and coupled
 object--object motion is explained as an outcome of the joint rigid-body
 rollout in $\mathsf{EvalSim}$ (Sec.~II-C, II-D, III-C2, III-C3, III-D, III-E1).
 
-\item Sec.~IV-A1 now states the
+\item \textbf{Comparison protocol and budgets.} Sec.~IV-A1 now states the
 shared footprints, obstacle configurations, collision/reachability checks,
 success criterion and simulator, and the shared per-trial budget
 (\textbf{800\,s} timeout, \textbf{20{,}000} control steps, \textbf{8} parallel
@@ -151,7 +155,7 @@ statistics.
 
 %========================================
 
-\vspace{0.6em}\hrule\vspace{0.4em}
+\newpage
 \section*{To Reviewer 3}
 %========================================
 
@@ -758,7 +762,7 @@ planning framework, the recursive-pushing mechanism and the hardware validation
 unchanged, and concentrates on the clarifications and the additional
 evaluations requested in the review.
 
-\vspace{0.6em}\hrule\vspace{0.4em}
+\newpage
 \section*{To Reviewer 4}
 %========================================
 
@@ -1083,7 +1087,7 @@ above are addressed without changing the method, and the added protocol details,
 dispersion statistics and the configuration-space comparison are intended to
 make the evaluation easier to interpret.
 
-\vspace{0.6em}\hrule\vspace{0.4em}
+\newpage
 \section*{Updated and added figures}
 %========================================
 
@@ -1094,51 +1098,44 @@ revised version; the page refers to the location in the revised manuscript.
 %----------------------------------------------------------
 \subsection*{F1. Obstacle-density scaling: revised Fig.~10 (Page~7)}
 %----------------------------------------------------------
-\begin{figure}[!ht]
-\centering
-\subfigure[Original: five seeds per density, mean only, 400\,s cap.]{\includegraphics[width=0.47\linewidth]{old_density.pdf}}
-\hfill
-\subfigure[Revised: ten seeds per density, mean$\pm$s.d., 800\,s cap.]{\includegraphics[width=0.47\linewidth]{new_density.pdf}}
-\caption{Obstacle-density scaling, original (left) versus revised (right). The
-panel structure is unchanged, so the two images are directly comparable. The
-revision doubles the number of independent seeds per density, adds dispersion
-to the timing results, and aligns the failed-trial statistic with the actual
-800\,s per-trial timeout; the earlier manuscript used a 400\,s cap in this
-summary.}
-\end{figure}
+\begin{center}
+\includegraphics[width=0.41\linewidth]{old_density.pdf}\hfill
+\includegraphics[width=0.41\linewidth]{new_density.pdf}\\[2pt]
+{\footnotesize (a)~Original: five seeds per density, mean only, 400\,s cap. \hfill (b)~Revised: ten seeds per density, mean$\pm$s.d., 800\,s cap.}\\[3pt]
+\captionof{figure}{Obstacle-density scaling, original (left) versus revised (right). The
+panel structure is unchanged, so the two images are directly comparable: the
+revision doubles the seeds per density, adds dispersion to the timing panels,
+and uses the actual 800\,s timeout instead of the 400\,s cap of the summary.}
+\end{center}
 
 %----------------------------------------------------------
 \subsection*{F2. Simulation snapshots: revised Fig.~7 (Page~6)}
 %----------------------------------------------------------
-\begin{figure}[!ht]
-\centering
-\subfigure[Original: one overlay inset did not match its snapshot.]{\includegraphics[width=0.47\linewidth]{old_sim.pdf}}
-\hfill
-\subfigure[Revised: regenerated with the correct inset.]{\includegraphics[width=0.47\linewidth]{new_sim.png}}
-\caption{Execution and planning alignment in the two simulation scenarios,
+\begin{center}
+\includegraphics[width=0.41\linewidth]{old_sim.pdf}\hfill
+\includegraphics[width=0.41\linewidth]{new_sim.png}\\[2pt]
+{\footnotesize (a)~Original: one overlay inset did not match its snapshot. \hfill (b)~Revised: regenerated with the correct inset.}\\[3pt]
+\captionof{figure}{Execution and planning alignment in the two simulation scenarios,
 original (left) versus revised (right). One inset of the original composite was
-incorrect, because the fourth sub-image of its bottom row duplicated the sixth
-sub-image of the same row, so that WCCG overlay did not correspond to the
-snapshot above it. The figure has been regenerated with the correct panel; the
-caption, the scenario and the message are unchanged.}
-\end{figure}
+incorrect: the fourth sub-image of its bottom row duplicated the sixth, so that
+WCCG overlay did not match the snapshot above it. The panel has been
+regenerated; the caption and the message are unchanged.}
+\end{center}
 
 %----------------------------------------------------------
 \subsection*{F3. Scalability scenes: revised Fig.~9 (Page~7)}
 %----------------------------------------------------------
-\begin{figure}[!ht]
-\centering
-\subfigure[Original: obstacle-density run only.]{\includegraphics[width=0.47\linewidth]{old_dense.png}}
-\hfill
-\subfigure[Revised: density run (left half) plus the four-robot study (right half).]{\includegraphics[width=0.47\linewidth]{new_obs_rob_scale.png}}
-\caption{Simulation scenes of the scalability evaluation, original (left) versus
-revised (right). The revised figure covers both scalability axes instead of the
-obstacle-density axis alone: its left half keeps the representative $M{=}45$,
-two-robot run (snapshots above, WCCG overlays with the start face in blue below),
-while its right half adds the four-robot study ($M{=}30$, $N{=}4$) with the
-global initial and final states above and two magnified views of a single pushing
-task below. This provides a qualitative illustration of the team-size results in
-Table~III (Page~7), which previously had no accompanying scene figure.}
-\end{figure}
+\begin{center}
+\includegraphics[width=0.43\linewidth]{old_dense.png}\hfill
+\includegraphics[width=0.43\linewidth]{new_obs_rob_scale.png}\\[2pt]
+{\footnotesize (a)~Original: obstacle-density run only. \hfill (b)~Revised: density run (left half) plus the four-robot study (right half).}\\[3pt]
+\captionof{figure}{Simulation scenes of the scalability evaluation, original (left) versus
+revised (right). The revised figure covers both axes instead of density alone:
+the left half keeps the representative $M{=}45$, two-robot run (snapshots above,
+WCCG overlays below), and the right half adds the four-robot study
+($M{=}30$, $N{=}4$) with initial and final states above and two magnified views
+of one pushing task below, illustrating the team-size results of Table~III
+(Page~7).}
+\end{center}
 
 \end{document}
