@@ -88,7 +88,7 @@ Ablations & Scenario~1, 40 trials & 82.5--97.5\,\% & --- & Table~II, p.\,6\\
 \addlinespace[2pt]
 Obstacle density & $8{\times}8$\,m, $M{=}15$--45, $N{=}2$; 10 seeds each & \textbf{100}\,\% for all $M$ & 0/10 at $M{=}45$ & Table~III, Fig.~10; p.\,7\\
 \addlinespace[2pt]
-Physics mismatch & $8{\times}8$\,m, $M{=}30$, $N{=}2$; $\pm20\%$ and $\pm40\%$; 10 seeds each & \textbf{97.5}\,\% at $\pm40\%$ & DFS-WCCG 57.5\,\%; SL-Push (sim) 32.5\,\% & Table~III, p.\,7\\
+Physics mismatch & $8{\times}8$\,m, $M{=}30$, $N{=}2$; $\pm20\%$ and $\pm40\%$; 10 seeds per condition (ours), 5 for the baseline supplements at the $\pm40\%$ extremes & \textbf{97.5}\,\% at $\pm40\%$ & DFS-WCCG 57.5\,\%; SL-Push (sim) 32.5\,\% & Table~III, p.\,7\\
 \addlinespace[2pt]
 Robot-team scaling & $8{\times}8$\,m, $M{=}30$, $N{=}2$--4; 10 seeds each & \textbf{100}\,\% (30/30) & DFS-WCCG 90--100\,\%; SL-Push (sim) 80\,\% & Table~III, p.\,7\\
 \addlinespace[2pt]
@@ -494,8 +494,11 @@ fails, the bounded-backtracking search expands at most $B{=}2000$ partial
 assignments --- a fixed budget that does not grow with the team size --- and the
 subset fallback repeats that search for at most one excluded robot. Each
 resulting candidate is checked by a force LP with a $2N$-dimensional decision
-vector, so larger teams raise the contact-assignment and LP costs linearly in
-$N$ rather than exponentially. Sec.~III-E2 states this distinction and the
+vector. The number of contact assignments examined is bounded by
+$N|\mathcal A|{+}2B$, rather than growing as $|\mathcal A|^N$; each examined
+assignment requires an LP over $2N$ force variables, so team size affects both the
+number and the dimension of the LPs, while the implementation avoids exhaustive
+enumeration of joint contact tuples. Sec.~III-E2 states this distinction and the
 budget used.
 
 The preliminary $N{=}4$ runs failed in 3 of 10 seeds (2 planning failures and
@@ -523,7 +526,8 @@ by the baselines as well as by PushAround:
 \begin{threeparttable}
 \footnotesize
 \caption{Robot-team scaling at $M{=}30$ (nominal physics) after the shared
-mode-generation fix. Every cell uses 10 seeds and the same code;
+mode-generation fix. Every cell uses 10 seeds and the same shared mode-generation
+implementation and evaluation protocol;
 $PT$/$ET$ are means over successful trials. For reference, the pre-fix history
 is given in the notes.}
 \label{tab:robot}
@@ -850,7 +854,8 @@ Because geometric degeneracies and decomposition choices still matter in
 practice, we compare WCCG against two independent references on 300 random
 scenes stratified into convex, mixed, and non-convex obstacles: a continuous
 configuration-space (CC) reference and a rasterized reference (FR) at
-$0.02$\,m, verified at $0.01$\,m.
+$0.01$\,m oracle resolution, with a coarser $0.02$\,m raster used only as a
+stability check.
 CC and FR disagree in \textbf{4/300} cases, all of which are raster-unstable
 near narrow or tangential contacts. On all 300 scenes, WCCG agrees with the
 continuous reference and produces \textbf{zero false positives and zero false
@@ -1085,7 +1090,7 @@ Study & Workspace & $M$ & $N$ & Seeds & Timeout / cap & Workers\\
 \midrule
 Main comparison (Table~II) & $8{\times}5$\,m & 10 & 2 & 40 trials & 800\,s / 20k & 8\\
 Density (Table~III, Fig.~10) & $8{\times}8$\,m & 15--45 & 2 & 10 per density & 800\,s / 20k & 8\\
-Mismatch (Table~III) & $8{\times}8$\,m & 30 & 2 & 10 per cell & 800\,s / 20k & 8\\
+Mismatch (Table~III) & $8{\times}8$\,m & 30 & 2 & 10 (ours) / 5 (baseline) & 800\,s / 20k & 8\\
 Robot scaling (Table~III) & $8{\times}8$\,m & 30 & 2--4 & 10 per cell & 800\,s / 20k & 8\\
 WCCG validation (Table~I) & $8{\times}8$\,m & 10 & --- & 300 scenes & n/a & 4 (C++)\\
 \bottomrule
