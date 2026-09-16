@@ -118,9 +118,9 @@ densities ($M{=}15$--$45$), with mean planning time rising from $2.5$ to $53.4$\
 comparison methods fall to $0/10$ at $M{=}45$ (Table~\ref{tab:dens-full}; the revised figure beside the original, with Wilson intervals, is in
 our reply to Reviewer~3). The no-recursion ablation, which isolates recursive pushing, is reported alongside.
 
-\item \textbf{Robot-team scaling (new experiment and mechanism).} Two mode-generation refinements were added to the shared generator, which
-all policies use: bounded backtracking contact assignment and a temporary
-per-task robot release. At $N{=}4$ the observed success rates change from $70\%$
+\item \textbf{Robot-team scaling (new experiment and mechanism).} Two mode-generation refinements were added to the generator shared by
+PushAround and the two team-scaling baselines: bounded backtracking contact assignment and a
+temporary per-task robot release. At $N{=}4$ the observed success rates change from $70\%$
 to \textbf{100\%} for PushAround, from $0\%$ to $80\%$ for SL-Push (sim) and
 from $80\%$ to $90\%$ for DFS-WCCG. (tables, figures and the pre-fix grid in our reply to Reviewer~3) PushAround
 succeeds in $30/30$ team-size trials, with mean planning times of $23.9$--$30.0$\,s and mean execution times
@@ -317,7 +317,7 @@ Force limit        & 1.4 & \textbf{10/10} & 15.2 & 93.3  & 3.2 & 3/5 & 27.6 & 30
 
 \begin{itemize}
 \item \change{it demonstrates substantial empirical improvements in feasibility, efficiency and scalability over the evaluated NAMO and collaborative-clearing baselines, together with robustness to execution-side physical-parameter mismatch.} (Sec.~I-B, Page~2)
-\item \change{Extensive simulations and hardware experiments validate WCCG against standard connectivity checks. PushAround further scales to denser clutter and teams of up to four robots, while remaining robust to simulated execution-side physical-parameter mismatch.} (Abstract, Page~1)
+\item \change{Numerical experiments validate WCCG against standard connectivity checks. PushAround further scales to denser clutter and teams of up to four robots, while remaining robust to simulated execution-side physical-parameter mismatch.} (Abstract, Page~1)
 \item \change{\textbf{(III) Physics mismatch:} the planner keeps the nominal model and only the execution simulator is perturbed, one parameter at a time. PushAround succeeds in $156/160$ perturbed trials ($97.5\%$); under $\pm40\%$ perturbations SL-Push (sim) reaches $13/40$ and DFS-WCCG $23/40$, at mean planning times of $31.5$ and $229.1$\,s against $18.4$\,s.} (Sec.~IV-A6, Page~7)
 \end{itemize}
 %==============================
@@ -468,13 +468,14 @@ We therefore added two refinements inside the shared mode generator. First, if t
 replacement fails, a bounded backtracking search recovers full-team assignments it may have missed.
 Second, if no feasible full-team assignment is found within the bounded search, one robot is
 temporarily inactive for that push and holds its pose. Full-team modes stay preferred through a ranking penalty on reduced-team modes, and the
-released robot is available again afterwards; The first refinement addresses assignments missed by the greedy search; the second provides a
+released robot is available again afterwards; the first refinement addresses assignments missed by the greedy search; the second provides a
 reduced-team fallback when the bounded full-team search fails, including the diagnosed cases in which
 a full-team assignment is geometrically infeasible.
 
-Before the refinement PushAround solved 7/10 $N{=}4$ trials, afterwards 10/10 at $N{=}2,3,4$.
+Before the refinement, PushAround solved 7/10 trials at $N{=}4$; afterwards, it solved 10/10
+trials at each of $N{=}2,3,4$.
 Both refinements are in the shared generator, so we re-ran both baselines on the same implementation;
-their 40 trial logs record $20{,}890$ failed greedy replacements, $10{,}904$ backtracking assignments
+the logs from their 40 trials record $20{,}890$ failed greedy replacements, $10{,}904$ backtracking assignments
 (739 rescues) and $6{,}017$ robot releases, so the baselines exercise the added paths as well.
 
 An exhaustive joint assignment over $|\mathcal A|$ candidate contacts per robot would need
@@ -491,10 +492,12 @@ including the pre-fix rows, is in Table~\ref{tab:robot-full}.
 
 \begin{itemize}
 \item \change{If the sequential replacement cannot assign a contact to every robot, a bounded backtracking search over robot--contact combinations (with a fixed budget) attempts the full-team assignment.} (Sec.~III-C2, Page~4)
-\item \change{\textbf{(II) Robot-team size:} at $M{=}30$, PushAround solves all ten trials at $N{=}2$, $3$, and $4$ using the same mode-generation procedure with a full-team-first fallback: if no feasible full-team assignment is found within the bounded search, one robot is temporarily inactive.} (Sec.~IV-A6 (II), Page~7)
+\item \change{\textbf{(II) Robot-team size:} at $M{=}30$, PushAround solves all ten trials at $N{=}2$, $3$, and
+$4$ using the same mode-generation procedure with a full-team-first fallback in which one robot may
+be temporarily inactive.} (Sec.~IV-A6 (II), Page~7)
 \item \change{Robot-team size mainly affects mode generation: each greedy sweep evaluates at most
-$N|\mathcal{A}|$ single-contact substitutions rather than the exhaustive $|\mathcal{A}|^{N}$
-assignment, while refinement is capped by a fixed evaluation budget.} (Sec.~III-E2, Page~6)
+$N|\mathcal{A}|$ single-contact substitutions rather than $|\mathcal{A}|^{N}$ joint tuples, and
+refinement is capped by a fixed evaluation budget.} (Sec.~III-E2, Page~6)
 \end{itemize}
 
 The scalability figure of the manuscript (Fig.~9, Page~7) appears below in

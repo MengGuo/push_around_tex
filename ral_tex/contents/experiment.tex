@@ -25,12 +25,12 @@ on a machine with an Intel i9-14900KF and an RTX 4080.
 
 \change{
 \begin{tabular}{
-    @{}
-    l
-    cc
-    @{\hspace{8pt}}
-    ccc
-    @{}
+ @{}
+ l
+ cc
+ @{\hspace{8pt}}
+ ccc
+ @{}
 }
 
 \toprule
@@ -125,48 +125,48 @@ simulator, with the same $800$\,s planning cap, $20{,}000$-step ($500$\,s) execu
 
 % ========================================
 \begin{table}[t]
-  \centering
-  \begin{threeparttable}
-  \caption{Performance comparison and ablations on Scenario~1 over $40$ randomized trials.\tnote{a}}
-  \label{tab:main_ablation}
-  \setlength{\tabcolsep}{2.7pt}
-  \renewcommand{\arraystretch}{0.92}
-  \begin{tabular}{lccccc}
-  \toprule
-  Method / Variant & Succ.(\%) & PT (s) & ET (s) & \#Sims & \#Pushes \\
-  \midrule
-  DFS-WCCG            & 25.0  & $>$100.0 & 51.2 & $>$500 & 8.0 \\
-  SL-Push (offline)   & 62.5  & 0.06     & 44.1 & 0.0    & 7.3 \\
-  SL-Push (sim)       & 75.0  & 18.2     & 64.6 & 20.0   & 10.2 \\
-  Rec-NAMO            & 37.5  & 13.3     & 42.4 & 0.0    & 7.8 \\
-  \textbf{PushAround (ours)}
-                       & \textbf{97.5} & \textbf{10.3} & \textbf{28.6}
-                       & \textbf{121.5} & \textbf{6.0} \\
-  \midrule
-  w/o gap-lookahead    & 82.5 & 16.9 & 35.2 & 178.3 & 7.2 \\
-  w/o mode-cache       & 92.5 & 17.1 & 33.4 & 164.6 & 6.5 \\
-  w/o quick-pass       & 90.0 & 23.6 & 41.9 & 208.2 & 6.1 \\
-  w/o reinsertion      & 85.0 & 12.8 & 31.1 & 151.7 & 7.8 \\
-  \bottomrule
-  \end{tabular}
-  \begin{tablenotes}\scriptsize
-    \item[a] Times are averaged over successful trials; failures count in the
-    success rate only. DFS-WCCG exceeds the planning budget ($PT$ lower bound).
-    \#Sims counts all simulations, including mode generation.
-  \end{tablenotes}
-  \end{threeparttable}
-  \vspace{-4.0mm}
+ \centering
+ \begin{threeparttable}
+ \caption{Performance comparison and ablations on Scenario~1 over $40$ randomized trials.\tnote{a}}
+ \label{tab:main_ablation}
+ \setlength{\tabcolsep}{2.7pt}
+ \renewcommand{\arraystretch}{0.92}
+ \begin{tabular}{lccccc}
+ \toprule
+ Method / Variant & Succ.(\%) & PT (s) & ET (s) & \#Sims & \#Pushes \\
+ \midrule
+ DFS-WCCG & 25.0 & $>$100.0 & 51.2 & $>$500 & 8.0 \\
+ SL-Push (offline) & 62.5 & 0.06 & 44.1 & 0.0 & 7.3 \\
+ SL-Push (sim) & 75.0 & 18.2 & 64.6 & 20.0 & 10.2 \\
+ Rec-NAMO & 37.5 & 13.3 & 42.4 & 0.0 & 7.8 \\
+ \textbf{PushAround (ours)}
+ & \textbf{97.5} & \textbf{10.3} & \textbf{28.6}
+ & \textbf{121.5} & \textbf{6.0} \\
+ \midrule
+ w/o gap-lookahead & 82.5 & 16.9 & 35.2 & 178.3 & 7.2 \\
+ w/o mode-cache & 92.5 & 17.1 & 33.4 & 164.6 & 6.5 \\
+ w/o quick-pass & 90.0 & 23.6 & 41.9 & 208.2 & 6.1 \\
+ w/o reinsertion & 85.0 & 12.8 & 31.1 & 151.7 & 7.8 \\
+ \bottomrule
+ \end{tabular}
+ \begin{tablenotes}\scriptsize
+ \item[a] Times are averaged over successful trials; failures count in the
+ success rate only. DFS-WCCG exceeds the planning budget ($PT$ lower bound).
+ \#Sims counts all simulations, including mode generation.
+ \end{tablenotes}
+ \end{threeparttable}
+ \vspace{-4.0mm}
 \end{table}
 
 % ========================================
 % ========================================
 \begin{figure}[t!]
-  \centering
-  \includegraphics[width=0.7\columnwidth]{figures/compare.png}
-  \vspace{-3.0mm}
-  \caption{Failure cases by baselines Rec-NAMO, SL-Push and DFS-WCCG.}
-  \label{fig:baseline}
-  \vspace{-6.0mm}
+ \centering
+ \includegraphics[width=0.7\columnwidth]{figures/compare.png}
+ \vspace{-3.0mm}
+ \caption{Failure cases by baselines Rec-NAMO, SL-Push and DFS-WCCG.}
+ \label{fig:baseline}
+ \vspace{-6.0mm}
 \end{figure}
 
 % ========================================
@@ -216,14 +216,14 @@ DFS-WCCG exhibits rapid branching growth, offline SL-Push produces displacements
 
 \change{
 \begin{tabular}{
-    @{}
-    l
-    c
-    c
-    r@{\;}c@{\;}l
-    @{\hspace{10pt}}
-    r@{\;}c@{\;}l
-    @{}
+ @{}
+ l
+ c
+ c
+ r@{\;}c@{\;}l
+ @{\hspace{10pt}}
+ r@{\;}c@{\;}l
+ @{}
 }
 \hline
 
@@ -237,56 +237,56 @@ Case
 \hline
 
 \multicolumn{9}{l}{
-    \emph{Obstacle density} (PushAround, $N=2$, nominal)
+ \emph{Obstacle density} (PushAround, $N=2$, nominal)
 }
 \\
 
 $M=15$
 & 10 & 100
-& 2.5   & $\pm$ & 0.9
-& 37.1  & $\pm$ & 21.0
+& 2.5 & $\pm$ & 0.9
+& 37.1 & $\pm$ & 21.0
 \\
 
 $M=30$
 & 10 & 100
-& 11.7  & $\pm$ & 3.7
+& 11.7 & $\pm$ & 3.7
 & 100.9 & $\pm$ & 34.7
 \\
 
 $M=45$
 & 10 & 100
-& 53.4  & $\pm$ & 24.5
+& 53.4 & $\pm$ & 24.5
 & 272.7 & $\pm$ & 97.4
 \\
 
 \hline
 
 \multicolumn{9}{l}{
-    \emph{Robot-team size} ($M=30$, nominal; 10 trials per cell)
+ \emph{Robot-team size} ($M=30$, nominal; 10 trials per cell)
 }
 \\
 
 PushAround, $N=3$
 & 10 & 100
-& 30.0  & $\pm$ & 12.7
-& 97.3  & $\pm$ & 42.1
+& 30.0 & $\pm$ & 12.7
+& 97.3 & $\pm$ & 42.1
 \\
 
 PushAround, $N=4$
 & 10 & 100
-& 29.2  & $\pm$ & 8.9
+& 29.2 & $\pm$ & 8.9
 & 110.1 & $\pm$ & 33.1
 \\
 
 SL-Push, $N=3$
 & 10 & 80
-& 30.0  & $\pm$ & 46.3
+& 30.0 & $\pm$ & 46.3
 & 193.3 & $\pm$ & 111.3
 \\
 
 SL-Push, $N=4$
 & 10 & 80
-& 23.4  & $\pm$ & 18.2
+& 23.4 & $\pm$ & 18.2
 & 171.7 & $\pm$ & 61.2
 \\
 
@@ -305,7 +305,7 @@ DFS-WCCG, $N=4$
 \hline
 
 \multicolumn{9}{l}{
-    \emph{Physics mismatch} ($M=30$, $N=2$)
+ \emph{Physics mismatch} ($M=30$, $N=2$)
 }
 \\
 
@@ -392,8 +392,7 @@ PushAround keeps $100\%$ success at all tested densities ($M{=}15$ to $45$), pla
 and the no-recursion ablation solves $7/10$.
 \textbf{(II) Robot-team size:} at $M{=}30$, PushAround solves all ten trials at
 $N{=}2$, $3$, and $4$ using the same mode-generation
-procedure with a full-team-first fallback: if no feasible full-team assignment is found within the bounded search, one robot is temporarily
-inactive. At $N{=}4$, PushAround uses $29.2$\,s planning and $110.1$\,s execution against $101.9$\,s and $175.9$\,s for DFS-WCCG.
+procedure with a full-team-first fallback in which one robot may be temporarily inactive. At $N{=}4$, PushAround uses $29.2$\,s planning and $110.1$\,s execution against $101.9$\,s and $175.9$\,s for DFS-WCCG.\,s for DFS-WCCG.
 Across the sweep, the branching per expansion stays
 near six while expansions grow only modestly ($3.5$ to $24.5$), against a candidate
 space that scales as $|\mathcal{A}|^{N}$ per task. A solved trial needs a median of $10$ expansions and $48$
@@ -411,40 +410,40 @@ times of $31.5$ and $229.1$\,s against $18.4$\,s.
 
 % ========================================
 \begin{figure}[t!]
-  \centering
-  \includegraphics[width=0.86\columnwidth]{figures/obs_rob_scale.png}
-  \vspace{-2mm}
-  \caption{\change{
-  Scalability of the clearing process. \textbf{Left:} density scaling ($M{=}45$, two robots): snapshots during clearing (\textbf{top}) and WCCG overlays with the start face in blue (\textbf{bottom}). \textbf{Right:} team scaling ($M{=}30$, four robots): initial and final states (\textbf{top}) and one push before contact and during execution (\textbf{bottom}).}}
-  \label{fig:scalability_scenes}
-  \vspace{-4mm}
+ \centering
+ \includegraphics[width=0.86\columnwidth]{figures/obs_rob_scale.png}
+ \vspace{-2mm}
+ \caption{\change{
+ Scalability of the clearing process. \textbf{Left:} density scaling ($M{=}45$, two robots): snapshots during clearing (\textbf{top}) and WCCG overlays with the start face in blue (\textbf{bottom}). \textbf{Right:} team scaling ($M{=}30$, four robots): initial and final states (\textbf{top}) and one push before contact and during execution (\textbf{bottom}).}}
+ \label{fig:scalability_scenes}
+ \vspace{-4mm}
 \end{figure}
 
 % ========================================
 % ========================================
 \begin{figure}[t!]
-  \centering
-  \includegraphics[width=0.90\columnwidth]{figures/density_comparison.pdf}
-  \vspace{-2.0mm}
-  \caption{\change{
-  Obstacle-density scaling ($8\times 8$\,m, $10$ seeds per density). Times are
-  budget-capped (planning $800$\,s, execution $20{,}000$ steps $=500$\,s; dotted).}}
-  \label{fig:density_scaling}
-  \vspace{-6.0mm}
+ \centering
+ \includegraphics[width=0.90\columnwidth]{figures/density_comparison.pdf}
+ \vspace{-2.0mm}
+ \caption{\change{
+ Obstacle-density scaling ($8\times 8$\,m, $10$ seeds per density). Times are
+ budget-capped (planning $800$\,s, execution $20{,}000$ steps $=500$\,s; dotted).}}
+ \label{fig:density_scaling}
+ \vspace{-6.0mm}
 \end{figure}
 
 % ========================================
 % ========================================
 % ========================================
 \begin{figure*}[!t]
-  \centering
-  \includegraphics[width=0.9\linewidth]{figures/hardware.png}
-  \vspace{-3.0mm}
-  \caption{\change{Real-world pushing experiments with execution--planning alignment (over~$20$ runs, $2$ scenarios).
-    \textbf{Top:} two robots pushing obstacles in a \(5{\times}6\,\mathrm{m}\)
-    workspace. \textbf{Bottom:} WCCG overlays with the start face in blue.}}
-  \vspace{-5.0mm}
-  \label{fig:hardware}
+ \centering
+ \includegraphics[width=0.9\linewidth]{figures/hardware.png}
+ \vspace{-3.0mm}
+ \caption{\change{Real-world pushing experiments with execution--planning alignment (over~$20$ runs, $2$ scenarios).
+ \textbf{Top:} two robots pushing obstacles in a \(5{\times}6\,\mathrm{m}\)
+ workspace. \textbf{Bottom:} WCCG overlays with the start face in blue.}}
+ \vspace{-5.0mm}
+ \label{fig:hardware}
 \end{figure*}
 
 \subsection{Hardware Experiments}\label{subsec:hardware}

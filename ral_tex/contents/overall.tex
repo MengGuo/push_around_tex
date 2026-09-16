@@ -35,9 +35,9 @@ with the number of validated candidates and is reduced by $n_{\texttt{w}}$ paral
 workers.} 
 \change{Robot-team size mainly affects mode 
 generation: each greedy sweep evaluates at most $N|\mathcal{A}|$ single-contact
-substitutions rather than the exhaustive $|\mathcal{A}|^N$ assignment, while refinement is capped by a fixed evaluation budget; if it 
-fails, a bounded backtracking search with budget $B{=}2000$ is tried, then a 
-reduced-team fallback repeats the assignment with one robot inactive. Each candidate is checked by an LP over at most $2N$ contact-force variables.}
+substitutions rather than $|\mathcal{A}|^N$ joint tuples, and refinement is capped by a fixed evaluation
+budget; failures are handled by bounded backtracking with budget $B{=}2000$ and a reduced-team
+fallback over at most $N$ one-robot-excluded subsets. Each candidate is checked by an LP over at most $2N$ contact-force variables.}
 %% %----------------------------------------------
 %% \subsubsection{Generalization}\label{subsec:general}
 %% The framework admits several extensions:
