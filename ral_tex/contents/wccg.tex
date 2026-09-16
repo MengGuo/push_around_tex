@@ -5,11 +5,11 @@ The feasibility of routing the vehicle reduces to whether a~$W$-width corridor
 connects~$\mathbf{x}_\texttt{V}^{\texttt{S}}$ and~$\mathbf{x}_\texttt{V}^{\texttt{G}}$.
 A W--clearance connectivity graph (WCCG) is introduced here to encode obstacle
 adjacencies under clearance~$W$ and enable fast connectivity queries.
-\change{Conventional clearance checks either rasterize the workspace into an
-inflated occupancy grid or query sampling-based roadmaps, and must therefore fix
-a resolution and re-query the map whenever an obstacle
-moves~\cite{karaman2011samplingbasedalgorithmsoptimalmotion}.
-Built directly from obstacle geometry, the WCCG introduces no grid-resolution parameter in the repeated connectivity queries used during planning.}
+\change{Grid- and sampling-based clearance checks typically depend on a chosen
+grid or sampling resolution and must update their queries when obstacles
+move~\cite{karaman2011samplingbasedalgorithmsoptimalmotion}.
+Built from obstacle geometry, the WCCG needs no grid-resolution parameter in these
+repeated queries.}
 
 %------------------------------
 \begin{figure}[t!]
@@ -21,6 +21,7 @@ Built directly from obstacle geometry, the WCCG introduces no grid-resolution pa
   \label{fig:pihs_overview}
   \vspace{-4mm}
 \end{figure}
+
 %------------------------------
 
 \subsubsection{Graph Construction}
@@ -41,7 +42,7 @@ where~$\mathcal{V}$ are centroid and bridge nodes;
 $\mathcal{E}_c$ contains centroid--bridge edges; and~$\mathcal{E}_b$ for
 bridge--bridge edges with widths~$w_{uv}$.
 
-\subsubsection{Connectivity Criterion}\label{subsubsec:bugplanner}
+\subsubsection{Connectivity Criterion}\label{subsubsec:wccg-criterion}
 Once~$\mathcal{G}_W$ has been constructed, connectivity queries can be
 performed without explicitly computing a geometric path. Let
 $\textsf{Face}(\mathcal{G}_W)$ denote the set of connected planar faces induced
@@ -57,10 +58,7 @@ is given by
 \end{equation}
 \change{where the faces follow the standard configuration-space inflation
 interpretation: expanding obstacles by a disk of radius $W/2$ turns gaps
-narrower than $W$ into overlapping barriers, and non-convex obstacles are
-handled through clearance-relevant decomposition, after which WCCG records the
-separating bottlenecks.} The consistency between WCCG connectivity and continuous and
-rasterized configuration-space references is further evaluated numerically
+narrower than $W$ into overlapping barriers, and non-convex obstacles are decomposed into clearance-relevant components, after which WCCG records the separating bottlenecks.} The consistency of WCCG connectivity with both continuous and rasterized configuration-space references is further evaluated numerically
 in Sec.~\ref{subsec:wccg-validation}.
 A frontier-tracing procedure, similar to the
 BugPlanner~\cite{McGuireCroonTuyls2019}, is then used to extract a skeleton

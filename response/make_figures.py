@@ -330,7 +330,7 @@ def fig_wccg() -> None:
     ax0.set_title("(a) agreement on 300 random scenes")
     ax0.legend(loc="upper left", frameon=False, fontsize=6.2)
 
-    names = ["WCCG", "CC", "FR\n(0.02 m)"]
+    names = ["WCCG", "CC", "FR\n(0.01 m)"]
     vals = [w.wccg_time_ms.iloc[-1], w.cc_time_ms.iloc[-1], w.fr_time_ms.iloc[-1]]
     cols = [CLR["ours"], "#4c9f70", CLR["slpush"]]
     ax1.bar(names, vals, color=cols, edgecolor="k", linewidth=0.35)

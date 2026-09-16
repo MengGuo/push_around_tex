@@ -14,9 +14,9 @@ FILES
                             contains (1) the detailed point-by-point response to
                             the Associate Editor and to Reviewers 3 and 4,
                             followed by (2) the revised paper with the changes
-                            highlighted in blue (26 pages in total: 18 + 8).
+                            highlighted in blue (23 pages in total: 15 + 8).
 
-* "response.pdf"          - the response letter alone, 18 pages (identical to the
+* "response.pdf"          - the response letter alone, 15 pages (identical to the
                             leading part of "response_and_diff.pdf"), for
                             convenience. Every listed manuscript change is
                             located by page and section, and the figures that

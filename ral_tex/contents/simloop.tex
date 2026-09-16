@@ -5,24 +5,19 @@ The proposed physics-informed hybrid search (PIHS) selects blocking gaps and
 validates corresponding multi-robot pushing strategies through short-horizon
 simulation, as shown in Fig.~\ref{fig:PIHS} and summarized in
 Alg.~\ref{alg:pihs}. Unlike purely geometric NAMO planners, PIHS expands only
-physics-validated strategies through parallel candidate evaluation. It is a
-feasibility-oriented heuristic search, where Eq.~\eqref{eq:problem} defines
-the ranking objective for candidate schedules. 
-\change{
-The search operates on a finite
-sampled candidate set and therefore does not guarantee global optimality or
-completeness of the underlying continuous hybrid planning problem.
-}
+physics-validated strategies through parallel candidate evaluation. It is a feasibility-oriented heuristic search, where Eq.~\eqref{eq:problem} defines the realized clearance cost of a partial schedule, the accumulated-cost term in the node priority of Eq.~\eqref{eq:priority}. 
+\change{The search samples a finite candidate set, so neither global optimality nor
+completeness is guaranteed.}
 \subsubsection{Tree and Initialization}
 The search tree~$\mathcal{T}$ holds nodes
 $\nu\triangleq(\mathbf{s},\pi)$, where~$\mathbf{s}$ is the system state of all
 robots and movables in~\eqref{eq:transition} and~$\pi$ the partial pushing
-strategy in~\eqref{eq:problem}. Two global functions are maintained:
+strategy in~\eqref{eq:schedule}. Two global functions are maintained:
 $\mathsf{Rank}(\nu)$ stores the ranked candidate
 gaps~$\Gamma_{\mathcal{L}_\nu}$ of the frontier loop~$\mathcal{L}_\nu$ together
 with their exploration costs by~\eqref{eq:pred_cost}, and~$\chi(\nu)$ returns
 the cumulative execution cost from the root to~$\nu$. The root is
-$\nu_0\triangleq(\mathbf{s}_0,\emptyset)$ with initial state~$\mathbf{s}_0$.
+$\nu_0\triangleq(\mathbf{s}_0,\emptyset)$.
 % At initialization,~$\chi(\nu_0)=0$, and
 % $\mathsf{Rank}(\nu_0)$ is constructed by computing~$\Gamma_{\mathcal{L}_{\nu_0}}$
 % for state~$\mathbf{s}_0$.
@@ -70,7 +65,8 @@ Each candidate strategy~$(\Omega_m,\mathbf{v},\boldsymbol{\xi}) \in \Xi_g$ is fi
 checked by a geometric quick-pass and, if it passes, evaluated by the
 short-horizon rollout in~\eqref{eq:sim}. A successful evaluation yields
 $(\mathbf{s}',\delta_{\texttt{T}},\delta_{\texttt{J}})$, from which a child
-node~$\nu' \triangleq (\mathbf{s}',\pi')$ is created by appending
+node~$\nu' \triangleq (\mathbf{s}',\pi')$ is created with
+$\pi' \triangleq \pi \cup \{\tau\}$, appending
 $\tau \triangleq (\Omega_m,\mathbf{v},\boldsymbol{\xi})$ to the current partial
 schedule~$\pi$.
 The cumulative cost is updated by:
@@ -78,9 +74,7 @@ $\chi(\nu') \triangleq \chi(\nu) + \widehat{\mathsf{C}}(\nu,\tau)$,
 where~$\widehat{\mathsf{C}}(\nu,\tau)\triangleq
 \delta_{\texttt{T}} + \alpha\,\delta_{\texttt{J}}$
 is the realized incremental cost.
-Note that all candidate strategies in the current batch are evaluated
-\emph{concurrently in parallel},
-and a single expansion can produce multiple validated successors.
+Thereby, one expansion can yield several validated successors.
 
 
 {
@@ -103,7 +97,8 @@ Init~$\mathcal{Q}$ by~\eqref{eq:priority}\;
       $(\mathbf{s}',\delta_\texttt{T},\delta_\texttt{J})\gets\mathsf{EvalSim}(\nu,\tau)$
       by~\eqref{eq:sim}\;
     \If{success}{
-     $\nu'\gets(\mathbf{s}',\pi\cup\{\tau\})$\;
+     $\pi'\gets\pi\cup\{\tau\}$\;
+     $\nu'\gets(\mathbf{s}',\pi')$\;
      $\chi(\nu')\gets\chi(\nu)+\delta_\texttt{T}+\alpha\,\delta_\texttt{J}$\;
      Add $\nu'$ to $\mathcal{Q}$\;
       }
@@ -123,7 +118,7 @@ Init~$\mathcal{Q}$ by~\eqref{eq:priority}\;
 Termination occurs when a node~$\nu$ reaches a state~$\mathbf{s}$ for which a
 $W$--clear path~$\mathcal{P}^W_\texttt{V}$ exists from
 $\mathbf{x}_\texttt{V}^{\texttt{S}}$ to~$\mathbf{x}_\texttt{V}^{\texttt{G}}$
-by~\eqref{eq:wccg_criterion}. \change{Thus, the schedule~$\pi$ stored in~$\nu$ is a feasible solution satisfying the terminal clearance condition and the validated pushing transitions. It encodes both the sequence of gaps to clear and the pushing strategies that realize them, without implying that~$\mathcal{J}_{\mathrm{clr}}(\pi)$ is globally minimal. The objective covers the clearing phase only, since the external vehicle traverses the corridor after clearing completes; traversal time is therefore not part of~$T$.}
+by~\eqref{eq:wccg_criterion}. \change{Thus, the schedule~$\pi$ stored in~$\nu$ is a physics-validated solution under the nominal planning model: it satisfies the terminal clearance condition and the validated pushing transitions, and encodes both the gaps to clear and the strategies that realize them, without implying that~$\mathcal{J}_{\mathrm{clr}}(\pi)$ is globally minimal. The objective covers the clearing phase only, since the vehicle traverses the corridor after clearing completes.}
 
 \begin{remark}\label{remark:simloop}
 Efficiency comes from three lightweight heuristics:

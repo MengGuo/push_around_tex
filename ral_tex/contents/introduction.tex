@@ -22,7 +22,7 @@ chained motions of several obstacles that complicate planning.
 %==============================================
 \begin{figure}[t!]
   \centering
-  \includegraphics[width=0.85\linewidth]{figures/cover.png}% or {presearch.pdf}
+  \includegraphics[width=0.9\linewidth]{figures/cover.png}% or {presearch.pdf}
   \vspace{-0.1in}
   \caption{
     Collaborative path clearing in both simulation (\textbf{Top})
@@ -35,6 +35,7 @@ chained motions of several obstacles that complicate planning.
   \vspace{-6mm}
   \label{fig:snapshots}
 \end{figure}
+
 %==============================================
 
 \subsection{Related Work}\label{subsec:intro-related}
@@ -58,7 +59,7 @@ modes for breaking frontier gaps;
 \textbf{Bottom-left:} Sim-in-the-loop hybrid search with parallel validation in simulation;
 \textbf{Bottom-right:} Online execution and adaptation during path clearing.}
   \label{fig:overall}
-  \vspace{-6mm}
+  \vspace{-5mm}
 \end{figure*}
 %==============================================
 
@@ -68,7 +69,7 @@ foundational work on the mechanics of pushing and limit surfaces~\cite{goyal1989
 
 Physics-informed planning incorporates dynamics models, contact reasoning, or
 simulation feedback into motion generation: learned dynamics for humanoid
-contact planning~\cite{lin2019efficient}, multi-contact force control~\cite{rouxel2024multi}, demonstration-guided optimal control over contact modes~\cite{xue2023demonstration}, physics simulation interleaved with multi-agent pathfinding~\cite{saxena2023planning,ren2025object}, and learned physical priors~\cite{ni2023progressive,liu2025physics}. \change{These methods nonetheless assume a prescribed manipulation target or few objects, and physical realizability is usually argued rather than validated before execution. Corridor clearing differs on both counts: many movable obstacles are rearranged jointly, and the cleared configuration must remain traversable for a larger vehicle.}
+contact planning~\cite{lin2019efficient}, multi-contact force control~\cite{rouxel2024multi}, demonstration-guided optimal control over contact modes~\cite{xue2023demonstration}, physics simulation interleaved with multi-agent pathfinding~\cite{saxena2023planning,ren2025object}, and learned physical priors~\cite{ni2023progressive,liu2025physics}. \change{These methods nonetheless assume a prescribed target or few objects, and physical realizability is often not validated before execution. Corridor clearing differs: many movable obstacles must be rearranged, and the result must admit a larger vehicle.}
 
 
 %==============================
@@ -88,13 +89,16 @@ generation under geometric constraints. These are encapsulated in a search
 that incrementally expands candidate clearing plans while validating their
 physical realizability, so the resulting plans are not only geometrically
 valid but also feasible under robot dimensions, object mass, contact geometry,
-and coupled pushing dynamics.
-\change{Since physics validation depends on model fidelity, robustness under
-execution-model mismatch is also evaluated.}
+and coupled pushing dynamics. 
+% \change{We further examine its robustness to physical-model uncertainty relevant to real-world deployment.}
+
+
 
 The contributions are twofold: {(I)} it introduces a unified framework that
-couples collaborative pushing with
-physics-informed verification, producing executable plans for
-path clearing in cluttered environments; and {(II)} it
-shows significant improvements in feasibility, efficiency and
-scalability over existing NAMO and collaborative clearing methods.
+couples collaborative pushing with physics-informed verification, 
+producing executable plans for path clearing in cluttered environments; 
+and {(II)} \change{ 
+it demonstrates significant improvements in feasibility, efficiency, 
+and scalability over existing NAMO and collaborative clearing methods, 
+together with robustness to execution-side physical-parameter mismatch.
+}

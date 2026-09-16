@@ -122,16 +122,19 @@ c^\star
 \label{eq:greedy_mode_update}
 \end{equation}
 swept over contact slots until $\mathrm{J}_{\texttt{MF}}^m$ no longer
-decreases. \change{A bounded backtracking variant removes the robot-order
-sensitivity of this replacement. If no full-team assignment exists for a task,
-e.g., on small faces or under the pairwise pusher-clearance constraint, one
-robot is released for that single push (charged a penalty when ranking modes, so
-full-team modes are preferred) and the full team is available again afterwards.}
+decreases.
 The best tuple over initializations gives
 $\mathbf{c}_m^{k,\star}$, from which $\mathbf{u}_m^k$ follows from the inner
 minimization in~\eqref{eq:mode-feasibility}, yielding
 $\boldsymbol{\xi}_m^k=(\mathbf{c}_m^{k,\star},\mathbf{u}_m^k)$; each mode is
-cached as a warm start. The best few admissible pairs are kept for gap~$g$ and
+cached as a warm start. \change{If the sequential replacement cannot assign a
+contact to every robot, a bounded backtracking search over robot--contact
+combinations (with a fixed budget) attempts the full-team assignment. If no feasible full-team mode is found
+within this budget --- for instance on small faces or under the pairwise
+pusher-clearance constraint --- one robot is temporarily left inactive and the
+assignment is repeated with the remaining team. Reduced-team modes
+carry a ranking penalty, so a feasible full-team mode is preferred, and the
+inactive robot returns for the next task.} The best few admissible pairs are kept for gap~$g$ and
 passed to simulation; $\mathbf{u}_m^k$ certifies wrench feasibility while
 hardware tracks the contact geometry from pose/velocity commands.
 
@@ -153,6 +156,7 @@ Reachable contacts are filtered by the
     \label{fig:mode_generation}
    \vspace{-4mm}
 \end{figure}
+
 %------------------------------
 %==============================================
 \subsubsection{Pushing Strategy Evaluation}
@@ -184,11 +188,12 @@ validated before and the swept region of~$\Omega_m$ is collision-free.
 %------------------------------
 \begin{figure}[t!]
   \centering
-  \includegraphics[width=0.85\linewidth]{figures/PIHS_bottom.pdf}
+  \includegraphics[width=0.9\linewidth]{figures/PIHS_bottom.pdf}
   \vspace{-2mm}
   \caption{\change{Sampled push tasks are evaluated via parallel simulation,
   producing updated states for search expansion.}}
     \label{fig:PIHS}
    \vspace{-4mm}
 \end{figure}
+
 %------------------------------

@@ -4,27 +4,20 @@
 \subsubsection{Execution and Online Adaptation}\label{subsec:execute}
 The hybrid search returns a pushing schedule
 $\pi = \{\tau_1,\cdots,\tau_K\}$, with
-$\tau_k \triangleq (\Omega_k,\mathbf{v}_k,\boldsymbol{\xi}_k)$.
+$\tau_k \triangleq (\Omega_{m_k},\mathbf{v}_k,\boldsymbol{\xi}_k)$.
 The schedule is executed in a receding-horizon manner: for each $\tau_k$ the
 robots reach the mode~$\boldsymbol{\xi}_k$ and follow the pushing
 direction~$\mathbf{v}_k$ from the current state, as in~\eqref{eq:sim}.
-\change{On the hardware the optimized contact forces certify feasibility rather
-than being commanded: a mode is retained only if its object wrench lies within
-the robots' actuation limits, and over each control interval $\mathsf{EvalSim}$ predicts a short forward
-object-motion reference (the expected displacement and rotation of the object),
-which the velocity-level controller tracks with motion-capture feedback, and each
-executed push returns an observed state that re-enters the planner.} During transitions,
-robots are reassigned by preserving the circular order of contact points along
-the obstacle boundary~\cite{tang2026pushingbots}, reducing path crossings under
-sufficient clearance. After each push the state is updated from observation,
-the WCCG is rebuilt from the current configuration, and execution continues
+\change{On the hardware the optimized forces certify feasibility rather than being
+commanded: a mode is kept only if its wrench lies within the actuation limits, and each control interval $\mathsf{EvalSim}$ predicts a short object-motion reference tracked with motion-capture feedback, so every executed push updates the execution state and the WCCG for the next task.} During transitions, robots are
+reassigned by preserving the contact-point order along the obstacle
+boundary~\cite{tang2026pushingbots}, reducing path crossings. After each push the state is updated, the WCCG is rebuilt, and execution continues
 until a $W$-clear path
 $\mathcal{P}^W_\texttt{V}$ connects~$\mathbf{x}_\texttt{V}^{\texttt{S}}$ and
 $\mathbf{x}_\texttt{V}^{\texttt{G}}$.
-Replanning is triggered by observed execution discrepancies -- failed contact
-establishment, stalled pushing, or invalidated WCCG connectivity -- in which
-case Alg.~\ref{alg:pihs} is called from the current state to derive the
-updated schedule.
+Replanning is triggered by observed execution discrepancies -- failed contacts,
+stalled pushing, or invalidated WCCG connectivity, in
+which case Alg.~\ref{alg:pihs} is re-invoked.
 
 %----------------------------------------------
 \subsubsection{Computational Complexity}\label{subsubsec:complexity}
@@ -37,15 +30,14 @@ $\mathcal{O}(|\Gamma_{\mathcal{L}_\nu}|
 \log|\Gamma_{\mathcal{L}_\nu}|)$ costs, respectively.
 \change{The dominant simulation cost
 $\mathcal{O}\big(\sum_{g\in\mathsf{Rank}(\nu)}|\Xi_g|\,\big(C_{\mathrm{LP}}+\rho_\nu T_{\mathrm{sim}}/n_{\texttt{w}}\big)\big)$
-grows with the number of validated candidates and is reduced by the
-$n_{\texttt{w}}$ parallel workers, so scalability is set by validated
-candidates rather than by the enumeration of contact assignments.} \change{Robot-team size mainly affects mode
-generation: the greedy stage evaluates at most $N|\mathcal{A}|$ single-contact
-substitutions rather than the exhaustive $|\mathcal{A}|^N$ assignment, and a
-bounded-backtracking fallback with a finite budget examines additional partial
-assignments independently of the team size. Each candidate is checked by an LP
-over the $2N$ admissible contact forces, so exhaustive enumeration of joint
-contact tuples is avoided.}
+grows
+with the number of validated candidates and is reduced by $n_{\texttt{w}}$ parallel
+workers.} 
+\change{Robot-team size mainly affects mode 
+generation: the greedy stage evaluates at most $N|\mathcal{A}|$ single-contact 
+substitutions rather than the exhaustive $|\mathcal{A}|^N$ assignment; if it 
+fails, a bounded backtracking search with budget $B{=}2000$ is tried, then a 
+reduced-team fallback repeats the assignment with one robot inactive. Each candidate is checked by an LP over at most $2N$ contact-force variables.}
 %% %----------------------------------------------
 %% \subsubsection{Generalization}\label{subsec:general}
 %% The framework admits several extensions:

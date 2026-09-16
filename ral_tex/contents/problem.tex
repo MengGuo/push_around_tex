@@ -74,7 +74,8 @@ $\boldsymbol{\xi}_m\triangleq(\mathbf{c}_m,\mathbf{u}_m)$, where
 $\mathbf{c}_m=(c_1,\cdots,c_N)$ is an ordered tuple of contact points on
 $\partial\Omega_m$, and the ordering specifies the robot-to-contact assignment.
 The vector~$\mathbf{u}_m\in\mathbb{R}^{2N}$ stacks the corresponding planar
-contact forces, expressed in the body frame of~$\Omega_m$.
+contact forces, expressed in the body frame of~$\Omega_m$; \change{an inactive
+robot carries a null contact $c_i=\varnothing$ with zero force (Sec.~\ref{subsec:push}).}
 For a contact tuple~$\mathbf{c}_m$, the set of admissible forces
 ${U}_m(\mathbf{c}_m)\subset\mathbb{R}^{2N}$ collects contact forces
 satisfying the robot pushing limits, robot--object friction, and unilateral
@@ -112,19 +113,19 @@ than a directly commanded control input.
 The goal is to compute a \emph{hybrid schedule} that reconfigures movable
 obstacles to admit a $W$-feasible path for the external vehicle.
 The schedule is defined as:
-\begin{equation}
+\begin{equation}\label{eq:schedule}
     \pi\triangleq
     \left\{
     \left(
     \Omega_{m_k},
-    \boldsymbol{\xi}_k,
-    \Delta t_k
+    \mathbf{v}_k,
+    \boldsymbol{\xi}_k
     \right)
     \right\}_{k=1}^{K},
 \end{equation}
 where~$\Omega_{m_k}\in\boldsymbol{\Omega}$ is the manipulated obstacle,
-$\boldsymbol{\xi}_k\in\Xi_{m_k}$ is its pushing mode, and
-$\Delta t_k>0$ is the execution duration. The search is guided by
+$\mathbf{v}_k$ its pushing direction, $\boldsymbol{\xi}_k\in\Xi_{m_k}$ its
+pushing mode. The node cost is defined as
 \begin{equation}\label{eq:problem}
     \mathcal{J}_{\mathrm{clr}}(\pi)
     \triangleq
@@ -135,14 +136,14 @@ $\Delta t_k>0$ is the execution duration. The search is guided by
     m_k,\boldsymbol{\xi}_k,\mathbf{s}(t_k)
     \right),
 \end{equation}
-\change{where~$T\triangleq\sum_{k=1}^{K}\Delta t_k$ denotes the robotic clearance
-duration excluding subsequent vehicle traversal, and~$J(\cdot)$ is the
-simulation-estimated manipulation effort. Vehicle traversal is considered
-only through the terminal $W$-clearance condition~\eqref{eq:wclear}.}
-The constraints~\eqref{eq:freespace}--\eqref{eq:transition} enforce valid
-pushing transitions. \change{Equation~\eqref{eq:problem} ranks feasible
-schedules; PIHS uses finite sampling and does not guarantee global optimality of
-the continuous hybrid objective.}
+\change{where~$T\triangleq\sum_{k=1}^{K}\Delta t_k$ denotes 
+the robotic clearance duration excluding subsequent vehicle traversal, 
+with $\Delta t_k>0$ the duration that the rollout in~(13) returns for the $k$-th push,
+ and~$J(\cdot)$ is the simulation-estimated manipulation cost. 
+ Vehicle traversal is considered only through the terminal $W$-clearance condition~\eqref{eq:wclear}. 
+ The constraints~\eqref{eq:freespace}--\eqref{eq:transition} 
+ enforce valid pushing transitions. 
+ Equation~\eqref{eq:problem} defines the realized clearance cost; PIHS samples finitely and does not guarantee global optimality.}
 
 % ==============================
 \begin{remark}\label{remark:uniqueness}
