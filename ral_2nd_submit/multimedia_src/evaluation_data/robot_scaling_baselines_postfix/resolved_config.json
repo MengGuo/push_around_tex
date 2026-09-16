@@ -1,0 +1,72 @@
+{
+  "common": {
+    "auto_plot": false,
+    "child_env": {
+      "DEBUG_MODEGEN_DIAG": "1",
+      "LOCAL_CLEARANCE_TIMER": "0",
+      "WCCG_PRESEARCH_TIMER": "0"
+    },
+    "ensure_mode_table": false,
+    "env_overrides": {
+      "max_mass": 30.0,
+      "min_mass": 20.0
+    },
+    "max_control_steps": 20000,
+    "num_parallel_workers": 8,
+    "open_predict_gui": false,
+    "open_pybullet_gui": false,
+    "output_dir": "data/robot_scaling_baselines_postfix",
+    "parent_timeout_margin_sec": 80,
+    "policy_overrides": {
+      "load_mode_table": false,
+      "mode_gen_via_greedy_opt": true,
+      "mode_gen_via_table_query": false,
+      "mode_table_file_dir": "mode_tables/robot_scaling",
+      "open_predict_gui": false,
+      "planning_timeout_sec": 800
+    },
+    "python_exe": "python",
+    "resume": true,
+    "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "stop_baseline_after_timeout": false,
+    "trial_timeout_sec": 800,
+    "use_mode_table": false
+  },
+  "experiments": {
+    "robot_scaling": {
+      "obstacle_count": 30,
+      "reserve_robot_slots": 4,
+      "robot_nums": [
+        3,
+        4
+      ],
+      "type": "robot_scaling",
+      "world_height": 8.0,
+      "world_width": 8.0
+    }
+  },
+  "policies": [
+    {
+      "base_policy": "slpush",
+      "label": "SL-Push (sim)",
+      "name": "slpush"
+    },
+    {
+      "base_policy": "dfs",
+      "label": "DFS-WCCG",
+      "name": "dfs"
+    }
+  ],
+  "suite_name": "revision_robot_scaling_baselines_postfix"
+}
