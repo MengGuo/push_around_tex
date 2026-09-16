@@ -172,12 +172,22 @@ simulator, with the same $800$\,s planning cap, $20{,}000$-step ($500$\,s) execu
 % ========================================
 %==============================
 \subsubsection{Results}
-
-\change{Over the $40$ Scenario~1 trials PushAround succeeds in $97.5\%$ of them at $10.3$\,s of planning and $28.6$\,s of execution, executing $6.0$ pushes on
-average (Table~\ref{tab:main_ablation}). Fig.~\ref{fig:main_result} shows two such runs: Scenario~1 ($10$ obstacles, two robots) needs a $6$-push plan ($7.4$\,s, executed in $42.3$\,s), while Scenario~2 ($14$ obstacles) needs $9$ pushes ($11.2$\,s, $61.3$\,s). Planning effort lies in validating those
-pushes: a solved trial spends $121.5$ simulations for $6.0$ executed pushes, and the ablations show that cached modes, quick-pass, gap lookahead and reinsertion change this validation load rather than the plan length.
-Execution is longer since every push is carried out and observed, while
-repositioning between pushes is abstracted as geometric reachability checks.}
+\change{
+Across the $40$ Scenario~1 trials, PushAround achieves a $97.5\%$ success rate,
+with mean planning and execution times of $10.3$\,s and $28.6$\,s, respectively,
+and $6.0$ pushes per successful trial, as shown in Table~\ref{tab:main_ablation}.
+Fig.~\ref{fig:main_result} shows representative runs in both scenarios.
+In Scenario~1 with $10$ movable obstacles and two robots, PushAround generates
+a $6$-push plan in $7.4$\,s and completes execution in $42.3$\,s. In
+Scenario~2 with $14$ obstacles, it generates a $9$-push plan in $11.2$\,s,
+with $61.3$\,s of execution.
+Planning effort is dominated by simulation-based validation: a successful
+trial uses $121.5$ simulations on average for $6.0$ executed pushes. The
+ablations indicate that mode caching, quick-pass, gap lookahead, and reinsertion
+mainly affect this validation load rather than plan length. Execution takes
+longer because each selected push is physically carried out and observed,
+whereas inter-push repositioning is handled by geometric reachability checks.
+}
 
 \change{
 \subsubsection{WCCG Connectivity Validation}

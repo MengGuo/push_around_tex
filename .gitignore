@@ -303,3 +303,6 @@ scen1_partial_data/
 *.out
 *.synctex.gz
 !**/figures/**
+# the experiment video is an original asset (not regenerable): keep it in the repository
+!ral_2nd_submit/PushAround.mp4
+
