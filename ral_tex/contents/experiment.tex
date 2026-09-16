@@ -397,17 +397,19 @@ Generalization is further evaluated in an $8\times8$\,m workspace by
 scaling the obstacle density~$M$, the team size~$N$ and the execution-side physics
 parameters (Table~\ref{tab:generalization}, Figs.~\ref{fig:scalability_scenes} and
 \ref{fig:density_scaling}).
-\textbf{(I) Obstacle density:} with two robots and $10$ trials per density,
-PushAround keeps $100\%$ success at all tested densities ($M{=}15$ to $45$), planning in $2.5$--$53.4$\,s, whereas at $M{=}45$ no external method solves any trial
+\textbf{(I) Obstacle density:} with two robots, $10$ trials per density,
+PushAround keeps $100\%$ success at all tested densities ($M{=}15$ to $45$), planning in $2.5$--$53.4$\,s; at $M{=}45$ none of the evaluated baselines solves any trial
 and the no-recursion ablation solves $7/10$.
 \textbf{(II) Robot-team size:} at $M{=}30$, PushAround solves all ten trials at
 $N{=}2$, $3$, and $4$ using the same mode-generation
-procedure with a full-team-first fallback in which one robot may be temporarily inactive. At $N{=}4$, PushAround uses $29.2$\,s planning and $110.1$\,s execution against $101.9$\,s and $175.9$\,s for DFS-WCCG.
+procedure with a full-team-first fallback that may leave one robot temporarily inactive. At $N{=}4$, PushAround uses $29.2$\,s planning and $110.1$\,s execution against $101.9$\,s and $175.9$\,s for DFS-WCCG.
 Across the clutter sweep ($M{=}15$ to $M{=}45$), the branching per expansion stays
 near six while expansions grow only modestly ($3.5$ to $24.5$), against a candidate
 space that scales as $|\mathcal{A}|^{N}$ per task. A solved trial needs a median of $10$ expansions and $48$
 visited snapshots and about $60$ simulations at $165$\,ms each, against $22$\,ms
-per generated mode. Two to four robots leave the search structure unchanged ($10$ expansions, $60$--$63$ simulations) but triple the aggregate mode-generation time ($15.8$ to $46.4$\,s).
+per generated mode. Across the tested $N{=}2$--$4$ cases, the observed search structure is nearly
+unchanged ($10$ expansions, $60$--$63$ simulations), while the aggregate
+mode-generation time triples from $15.8$ to $46.4$\,s.
 \textbf{(III) Physics mismatch:} the planner keeps the nominal model and only
 the execution simulator is perturbed, one parameter at a time. PushAround
 succeeds in $156$ of the $160$ perturbed trials, a success rate of $97.5\%$; under $\pm40\%$

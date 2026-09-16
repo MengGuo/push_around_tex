@@ -32,8 +32,7 @@ $\mathcal{O}(|\Gamma_{\mathcal{L}_\nu}|
 evaluated candidates; parallel workers reduce the rollout wall time.} 
 \change{Robot-team size affects mode generation: each greedy sweep evaluates at most $N|\mathcal{A}|$ single-contact
 substitutions, where $|\mathcal{A}|$ bounds the reachable contact candidates considered per
-robot, rather than $|\mathcal{A}|^N$ joint tuples, and refinement is capped by a fixed evaluation
-budget; failures are handled by bounded backtracking with budget $B$ and a reduced-team fallback over
+robot, rather than $|\mathcal{A}|^N$ joint tuples, and refinement is capped by a bounded evaluation budget; failures are handled by bounded backtracking with budget $B$ and a reduced-team fallback over
 at most $N$ one-robot-excluded subsets. Each candidate is checked by an LP over at most $2N$ force variables.}
 %% %----------------------------------------------
 %% \subsubsection{Generalization}\label{subsec:general}
