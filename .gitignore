@@ -306,3 +306,7 @@ scen1_partial_data/
 # the experiment video is an original asset (not regenerable): keep it in the repository
 !ral_2nd_submit/PushAround.mp4
 
+# the first-submission archive is a historical record (not regenerable): keep it versioned
+!ral_1st_submit/root.pdf
+!ral_1st_submit/multimedia.zip
+!ral_1st_submit/video.mp4
