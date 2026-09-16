@@ -228,7 +228,58 @@ subset fallback 再重复一次 ⇒ 每任务 ≤ (N|A|+2B) 次 LP 检验，每�
 
 ---
 
-## 8. 一句话总结
+## 8. 一键重建与打包（`build.sh`）
+
+因为 PDF / 多媒体包属于"每次构建都会重新生成"的产物，**仓库不版本管理它们**（见 §9）。
+任何拿到源码的人（包括导师）只需：
+
+```bash
+git clone --depth 1 <repo-url>    # 约 65 MB（历史中不再有生成物）
+cd push_around_tex
+./build.sh                        # 一条命令重建全部产物
+```
+
+`build.sh` 做的事（幂等，可反复运行）：
+
+| 步骤 | 产物 |
+|---|---|
+| 1 | `ral_tex/root.pdf`（蓝色标注版，跑两遍 pdflatex 以定编号）|
+| 2 | `ral_tex/root_clean.pdf`（`\def\CLEANCOPY{}` 干净版）|
+| 3 | `response/response.pdf`（逐条回应信）|
+| 4 | 刷新 `ral_2nd_submit/` 的三个 PDF |
+| 5 | `ral_2nd_submit/response_and_diff.pdf`（回应信 + 高亮论文，`pdfunite` 合并）|
+| 6 | `ral_2nd_submit/multimedia.zip`（用 `ral_2nd_submit/PushAround.mp4` 替换包内 `video.mp4`）|
+| 校验 | 逐份打印页数 + `overfull / errors / undefined` 计数，非零即报警 |
+
+依赖：`pdflatex`（TeX Live + IEEEtran）、`pdfinfo`/`pdfunite`（poppler-utils）、`zip`。
+
+注意事项：
+
+* 视频**不在仓库里**（体积大且属于原始素材）。若 `ral_2nd_submit/PushAround.mp4` 不存在，
+  脚本会保留包内原视频并给出警告；把视频放回该路径即可自动打包进去。
+* `multimedia.zip` 本身也不在仓库里；若缺失，脚本跳过第 6 步（其余照常）。
+* 脚本从不删除源码或插图，只覆盖生成物。
+
+## 9. 仓库体积管理（血的教训）
+
+问题：每次修改都提交 `root.pdf` / `response_and_diff.pdf` / `multimedia.zip` 等生成物，
+101 次提交后 `.git` 达到 **1.5 GB**，导师 clone 困难。
+
+处理（本项目实际执行）：
+
+1. `git gc --prune=now` —— 松散对象打包，1.5 GB → 357 MB（**不改历史**，零风险）
+2. 历史改写清除生成物（`git filter-branch --index-filter`，只保留 `**/figures/**` 下的插图）——
+   清除 216 个 blob / 1394 MB → `.git` 46 MB；GitHub 浅克隆 **65 MB**、完整克隆 **82 MB**
+3. `.gitignore` 生成物模式（`*.pdf`、`*.png`、`*.zip`、`*.mp4`、`*.aux`、`*.log`、`*.out`），
+   但用 `!**/figures/**` 保留插图资产
+
+两条硬教训：
+
+* **squash 提交不能减小体积**——blob 仍在历史中；只有"改写历史 + 清除文件"才有效。
+* `filter-branch` 结束时会**按新 HEAD 检出工作区**，会把被移除的生成物**从磁盘删掉**。
+  动手前务必先 `git clone --mirror` 备份（本项目因此在误删后完整恢复，含不可重建的视频）。
+
+## 10. 一句话总结
 
 **写作阶段**：把"页面预算 + 蓝色标注机制 + 图表规范"当工程约束，一开始就建好，别等返修时救火。
 **返修阶段**：逐条覆盖、顺序不动、原文引用、页码可核查、数字可追溯、语气克制、附件一致。

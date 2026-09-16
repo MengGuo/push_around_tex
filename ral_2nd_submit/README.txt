@@ -70,3 +70,6 @@ NOTES
 * The multimedia attachment contains datasets and source code only; it does not
   contain supplemental text or figures, so it does not circumvent the page
   limit.
+
+* All files in this folder are generated, not versioned. Rebuild them from the
+  source with ./build.sh (see docs/revision_playbook.md, section 8).
