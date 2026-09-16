@@ -468,20 +468,21 @@ We therefore added two refinements inside the shared mode generator. First, if t
 replacement fails, a bounded backtracking search recovers full-team assignments it may have missed.
 Second, if no feasible full-team assignment is found within the bounded search, one robot is
 temporarily inactive for that push and holds its pose. Full-team modes stay preferred through a ranking penalty on reduced-team modes, and the
-released robot is available again afterwards; the first refinement addresses search failure within the bounded search, the second the diagnosed cases
-in which a full-team assignment is geometrically impossible.
+released robot is available again afterwards; The first refinement addresses assignments missed by the greedy search; the second provides a
+reduced-team fallback when the bounded full-team search fails, including the diagnosed cases in which
+a full-team assignment is geometrically infeasible.
 
 Before the refinement PushAround solved 7/10 $N{=}4$ trials, afterwards 10/10 at $N{=}2,3,4$.
 Both refinements are in the shared generator, so we re-ran both baselines on the same implementation;
 their 40 trial logs record $20{,}890$ failed greedy replacements, $10{,}904$ backtracking assignments
 (739 rescues) and $6{,}017$ robot releases, so the baselines exercise the added paths as well.
 
-For scaling, an exhaustive joint assignment over $|\mathcal A|$ candidates per robot needs
-$|\mathcal A|^{N}$ tuples, which the generator avoids: the greedy stage evaluates at most
-$N|\mathcal A|$ substitutions, a bounded backtracking search of budget $B{=}2000$ follows if it
-fails, and the reduced-team fallback evaluates the $N$ one-robot-excluded subsets, each with its own
-bounded search. Explored assignments therefore stay polynomial, $\mathcal{O}(N^{2}|\mathcal A|+NB)$, and each
-candidate is checked by a force LP of dimension at most $2N$ (Sec.~III-E2).
+An exhaustive joint assignment over $|\mathcal A|$ candidate contacts per robot would need
+$|\mathcal A|^{N}$ tuples, which the generator avoids. Each greedy sweep tests at most
+$N|\mathcal A|$ substitutions and the total refinement is capped by a fixed evaluation budget;
+backtracking is capped at $B{=}2000$, and the reduced-team fallback considers at most $N$
+one-robot-excluded subsets under the same bounded procedure. Each candidate is checked by a force LP
+of dimension at most $2N$ (Sec.~III-E2).
 
 After the refinement all methods retain high success rates at $N{=}3,4$ with overlapping CIs, so we claim no monotonic superiority with team size. PushAround reaches $30/30$ successes at $29$--$30$\,s of planning and $97$--$110$\,s of execution; the full grid,
 including the pre-fix rows, is in Table~\ref{tab:robot-full}.
@@ -490,12 +491,10 @@ including the pre-fix rows, is in Table~\ref{tab:robot-full}.
 
 \begin{itemize}
 \item \change{If the sequential replacement cannot assign a contact to every robot, a bounded backtracking search over robot--contact combinations (with a fixed budget) attempts the full-team assignment.} (Sec.~III-C2, Page~4)
-\item \change{\textbf{(II) Robot-team size:} at $M{=}30$, PushAround solves all ten trials at $N{=}2$, $3$, and $4$ using the same mode-generation procedure with a full-team-first fallback: if no full-team assignment is feasible, one robot is temporarily inactive, penalized in the ranking. At $N{=}4$, PushAround uses $29.2$\,s planning and $110.1$\,s execution against $101.9$\,s and $175.9$\,s for DFS-WCCG.} (Sec.~IV-A6 and Table~III, Page~7)
-\item \change{Robot-team size mainly affects mode generation: the assignment stage evaluates at
-most $N|\mathcal{A}|$ single-contact substitutions rather than the exhaustive
-$|\mathcal{A}|^{N}$ assignment, and tuple refinement is capped by a fixed evaluation budget; if it
-fails, a bounded backtracking search with budget $B{=}2000$ is tried, then a reduced-team fallback
-repeats the assignment with one robot inactive.} (Sec.~III-E2, Page~6)
+\item \change{\textbf{(II) Robot-team size:} at $M{=}30$, PushAround solves all ten trials at $N{=}2$, $3$, and $4$ using the same mode-generation procedure with a full-team-first fallback: if no feasible full-team assignment is found within the bounded search, one robot is temporarily inactive.} (Sec.~IV-A6 (II), Page~7)
+\item \change{Robot-team size mainly affects mode generation: each greedy sweep evaluates at most
+$N|\mathcal{A}|$ single-contact substitutions rather than the exhaustive $|\mathcal{A}|^{N}$
+assignment, while refinement is capped by a fixed evaluation budget.} (Sec.~III-E2, Page~6)
 \end{itemize}
 
 The scalability figure of the manuscript (Fig.~9, Page~7) appears below in
@@ -867,8 +866,7 @@ this reference and the motion-capture pose error into planar velocity commands
 for the Mecanum UGVs. Feedback and replanning absorb the difference between the
 reference and the realized motion.
 
-Coupled motion is handled by the rollout: although a strategy names one targeted obstacle, $\mathsf{EvalSim}$ advances all robots and movable
-movable bodies jointly; object--object contacts are resolved by the physics
+Coupled motion is handled by the rollout: although a strategy names one targeted obstacle, $\mathsf{EvalSim}$ advances all robots and movable bodies jointly; object--object contacts are resolved by the physics
 engine and the complete successor scene is returned to the search. The adjacent
 T-shaped block in hardware Scenario~2 therefore moves as a contact-induced
 outcome rather than as a separately scripted task.

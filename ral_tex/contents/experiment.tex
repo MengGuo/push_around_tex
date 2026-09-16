@@ -392,8 +392,9 @@ PushAround keeps $100\%$ success at all tested densities ($M{=}15$ to $45$), pla
 and the no-recursion ablation solves $7/10$.
 \textbf{(II) Robot-team size:} at $M{=}30$, PushAround solves all ten trials at
 $N{=}2$, $3$, and $4$ using the same mode-generation
-procedure with a full-team-first fallback: if no full-team assignment is feasible, one robot is temporarily inactive, penalized in the ranking. At $N{=}4$, PushAround uses $29.2$\,s planning and $110.1$\,s execution against $101.9$\,s and $175.9$\,s for DFS-WCCG.
-Across the clutter sweep ($M{=}15$ to $M{=}45$), the branching per expansion stays
+procedure with a full-team-first fallback: if no feasible full-team assignment is found within the bounded search, one robot is temporarily
+inactive. At $N{=}4$, PushAround uses $29.2$\,s planning and $110.1$\,s execution against $101.9$\,s and $175.9$\,s for DFS-WCCG.
+Across the sweep, the branching per expansion stays
 near six while expansions grow only modestly ($3.5$ to $24.5$), against a candidate
 space that scales as $|\mathcal{A}|^{N}$ per task. A solved trial needs a median of $10$ expansions and $48$
 visited snapshots and about $60$ simulations at $165$\,ms each, against $22$\,ms
