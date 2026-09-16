@@ -34,8 +34,9 @@ grows
 with the number of validated candidates and is reduced by $n_{\texttt{w}}$ parallel
 workers.} 
 \change{Robot-team size mainly affects mode 
-generation: the greedy stage evaluates at most $N|\mathcal{A}|$ single-contact 
-substitutions rather than the exhaustive $|\mathcal{A}|^N$ assignment; if it 
+generation: the assignment stage evaluates at most $N|\mathcal{A}|$ single-contact
+substitutions rather than the exhaustive $|\mathcal{A}|^N$ assignment, and tuple refinement is capped by a fixed
+evaluation budget; if it 
 fails, a bounded backtracking search with budget $B{=}2000$ is tried, then a 
 reduced-team fallback repeats the assignment with one robot inactive. Each candidate is checked by an LP over at most $2N$ contact-force variables.}
 %% %----------------------------------------------
