@@ -122,7 +122,7 @@ c^\star
 \label{eq:greedy_mode_update}
 \end{equation}
 swept over contact slots until $\mathrm{J}_{\texttt{MF}}^m$ no longer
-decreases or a fixed evaluation budget is reached.
+decreases or a bounded evaluation budget is reached.
 The best tuple over initializations gives
 $\mathbf{c}_m^{k,\star}$, from which $\mathbf{u}_m^k$ follows from the inner
 minimization in~\eqref{eq:mode-feasibility}, yielding
@@ -130,8 +130,8 @@ $\boldsymbol{\xi}_m^k=(\mathbf{c}_m^{k,\star},\mathbf{u}_m^k)$; each mode is
 cached as a warm start. \change{If the sequential replacement cannot assign a
 contact to every robot, a bounded backtracking search over robot--contact
 combinations (with a fixed budget) attempts the full-team assignment. If no feasible full-team mode is found
-within this budget --- for instance on small faces or under the pairwise
-pusher-clearance constraint --- one robot is temporarily left inactive and the
+within this budget, for instance on small faces or under the pairwise
+pusher-clearance constraint, one robot is temporarily left inactive and the
 assignment is repeated with the remaining team. Reduced-team modes
 carry a ranking penalty, so a feasible full-team mode is preferred, and the
 inactive robot returns for the next task.} The best few admissible pairs are kept for gap~$g$ and
@@ -149,10 +149,10 @@ hardware tracks the contact geometry from pose/velocity commands.
   \centering
   \includegraphics[width=0.85\linewidth]{figures/mode_generation.pdf}
   \vspace{-4mm}
-  \caption{\change{
-Reachable contacts are filtered by the
-  desired object twist, assigned to robots, refined by local replacement,
-  and finally validated by simulation.}}
+  \caption{\change{Mode generation for a gap-opening task: (a) local reachability,
+  (b) the reachable contact candidates after twisting filtering, (c) a compatible
+  initial contact tuple, (d) greedy replacement of individual contacts, (e) the
+  force balance of the optimized push, and (f) rollout validation of the mode.}}
     \label{fig:mode_generation}
    \vspace{-4mm}
 \end{figure}
@@ -188,7 +188,7 @@ validated before and the swept region of~$\Omega_m$ is collision-free.
 %------------------------------
 \begin{figure}[t!]
   \centering
-  \includegraphics[width=0.9\linewidth]{figures/PIHS_bottom.pdf}
+  \includegraphics[width=0.95\linewidth]{figures/PIHS_bottom.pdf}
   \vspace{-2mm}
   \caption{\change{Sampled push tasks are evaluated via parallel simulation,
   producing updated states for search expansion.}}

@@ -75,7 +75,7 @@ $\mathbf{c}_m=(c_1,\cdots,c_N)$ is an ordered tuple of contact points on
 $\partial\Omega_m$, and the ordering specifies the robot-to-contact assignment.
 The vector~$\mathbf{u}_m\in\mathbb{R}^{2N}$ stacks the corresponding planar
 contact forces, expressed in the body frame of~$\Omega_m$; \change{an inactive
-robot carries a null contact $c_i=\varnothing$ with zero force (Sec.~\ref{subsec:push}).}
+robot carries a null contact $c_i=\varnothing$ with zero force.}
 For a contact tuple~$\mathbf{c}_m$, the set of admissible forces
 ${U}_m(\mathbf{c}_m)\subset\mathbb{R}^{2N}$ collects contact forces
 satisfying the robot pushing limits, robot--object friction, and unilateral
@@ -137,13 +137,13 @@ pushing mode. The node cost is defined as
     \right),
 \end{equation}
 \change{where~$T\triangleq\sum_{k=1}^{K}\Delta t_k$ denotes 
-the robotic clearance duration excluding subsequent vehicle traversal, 
+the robotic clearance duration excluding vehicle traversal,  
 with $\Delta t_k>0$ the duration that the rollout in~(13) returns for the $k$-th push,
  and~$J(\cdot)$ is the simulation-estimated manipulation cost. 
- Vehicle traversal is considered only through the terminal $W$-clearance condition~\eqref{eq:wclear}. 
+ Vehicle traversal enters only through the terminal $W$-clearance condition~\eqref{eq:wclear}. 
  The constraints~\eqref{eq:freespace}--\eqref{eq:transition} 
  enforce valid pushing transitions. 
- Equation~\eqref{eq:problem} defines the realized clearance cost; PIHS samples finitely and does not guarantee global optimality.}
+ Equation~\eqref{eq:problem} defines the realized clearance cost; PIHS samples finitely and does not guarantee optimality.}
 
 % ==============================
 \begin{remark}\label{remark:uniqueness}

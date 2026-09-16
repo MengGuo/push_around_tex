@@ -287,3 +287,7 @@ __pycache__/
 console.log
 *.pid
 _verify*.png
+
+# local-only code snapshot and scratch data (not part of the submission)
+code_related/src.zip
+scen1_partial_data/

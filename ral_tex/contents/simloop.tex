@@ -2,10 +2,8 @@
 \subsection{Physics-Informed Hybrid Search}\label{subsec:simloop}
 
 The proposed physics-informed hybrid search (PIHS) selects blocking gaps and
-validates corresponding multi-robot pushing strategies through short-horizon
-simulation, as shown in Fig.~\ref{fig:PIHS} and summarized in
-Alg.~\ref{alg:pihs}. Unlike purely geometric NAMO planners, PIHS expands only
-physics-validated strategies through parallel candidate evaluation. It is a feasibility-oriented heuristic search, where Eq.~\eqref{eq:problem} defines the realized clearance cost of a partial schedule, the accumulated-cost term in the node priority of Eq.~\eqref{eq:priority}. 
+validates multi-robot pushing strategies through short-horizon simulation, as shown in Fig.~\ref{fig:PIHS} and summarized in
+Alg.~\ref{alg:pihs}. Unlike purely geometric NAMO planners, PIHS expands only physics-validated strategies in parallel. It is a feasibility-oriented heuristic search, where~\eqref{eq:problem} defines the realized clearance cost of a partial schedule, the accumulated-cost term in the node priority of~\eqref{eq:priority}. 
 \change{The search samples a finite candidate set, so neither global optimality nor
 completeness is guaranteed.}
 \subsubsection{Tree and Initialization}
@@ -37,7 +35,7 @@ is the minimum predicted remaining cost among the unexplored gaps of~$\nu$.
 
 \begin{figure*}[t!]
   \centering
-  \includegraphics[width=0.9\linewidth]{figures/sim_fixed.png}
+  \includegraphics[width=0.95\linewidth]{figures/sim_fixed.png}
   \vspace{-2mm}
   \caption{\change{Execution and planning alignment in Scenario 1 (\textbf{Left})
     and  Scenario 2 (\textbf{Right}).

@@ -79,29 +79,34 @@ Tables~I--III (Pages~6--7).
 
 \begin{table}[!ht]
 \centering
-\scriptsize
+\footnotesize
 \caption{New and revised experiments at a glance; page numbers refer to the
 revised manuscript.}
 \label{tab:at-a-glance}
-\setlength{\tabcolsep}{5pt}
-\renewcommand{\arraystretch}{1.0}
+\setlength{\tabcolsep}{5.4pt}
+\renewcommand{\arraystretch}{1.18}
 
 \hyphenpenalty=10000
-\begin{tabular}{@{}l >{\raggedright\arraybackslash}p{4.50cm} >{\raggedright\arraybackslash}p{2.00cm} >{\raggedright\arraybackslash}p{2.50cm} >{\raggedright\arraybackslash}p{2.00cm}@{}}
+\begin{tabular}{@{}l >{\raggedright\arraybackslash}p{4.10cm} >{\raggedright\arraybackslash}p{2.10cm} >{\raggedright\arraybackslash}p{3.15cm} >{\raggedright\arraybackslash}p{1.75cm}@{}}
 \toprule
 Study & Setting & PushAround (ours) & Strongest baseline & Location\\
 \midrule
 Main comparison & $8{\times}5$\,m, $M{=}10$, $N{=}2$; 40 trials & \textbf{97.5}\,\% & SL-Push (sim) 75.0\,\% & Table~II, p.\,6\\
+\midrule
 Ablations & Scenario~1, 40 trials & 82.5--97.5\,\% & --- & Table~II, p.\,6\\
+\midrule
 Obstacle density & $8{\times}8$\,m, $M{=}15$--45, $N{=}2$;\newline 10 seeds each & \textbf{100}\,\% for all $M$ & 0/10 at $M{=}45$ & Table~III, Fig.~10; p.\,7\\
-Physics mismatch & $8{\times}8$\,m, $M{=}30$, $N{=}2$; $\pm20\%$, $\pm40\%$;\newline 10 seeds (ours);\newline 5 seeds (baselines, $\pm40\%$ only) & \textbf{97.5}\,\% at $\pm40\%$ & DFS-WCCG 57.5\,\%; SL-Push (sim) 32.5\,\% & Table~III, p.\,7\\
+\midrule
+Physics mismatch & $8{\times}8$\,m, $M{=}30$, $N{=}2$;\newline 10 seeds (ours, $\pm20\%$, $\pm40\%$);\newline 5 seeds (baselines, $\pm40\%$) & \textbf{97.5}\,\% at $\pm40\%$ & DFS-WCCG 57.5\,\%; SL-Push (sim) 32.5\,\% & Table~III, p.\,7\\
+\midrule
 Robot-team scaling & $8{\times}8$\,m, $M{=}30$, $N{=}2$--4;\newline 10 seeds each & \textbf{100}\,\% (30/30) & DFS-WCCG 90--100\,\%; SL-Push (sim) 80\,\% & Table~III, p.\,7\\
+\midrule
 WCCG validation & 300 random scenes,\newline incl.\ non-convex & 300/300, 0 FP/FN & --- & Table~I, p.\,6\\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\noindent The principal revisions are:
+\indent The principal revisions are:
 
 \begin{itemize}
 \item \textbf{Physics-model mismatch (new experiment).} The planner uses the nominal model while only the execution simulator is
@@ -120,9 +125,9 @@ our reply to Reviewer~3). The no-recursion ablation, which isolates recursive pu
 
 \item \textbf{Robot-team scaling (new experiment and mechanism).} Two mode-generation refinements were added to the generator shared by
 PushAround and the two team-scaling baselines: bounded backtracking contact assignment and a
-temporary per-task robot release. At $N{=}4$ the observed success rates change from $70\%$
-to \textbf{100\%} for PushAround, from $0\%$ to $80\%$ for SL-Push (sim) and
-from $80\%$ to $90\%$ for DFS-WCCG. (tables, figures and the pre-fix grid in our reply to Reviewer~3) PushAround
+temporary per-task robot release. In the recorded pre-fix and post-fix runs the observed $N{=}4$ success rates are $70\%$ and
+\textbf{100\%} for PushAround, $0\%$ and $80\%$ for SL-Push (sim), and $80\%$ and $90\%$ for
+DFS-WCCG. (tables, figures and the pre-fix grid in our reply to Reviewer~3) PushAround
 succeeds in $30/30$ team-size trials, with mean planning times of $23.9$--$30.0$\,s and mean execution times
 of $97.3$--$110.1$\,s, versus $102$--$143$\,s and $176$--$178$\,s for DFS-WCCG (Sec.~III-C2, Sec.~IV-A6,
 Table~III, Fig.~9, and Fig.~\ref{fig:resp-robot}).
@@ -151,12 +156,14 @@ counted only in the success rate; the scalability curves rather than the main co
 which corrects our earlier 400\,s figure for the same protocol.
 \end{itemize}
 
-All remarks have been carefully addressed; the main changes are listed above and
+\indent All remarks have been carefully addressed; the main changes are listed above and
 the detailed, point-by-point replies for every reviewer are attached in the
 following pages. All materials, including the main paper with highlighted
 changes, supplementary files and multi-media attachments, have been updated
 accordingly. The per-trial records, resolved configurations and per-condition tables behind the new studies are included in the multimedia attachment
-(\texttt{evaluation\_data/}).
+(\texttt{evaluation\_data/}), and the attached video has been extended with
+demonstrations of the physical-parameter mismatch study and of the robot-number scaling
+experiments with two, three and four robots.
 
 %========================================
 
@@ -195,21 +202,20 @@ demonstrated with two real robots.
 \end{shaded*}
 
 \noindent \textbf{A:}
-We thank the reviewer for the positive assessment and for recognizing the
-end-to-end integration, recursive pushing, dense-clutter scalability, and
-hardware validation. The revision keeps the core hybrid-search structure unchanged and
-strengthens the three aspects it touches: the recursive-pushing mechanism is
-illustrated in its own figure (Fig.~4, Page~4), the dense-clutter evaluation now
-uses ten independent seed sequences per density instead of five
-(Sec.~IV-A6, Page~7), which addresses the caveat attached to the scalability
-result, and the two-robot hardware demonstration is retained in Fig.~11
-(Page~8) with the execution monitor specified explicitly. The responses below explain each point and quote the modified
-manuscript text in blue.
+We thank the reviewer for the positive assessment and constructive comments.
+All eight remarks have been carefully addressed in the revised manuscript, while the
+core hybrid-search framework remains unchanged. The principal revisions concern
+the presentation of recursive pushing, the statistical support for dense-clutter
+scalability, the characterization of physics-model mismatch and robot-team scaling,
+and the clarification of search guarantees and hardware execution. The corresponding
+figures, tables, and supplementary evaluation materials have been updated accordingly.
+Detailed point-by-point responses and the associated manuscript changes are provided
+below.
 
-The overlay composite of the two simulation scenarios (Fig.~7, Page~6) was also
-regenerated, because one inset of the original panel did not match its snapshot;
-Fig.~\ref{fig:resp-old-new-sim} shows the original and the revised versions side
-by side.
+In addition, the overlay composite of the two simulation scenarios
+(Fig.~7, Page~6) was regenerated because one inset in the original submission did
+not match its corresponding snapshot. Fig.~\ref{fig:resp-old-new-sim} shows the
+original and revised versions side by side.
 
 \begin{figure}[!ht]
 \centering
@@ -245,13 +251,13 @@ re-identification.
 $\{0.6,0.8,1.2,1.4\}$ ($\pm20\%$, $\pm40\%$) on the nominal seeds.
 \end{itemize}
 
-\noindent Across 17 conditions ($M{=}30$, $N{=}2$, 10 seeds each, 170 trials),
+\indent Across 17 conditions ($M{=}30$, $N{=}2$, 10 seeds each, 170 trials),
 PushAround succeeds in \textbf{166/170 (97.6\%)}: the perturbed subset is \textbf{156/160 (97.5\%)},
 i.e.\ 78/80 at $\pm20\%$ and 78/80 at $\pm40\%$, against 10/10 nominal. The four failures are one mid-execution planning failure (lateral friction $\times0.6$) and three
 budget overruns (Table~R2). Mean replans rise from $2.3$ (nominal) to $3.9$ over the $\pm40\%$ conditions (up to
 $8.1$ at force limit $\times0.6$), and mean execution time from $104.7$ to $159.6$\,s there.
 
-\noindent For context, the two baselines were evaluated under the same protocol with five seeds per
+\indent For context, the two baselines were evaluated under the same protocol with five seeds per
 condition. Under the eight $\pm40\%$ extremes, SL-Push (sim) succeeds in
 \textbf{13/40 trials (32.5\%)} and DFS-WCCG in \textbf{23/40 trials (57.5\%)}.
 Their mean planning times are $31.5$ and $229.1$\,s against $18.4$\,s for PushAround. Because the baselines use fewer seeds (5) and have lower nominal success ($3/5$), these results give
@@ -465,7 +471,8 @@ pusher-clearance constraint may eliminate one robot's remaining candidates), and
 sequential greedy replacement may also miss even when a full-team assignment exists.
 
 We therefore added two refinements inside the shared mode generator. First, if the greedy
-replacement fails, a bounded backtracking search recovers full-team assignments it may have missed.
+replacement fails, a bounded backtracking search attempts to recover assignments that the greedy
+replacement may have missed.
 Second, if no feasible full-team assignment is found within the bounded search, one robot is
 temporarily inactive for that push and holds its pose. Full-team modes stay preferred through a ranking penalty on reduced-team modes, and the
 released robot is available again afterwards; the first refinement addresses assignments missed by the greedy search; the second provides a
@@ -480,13 +487,15 @@ the logs from their 40 trials record $20{,}890$ failed greedy replacements, $10{
 
 An exhaustive joint assignment over $|\mathcal A|$ candidate contacts per robot would need
 $|\mathcal A|^{N}$ tuples, which the generator avoids. Each greedy sweep tests at most
-$N|\mathcal A|$ substitutions and the total refinement is capped by a fixed evaluation budget;
+$N|\mathcal A|$ substitutions and the total refinement is capped by a bounded evaluation budget;
 backtracking is capped at $B{=}2000$, and the reduced-team fallback considers at most $N$
 one-robot-excluded subsets under the same bounded procedure. Each candidate is checked by a force LP
 of dimension at most $2N$ (Sec.~III-E2).
 
 After the refinement all methods retain high success rates at $N{=}3,4$ with overlapping CIs, so we claim no monotonic superiority with team size. PushAround reaches $30/30$ successes at $29$--$30$\,s of planning and $97$--$110$\,s of execution; the full grid,
 including the pre-fix rows, is in Table~\ref{tab:robot-full}.
+The accompanying video demonstrates both the mismatch and the team-number scaling
+experiments.
 
 \noindent\textbf{Changes in the revised manuscript:}
 
@@ -496,11 +505,12 @@ including the pre-fix rows, is in Table~\ref{tab:robot-full}.
 $4$ using the same mode-generation procedure with a full-team-first fallback in which one robot may
 be temporarily inactive.} (Sec.~IV-A6 (II), Page~7)
 \item \change{Robot-team size mainly affects mode generation: each greedy sweep evaluates at most
-$N|\mathcal{A}|$ single-contact substitutions rather than $|\mathcal{A}|^{N}$ joint tuples, and
-refinement is capped by a fixed evaluation budget.} (Sec.~III-E2, Page~6)
+$N|\mathcal{A}|$ single-contact substitutions, where $|\mathcal{A}|$ bounds the reachable contact
+candidates considered per robot, rather than $|\mathcal{A}|^{N}$ joint tuples, and refinement is capped
+by a bounded evaluation budget.} (Sec.~III-E2, Page~6)
 \end{itemize}
 
-The scalability figure of the manuscript (Fig.~9, Page~7) appears below in
+\indent The scalability figure of the manuscript (Fig.~9, Page~7) appears below in
 Fig.~\ref{fig:resp-old-new-scal} beside the original submission version.
 \begin{figure}[H]
 \centering
@@ -533,9 +543,8 @@ in (c) are the push counts of SL-Push (sim).}
 \begin{threeparttable}
 \footnotesize
 \caption{Robot-team scaling at $M{=}30$ (nominal physics) after the shared
-mode-generation fix; all cells use 10 seeds and the same implementation and
-protocol. $PT$, $ET$ and sims are means over successful trials; the pre-fix
-rows are kept only as history.}
+mode-generation fix; all post-fix cells use 10 seeds and the same implementation
+and protocol; the pre-fix rows are kept only as history. $PT$, $ET$ and sims are means over successful trials.}
 \label{tab:robot-full}
 \setlength{\tabcolsep}{4pt}
 \begin{tabular}{llcccccc}
@@ -607,7 +616,9 @@ reliability only.
 \noindent\textbf{Changes in the revised manuscript:}
 
 \begin{itemize}
-\item \change{where~$T\triangleq\sum_{k=1}^{K}\Delta t_k$ denotes the robotic clearance duration excluding subsequent vehicle traversal, with $\Delta t_k>0$ the duration that the rollout in~(13) returns for the $k$-th push} (Sec.~II-D, Page~3)
+\item \change{where~$T\triangleq\sum_{k=1}^{K}\Delta t_k$ denotes the robotic clearance duration excluding vehicle
+traversal; \dots\ Equation~(6) defines the realized clearance cost; PIHS samples finitely and does not
+guarantee optimality.} (Sec.~II-D, Page~3)
 \item \change{Thus, the schedule~$\pi$ stored in~$\nu$ is a physics-validated solution under the nominal planning model: it satisfies the terminal clearance condition and the validated pushing transitions, and encodes both the gaps to clear and the strategies that realize them, without implying that~$\mathcal{J}_{\mathrm{clr}}(\pi)$ is globally minimal. The objective covers the clearing phase only, since the vehicle traverses the corridor after clearing completes.} (Sec.~III-D, Page~5)
 \item \change{The remaining-cost term is a heuristic and is not required to be admissible. The score prioritizes nodes by realized cost and promising future actions, but it does not provide an A* optimality guarantee.} (Sec.~III-D, Page~5)
 \end{itemize}
@@ -640,7 +651,7 @@ only by the terminal $W$-clearance condition.
 \noindent\textbf{Changes in the revised manuscript:}
 
 \begin{itemize}
-\item \change{where~$T\triangleq\sum_{k=1}^{K}\Delta t_k$ denotes the robotic clearance duration excluding subsequent vehicle traversal, with $\Delta t_k>0$ the duration that the rollout in~(13) returns for the $k$-th push} (Sec.~II-D, Page~3)
+\item \change{where~$T\triangleq\sum_{k=1}^{K}\Delta t_k$ denotes the robotic clearance duration excluding vehicle traversal, with $\Delta t_k>0$ the duration that the rollout in~(13) returns for the $k$-th push} (Sec.~II-D, Page~3)
 \end{itemize}
 %==============================
 
@@ -714,10 +725,14 @@ few parts of the method need some clarification.
 \end{shaded*}
 
 \noindent \textbf{A:}
-We thank the reviewer for the supportive assessment. The four clarifications are addressed below
-without changing the method; the added protocol details, dispersion statistics and
-configuration-space comparison are intended to make the evaluation easier to interpret.
-
+We thank the reviewer for the supportive assessment and constructive comments. 
+All four remarks have been carefully addressed in the revised manuscript, 
+and the corresponding figures, tables, 
+and supplementary materials have been updated accordingly. 
+The main clarifications concern the WCCG connectivity criterion, search guarantees, 
+the contact-force and hardware interface, and the experimental protocol. 
+Detailed point-by-point responses and the associated manuscript changes 
+are provided below.
 %==============================
 
 %==============================
@@ -795,11 +810,13 @@ Non-convex & 98/100  & 100/100 & 0 & 0 & $1.51\pm0.18$ & $204.1\pm51.4$ & $\math
 
 \begin{figure}[!ht]
 \centering
-\includegraphics[width=\linewidth]{resp_wccg.pdf}
+\includegraphics[width=0.9\linewidth]{resp_wccg.pdf}
+\vspace{-2mm}
 \caption{WCCG validation. (a) Agreement per category: CC and FR differ on 4 of
 300 scenes (all raster-unstable), whereas WCCG matches the continuous reference
 on all 300 with zero false positives/negatives. (b) Mean connectivity-query
 cost on a logarithmic scale.}
+\vspace{-2mm}
 \label{fig:resp-wccg}
 \end{figure}
 
@@ -839,6 +856,15 @@ and solution-finding reliability only, not a formal solution-quality guarantee. 
 %==============================
 
 %==============================
+\noindent\textbf{Changes in the revised manuscript:}
+
+\begin{itemize}
+\item \change{The search samples a finite candidate set, so neither global optimality nor
+completeness is guaranteed.} (Sec.~III-D, Page~5)
+\item \change{The remaining-cost term is a heuristic and is not required to be admissible.}
+(Sec.~III-D, Page~5)
+\end{itemize}
+
 \begin{shaded*}
 \noindent \textbf{Q:}
 {\itshape
@@ -944,14 +970,17 @@ $11.7$\,s versus $16.8$\,s at $M{=}30$, $N{=}2$; the $N{=}2$ robot-team cell als
 uses a different scene realization of the same seeds ($23.9$\,s).
 \end{tablenotes}
 \end{threeparttable}
+\vspace{-4mm}
 \end{table}
 
 \begin{figure}[!ht]
 \centering
 \includegraphics[width=\linewidth]{resp_reliability.pdf}
+\vspace{-2mm}
 \caption{Wilson 95\% confidence intervals of the headline success rates. The
 intervals make sampling uncertainty explicit: the density and mismatch
 comparisons show clear separation, whereas some robot-team cells overlap.}
+\vspace{-2mm}
 \label{fig:resp-reliability}
 \end{figure}
 

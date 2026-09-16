@@ -22,9 +22,13 @@ FILES
                             located by page and section, and the figures that
                             changed are shown as original versus revised.
 
-* "video.mp4"             - simulation and hardware experiment video.
+* "PushAround.mp4"        - the experiment video (also included inside
+                            "multimedia.zip" as "video.mp4"): corridor clearing in
+                            simulation, hardware execution, the planner-execution
+                            physical-parameter mismatch study, and robot-number
+                            scaling with two, three and four robots.
 
-* "multimedia.zip"        - the multimedia attachment (7.8 MB, below the 50 MB
+* "multimedia.zip"        - the multimedia attachment (9.9 MB, below the 50 MB
                             limit of the guidelines). It contains:
                               - video.mp4 (one video, as required),
                               - ReadMe.txt (minimum software requirements and

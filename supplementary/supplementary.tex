@@ -67,18 +67,19 @@ Physics-Informed Hybrid Search}
 \toprule
 \change{Item} & \change{Setting}\\
 \midrule
-\change{Simulation step / control period} & \change{$1/240$\,s / $1/40$\,s}\\
-\change{Candidate push cap per expansion} & \change{Up to 64 tasks}\\
+\change{Simulation step / control period} & \change{$1/120$\,s / $1/40$\,s}\\
+\change{Candidate push cap per expansion} & \change{Up to 16 tasks}\\
 \change{Per-task rollout horizon} & \change{80 simulation steps}\\
-\change{Scenario-1 comparison timeout} & \todo{Verify and insert exact common timeout used for the 40-trial comparison}\\
-\change{Scenario-1 comparison search/control cap} & \todo{Verify and insert exact common budget}\\
-\change{Scenario-1 parallel workers} & \todo{Verify and insert worker count}\\
-\change{Density-scaling parallel workers} & \change{16}\\
+\change{Scenario-1 comparison timeout} & \change{$800$\,s per trial}\\
+\change{Scenario-1 comparison search/control cap} & \change{$20{,}000$ control steps}\\
+\change{Scenario-1 parallel workers} & \change{8}\\
+\change{Density-scaling parallel workers} & \change{8}\\
 \change{Density-scaling timeout} & \change{800\,s per trial}\\
 \change{Density-scaling control-step cap} & \change{20,000}\\
-\change{Density-scaling obstacle masses} & \change{$[15,30]$\,kg}\\
+\change{Density-scaling obstacle masses} & \change{$[20,30]$\,kg}\\
 \change{Contact-position acceptance threshold} & \change{0.10\,m}\\
-\change{Stall monitor} & \change{less than 0.05\,m motion over a 0.25\,s window}\\
+\change{Stall monitor} & \change{less than 0.0125\,m of motion over a 0.25\,s window
+($0.05$\,m/s over $10$ control steps)}\\
 \bottomrule
 \end{tabularx}
 \end{table}
