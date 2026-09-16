@@ -108,7 +108,7 @@ All runtimes use the same 300-scene harness with the compiled WCCG backend.
 
 \subsubsection{Setup and Configuration}\label{subsec:sim-setup}
 
-The simulation runs at a step size of $\Delta t=1/120$\,s with a control period
+The simulation runs at a step size of $\Delta t=1/240$\,s with a control period
 of $1/40$\,s; robots are disk or box pushers consistent with the $W$-clearance
 definition, and movable obstacles have masses $[5,15]$\,kg in Scenarios~1--2, $[20,30]$\,kg in the generalization studies. A trial
 succeeds when the external vehicle reaches its goal through a $W$-clear path. The
@@ -403,7 +403,7 @@ and the no-recursion ablation solves $7/10$.
 \textbf{(II) Robot-team size:} at $M{=}30$, PushAround solves all ten trials at
 $N{=}2$, $3$, and $4$ using the same mode-generation
 procedure with a full-team-first fallback in which one robot may be temporarily inactive. At $N{=}4$, PushAround uses $29.2$\,s planning and $110.1$\,s execution against $101.9$\,s and $175.9$\,s for DFS-WCCG.
-Across the sweep, the branching per expansion stays
+Across the clutter sweep ($M{=}15$ to $M{=}45$), the branching per expansion stays
 near six while expansions grow only modestly ($3.5$ to $24.5$), against a candidate
 space that scales as $|\mathcal{A}|^{N}$ per task. A solved trial needs a median of $10$ expansions and $48$
 visited snapshots and about $60$ simulations at $165$\,ms each, against $22$\,ms
@@ -466,7 +466,7 @@ Motion capture provides robot and object poses, compared with the successor stat
 \subsubsection{Results}\label{subsec:exp-results}
 Two representative real-world runs are shown in Fig.~\ref{fig:hardware}.
 In hardware Scenario~1, PIHS considers five candidate gaps and plans a four-task schedule in $6.5$\,s ($12$ node expansions, $49$ visited snapshots, search depth $6$); the robots then execute it, first rotating the yellow L-shaped object to open a gap near an
-immovable obstacle and then separates the green and orange objects until a $W$--clear path is established at $t=52\,$s.
+immovable obstacle and then separating the green and orange objects until a $W$--clear path is established at $t=52\,$s.
 In hardware Scenario~2, PushAround succeeds in $8/10$ trials with an average of $5.2$
 pushes and $11.4$\,s of planning; the first direct push on the blue L-shaped
 object also moves the adjacent T-shaped block and opens the first gap.

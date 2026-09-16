@@ -127,7 +127,8 @@ our reply to Reviewer~3). The no-recursion ablation, which isolates recursive pu
 PushAround and the two team-scaling baselines: bounded backtracking contact assignment and a
 temporary per-task robot release. In the recorded pre-fix and post-fix runs the observed $N{=}4$ success rates are $70\%$ and
 \textbf{100\%} for PushAround, $0\%$ and $80\%$ for SL-Push (sim), and $80\%$ and $90\%$ for
-DFS-WCCG. (tables, figures and the pre-fix grid in our reply to Reviewer~3) PushAround
+DFS-WCCG (see the tables, figures and the pre-fix grid in our reply to Reviewer~3).
+PushAround
 succeeds in $30/30$ team-size trials, with mean planning times of $23.9$--$30.0$\,s and mean execution times
 of $97.3$--$110.1$\,s, versus $102$--$143$\,s and $176$--$178$\,s for DFS-WCCG (Sec.~III-C2, Sec.~IV-A6,
 Table~III, Fig.~9, and Fig.~\ref{fig:resp-robot}).
@@ -203,7 +204,7 @@ demonstrated with two real robots.
 
 \noindent \textbf{A:}
 We thank the reviewer for the positive assessment and constructive comments.
-All eight remarks have been carefully addressed in the revised manuscript, while the
+All eight points have been carefully addressed in the revised manuscript, while the
 core hybrid-search framework remains unchanged. The principal revisions concern
 the presentation of recursive pushing, the statistical support for dense-clutter
 scalability, the characterization of physics-model mismatch and robot-team scaling,
@@ -500,7 +501,7 @@ experiments.
 \noindent\textbf{Changes in the revised manuscript:}
 
 \begin{itemize}
-\item \change{If the sequential replacement cannot assign a contact to every robot, a bounded backtracking search over robot--contact combinations (with a fixed budget) attempts the full-team assignment.} (Sec.~III-C2, Page~4)
+\item \change{If the sequential replacement cannot assign a contact to every robot, a bounded backtracking search over robot--contact combinations (with a bounded budget) attempts the full-team assignment.} (Sec.~III-C2, Page~4)
 \item \change{\textbf{(II) Robot-team size:} at $M{=}30$, PushAround solves all ten trials at $N{=}2$, $3$, and
 $4$ using the same mode-generation procedure with a full-team-first fallback in which one robot may
 be temporarily inactive.} (Sec.~IV-A6 (II), Page~7)
@@ -726,7 +727,7 @@ few parts of the method need some clarification.
 
 \noindent \textbf{A:}
 We thank the reviewer for the supportive assessment and constructive comments. 
-All four remarks have been carefully addressed in the revised manuscript, 
+All four points have been carefully addressed in the revised manuscript, 
 and the corresponding figures, tables, 
 and supplementary materials have been updated accordingly. 
 The main clarifications concern the WCCG connectivity criterion, search guarantees, 

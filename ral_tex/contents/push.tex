@@ -129,7 +129,7 @@ minimization in~\eqref{eq:mode-feasibility}, yielding
 $\boldsymbol{\xi}_m^k=(\mathbf{c}_m^{k,\star},\mathbf{u}_m^k)$; each mode is
 cached as a warm start. \change{If the sequential replacement cannot assign a
 contact to every robot, a bounded backtracking search over robot--contact
-combinations (with a fixed budget) attempts the full-team assignment. If no feasible full-team mode is found
+combinations (with a bounded budget) attempts the full-team assignment. If no feasible full-team mode is found
 within this budget, for instance on small faces or under the pairwise
 pusher-clearance constraint, one robot is temporarily left inactive and the
 assignment is repeated with the remaining team. Reduced-team modes
@@ -150,7 +150,7 @@ hardware tracks the contact geometry from pose/velocity commands.
   \includegraphics[width=0.85\linewidth]{figures/mode_generation.pdf}
   \vspace{-4mm}
   \caption{\change{Mode generation for a gap-opening task: (a) local reachability,
-  (b) the reachable contact candidates after twisting filtering, (c) a compatible
+  (b) the reachable contact candidates after twist filtering, (c) a compatible
   initial contact tuple, (d) greedy replacement of individual contacts, (e) the
   force balance of the optimized push, and (f) rollout validation of the mode.}}
     \label{fig:mode_generation}
