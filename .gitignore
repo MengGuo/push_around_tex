@@ -291,3 +291,15 @@ _verify*.png
 # local-only code snapshot and scratch data (not part of the submission)
 code_related/src.zip
 scen1_partial_data/
+
+# generated artifacts: kept on disk for convenience, not versioned
+# (everything under a figures/ directory is still tracked, including figure PDFs/PNGs)
+*.pdf
+*.png
+*.zip
+*.mp4
+*.aux
+*.log
+*.out
+*.synctex.gz
+!**/figures/**
