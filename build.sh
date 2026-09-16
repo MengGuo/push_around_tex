@@ -59,24 +59,20 @@ pdfunite ral_2nd_submit/response.pdf ral_2nd_submit/root.pdf ral_2nd_submit/resp
 
 # --------------------------------------------------------- multimedia attachment
 step "6/6  multimedia attachment -> ral_2nd_submit/multimedia.zip"
-if [ ! -f ral_2nd_submit/multimedia.zip ]; then
-  printf 'WARNING: ral_2nd_submit/multimedia.zip not found - skipping the attachment.\n' >&2
+src="ral_2nd_submit/multimedia_src"
+if [ ! -d "$src" ]; then
+  printf 'WARNING: %s not found - skipping the multimedia attachment.\n' "$src" >&2
+elif [ ! -f "$VIDEO" ]; then
+  printf 'WARNING: video %s not found - skipping the multimedia attachment\n' "$VIDEO" >&2
+  printf '         (an attachment without its video would be incomplete).\n' >&2
 else
-  src="ral_2nd_submit/multimedia_src"
-  if [ ! -d "$src" ]; then
-    printf 'WARNING: %s not found - keeping the existing archive as is.\n' "$src" >&2
-  elif [ ! -f "$VIDEO" ]; then
-    printf 'WARNING: video %s not found - keeping the existing archive (a multimedia\n' "$VIDEO" >&2
-    printf '         attachment without its video would be incomplete).\n' >&2
-  else
-    tmp="$(mktemp -d)"; trap 'rm -rf "$tmp"' EXIT
-    cp -r "$src"/. "$tmp"/
-    cp "$VIDEO" "$tmp/video.mp4"
-    rm -f ral_2nd_submit/multimedia.zip
-    ( cd "$tmp" && zip -qr "$OLDPWD/ral_2nd_submit/multimedia.zip" . )
-    printf '  video: %s (%s)\n' "$VIDEO" "$(du -h "$VIDEO" | cut -f1)"
-    printf '  multimedia.zip: %s\n' "$(du -h ral_2nd_submit/multimedia.zip | cut -f1)"
-  fi
+  tmp="$(mktemp -d)"; trap 'rm -rf "$tmp"' EXIT
+  cp -r "$src"/. "$tmp"/
+  cp "$VIDEO" "$tmp/video.mp4"
+  rm -f ral_2nd_submit/multimedia.zip
+  ( cd "$tmp" && zip -qr "$OLDPWD/ral_2nd_submit/multimedia.zip" . )
+  printf '  video: %s (%s)\n' "$VIDEO" "$(du -h "$VIDEO" | cut -f1)"
+  printf '  multimedia.zip: %s (%s files)\n' "$(du -h ral_2nd_submit/multimedia.zip | cut -f1)" "$(unzip -l ral_2nd_submit/multimedia.zip | tail -1 | awk '{print $2}')"
 fi
 
 # ------------------------------------------------------------------- QA report
