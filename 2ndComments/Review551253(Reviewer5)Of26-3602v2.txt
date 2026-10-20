@@ -1,0 +1,54 @@
+I thank the authors for their careful revision and detailed responses
+to the reviewers’ comments. This is a substantial revision, and I think
+the paper has improved considerably. The additional experiments on
+physics-model uncertainty, obstacle density, and larger robot teams
+provide stronger support for the proposed method. The explanations of
+the WCCG connectivity check, the search guarantees, and the hardware
+execution are also clearer now.
+
+Overall, I think the authors have addressed the main concerns raised in
+the first round. The combination of geometric reasoning, collaborative
+pushing, and physics-informed search is interesting, and the simulation
+and hardware results support the contribution. I have a few remaining
+minor comments that could improve the clarity and consistency of the
+paper:
+
+1.The response explains that the density experiments use a precomputed
+mode table, while the mismatch and robot-team experiments use greedy
+mode optimization. It also mentions a different scene realization for
+the two-robot team-scaling experiment. I suggest including these
+details in Sec. IV-A, since they help explain the different planning
+times reported for M=30 and N=2. Please also clarify whether the time
+needed to prepare the precomputed mode table is included in the
+reported planning time.
+
+2.Sec. III-C3 states that a physics rollout may be bypassed when a mode
+has been validated before and the swept region is collision-free. A
+brief explanation of the conditions for reusing this validation would
+be helpful. In particular, please clarify which state and physical
+parameters must remain unchanged, and how the successor state and costs
+are obtained when the rollout is skipped.
+
+3.The new mismatch experiments are useful. However, the perturbed
+trials reuse ten base seeds and change one parameter family at a time,
+while the baselines use five seeds per condition. The response
+acknowledges these limitations and the differences in nominal success
+rates. I suggest adding a short qualification in the manuscript so that
+readers can interpret the robustness comparisons appropriately.
+
+4.In Sec. IV-B2, the text describes “15.9 s of deviations” due to force
+limits, drifting, and slippage, whereas Fig. 11 reports execution time
+as 77.1 ± 15.9 s. Please clarify whether 15.9 s is the standard
+deviation or a separately measured recovery time. There is also a small
+inconsistency in the response: the text on p. 4 gives 159.6 s as the
+mean execution time under ±40% perturbations, while Table R2 gives
+115.0 s for the aggregate and 159.6 s for the force-limit ×0.6
+condition.
+
+5.Sec. IV-B1 says that replanning is triggered “only” when the position
+or orientation error exceeds the thresholds. Sec. III-E1 also lists
+failed contacts, stalled pushing, and invalidated connectivity. Please
+make these descriptions consistent.
+
+These are minor comments on clarity and reporting. I am satisfied with
+the overall revision and recommend acceptance.

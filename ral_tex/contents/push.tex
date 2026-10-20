@@ -1,17 +1,15 @@
 %==============================================
 \subsection{Pushing Mode Generation and Evaluation}\label{subsec:push}
-For a selected frontier gap~$g$, this subsection constructs a set of candidate
+For a selected frontier gap~$g$, this subsection constructs candidate
 pushing strategies
-$\Xi_g \triangleq \{(\Omega_m,\mathbf{v},\boldsymbol{\xi})\}$,
-where~$\mathbf{v} \triangleq (v_x,v_y,\omega)\in\mathbb{R}^3$ is a
-short-horizon pushing direction for the movable obstacle~$\Omega_m$ induced by~$g$, and
-$\boldsymbol{\xi}\triangleq(\mathbf{c}_m,\mathbf{u})$ is the associated pushing
-mode in~\eqref{eq:transition}.
-\change{The wrench feasibility encoded in~$\boldsymbol{\xi}$ acts as a screening
-condition rather than a force setpoint: it certifies that the chosen contact
-configuration can realize the required object motion within the robots'
-actuation limits, after which the candidate is passed to the physics rollout for
-validation.}
+$\Xi_g\triangleq\{(\Omega_m,\mathbf{v},\boldsymbol{\xi})\}$,
+where $\mathbf{v}=(v_x,v_y,\omega)\in\mathbb{R}^3$ is a short-horizon pushing
+direction for~$\Omega_m$, and $\boldsymbol{\xi}=(\mathbf{c}_m,\mathbf{u})$
+is its mode in~\eqref{eq:transition}.
+\change{Wrench feasibility screens contact configurations that can realize
+the required motion within actuation limits. The forces certify feasibility
+rather than serving as hardware setpoints; candidate motion is then checked
+by rollout or quick-pass reuse.}
 
 
 
@@ -111,8 +109,8 @@ robot-reachable boundary of~$\Omega_m$ by velocity--force compatibility
 filtering (Fig.~\ref{fig:mode_generation}), keeping a contact only if its
 robots reach collision-free pre-contact poses. Starting from cached layouts or
 random initializations, the tuple is refined by sequential greedy replacement:
-at the $\ell$-th step, $\mathbf{c}_{r,c}^{\ell}$ replaces the $r$-th contact
-with $c$, and the best replacement is:
+at step~$\ell$, let $\mathbf{c}_{r,c}^{\ell}$ replace contact~$r$
+with~$c$; select:
 \begin{equation}
 c^\star
 =
@@ -161,11 +159,11 @@ hardware tracks the contact geometry from pose/velocity commands.
 %==============================================
 \subsubsection{Pushing Strategy Evaluation}
 
-For a current state~$\mathbf{s}$ and a candidate strategy
+For a current state~$\mathbf{s}$ and candidate strategy
 $(\Omega_m,\mathbf{v},\boldsymbol{\xi})\in\Xi_g$, a short-horizon rollout
 evaluates the transition in~\eqref{eq:transition} under the selected mode.
-As shown in Fig.~\ref{fig:mode_generation}, a strategy is accepted only if
-the robots reach the pre-contact poses, maintain stable contact, and induce
+As shown in Fig.~\ref{fig:mode_generation}, a strategy is accepted if the
+robots reach the pre-contact poses, maintain stable contact and induce
 obstacle motion above threshold. The simulation returns:
 \begin{equation}
     (\mathbf{s}',\,\delta_{\texttt{T}},\,\delta_{\texttt{J}})
@@ -176,15 +174,17 @@ obstacle motion above threshold. The simulation returns:
     \big),
     \label{eq:sim}
 \end{equation}
-where~$\mathbf{s}'$ is the successor state capturing the resulting robot and
-object configurations; $\delta_{\texttt{T}}>0$ is the time cost; and
-$\delta_{\texttt{J}}$ is the control effort. 
-\change{
-The rollout jointly simulates
-all robots and movable bodies, thereby capturing contact-induced object
-interactions.}
-For efficiency, the pushing rollout may be bypassed when the mode has been
-validated before and the swept region of~$\Omega_m$ is collision-free.
+where $\mathbf{s}'$ contains the resulting robot and object configurations,
+$\delta_{\texttt{T}}>0$ is duration and $\delta_{\texttt{J}}$ control effort.
+\change{Joint rollout captures contact-induced interactions among all bodies.
+\minorchange{For quick-pass, a mode-table entry can store a validated body-frame state
+sequence and cost increments. Under uniform, isotropic nominal dynamics,
+translation invariance permits reuse for matching relative states, contacts,
+twist, duration and physical properties (shape, mass, inertia, friction and
+robot force limits), after reachability and robot--object swept-clearance
+checks. Transforming the endpoint gives $\mathbf{s}'$ and cached increments
+give $\delta_{\texttt{T}}$, $\delta_{\texttt{J}}$; uninvolved bodies remain
+unchanged. Small parameter differences make reuse approximate.}}
 %------------------------------
 \begin{figure}[t!]
   \centering

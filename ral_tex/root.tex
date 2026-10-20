@@ -1,4 +1,4 @@
-\documentclass[letterpaper, 10pt, journal]{IEEEtran}  % Comment this line out if you need a4paper
+\documentclass[letterpaper, 10pt, journal, twoside]{IEEEtran}
 %\documentclass[a4paper, 10pt, conference]{ieeeconf}% Use this line for a4 paper
 
                                                           % you want to use the \thanks command
@@ -63,31 +63,38 @@
 \newcommand{\improve}[1]{\textcolor{blue}{#1}}
 \newcommand{\note}[1]{\textcolor{blue}{NOTE: #1}}
 \newcommand{\question}[1]{\textcolor{orange}{Q: #1}}
-\newcommand{\change}[1]{{\color{blue}#1}}
+% Previous-round edits are now ordinary text; highlight only this round's
+% reviewer-requested clarifications with \minorchange.
+\newcommand{\change}[1]{#1}
+\newcommand{\minorchange}[1]{{\color{blue}#1}}
 % Build a clean copy (no revision highlighting) with:
 %   pdflatex -jobname=root_clean "\def\CLEANCOPY{}\input{root.tex}"
 \ifdefined\CLEANCOPY
-  \renewcommand{\change}[1]{#1}
+  \renewcommand{\minorchange}[1]{#1}
 \fi
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%
 
 
-\title{\LARGE \bf
-  PushAround: Collaborative Path Clearing via \\
-  Physics-Informed Hybrid Search
-}
+\input{contents/final_metadata.tex}
+\title{PushAround: Collaborative Path Clearing via Physics-Informed Hybrid Search}
 
+\author{Zili Tang$^{1}$, Zongyuan Li$^{2}$, Zishao Qiao$^{1}$, and Meng Guo$^{1}$%
+\thanks{Manuscript received: \RALReceivedDate; Revised: \RALRevisedDate;
+Accepted: \RALAcceptedDate.}%
+\thanks{This paper was recommended for publication by Editor M. Ani Hsieh
+upon evaluation of the Associate Editor and Reviewers' comments.
+This work was supported by the National Natural Science Foundation of China
+under grants U2241214 and T2121002.
+\textit{(Corresponding author: Meng Guo.)}}%
+\thanks{The authors are with Peking University, Beijing 100871, China:
+$^{1}$School of Advanced Manufacturing and Robotics;
+$^{2}$College of Engineering (e-mail: meng.guo@pku.edu.cn).}%
+\thanks{Digital Object Identifier (DOI): see top of this page.}}
 
-% \author{Zili Tang$^1$, Zhongyuan Li$^1$,
-%   Zhishao Qiao$^1$ and Meng Guo$^1$ %<-this % stops a space
-%   \thanks{The authors are with: $^1$the College of Engineering,
-%     Peking University, China;
-%     This work was supported by the National Natural Science Foundation
-%     of China (NSFC) under grants 62203017, T2121002, U2241214.
-%     Contact: {\tt\small meng.guo@pku.edu.cn}.}% <-this % stops a space
-% }
+\markboth{IEEE Robotics and Automation Letters. Preprint Version. Accepted \RALFinalMonthYear}%
+{Tang \MakeLowercase{\textit{et al.}}: PushAround: Collaborative Path Clearing}
 
 
 % --- float packing (revision) ---
@@ -100,8 +107,6 @@
 
 \begin{document}
 \maketitle
-\thispagestyle{empty}
-\pagestyle{empty}
 
 
 %%========================================
@@ -109,6 +114,9 @@
 
 %%========================================
 \input{contents/abstract.tex}
+\begin{IEEEkeywords}
+Multi-Robot Systems, Task and Motion Planning, Manipulation Planning.
+\end{IEEEkeywords}
 %%========================================
 \input{contents/introduction.tex}
 %%========================================

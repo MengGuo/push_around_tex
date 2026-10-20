@@ -1,11 +1,14 @@
 %==============================================
 \subsection{Physics-Informed Hybrid Search}\label{subsec:simloop}
 
-The proposed physics-informed hybrid search (PIHS) selects blocking gaps and
-validates multi-robot pushing strategies through short-horizon simulation, as shown in Fig.~\ref{fig:PIHS} and summarized in
-Alg.~\ref{alg:pihs}. Unlike purely geometric NAMO planners, PIHS expands only physics-validated strategies in parallel. It is a feasibility-oriented heuristic search, where~\eqref{eq:problem} defines the realized clearance cost of a partial schedule, the accumulated-cost term in the node priority of~\eqref{eq:priority}. 
-\change{The search samples a finite candidate set, so neither global optimality nor
-completeness is guaranteed.}
+\change{The physics-informed hybrid search (PIHS) selects blocking gaps and
+evaluates pushing strategies in parallel
+(Fig.~\ref{fig:PIHS}, Alg.~\ref{alg:pihs}), \minorchange{using short-horizon simulation or
+the nominal-model quick-pass reuse of Sec.~\ref{subsec:push}.}
+Equation~\eqref{eq:problem} defines the evaluated clearance cost of a partial
+schedule, used as the accumulated-cost term in the node priority
+of~\eqref{eq:priority}.
+Finite sampling gives no global optimality or completeness guarantee.}
 \subsubsection{Tree and Initialization}
 The search tree~$\mathcal{T}$ holds nodes
 $\nu\triangleq(\mathbf{s},\pi)$, where~$\mathbf{s}$ is the system state of all
@@ -59,9 +62,9 @@ including both the direct push of the adjacent movable obstacles,
 and recursive push of out-layer obstacles.
 Thus, expansion is prioritized first by the gap ordering in
 $\mathsf{Rank}(\nu)$, and then by the candidate ordering within~$\Xi_g$.
-Each candidate strategy~$(\Omega_m,\mathbf{v},\boldsymbol{\xi}) \in \Xi_g$ is first
-checked by a geometric quick-pass and, if it passes, evaluated by the
-short-horizon rollout in~\eqref{eq:sim}. A successful evaluation yields
+\minorchange{Each candidate is evaluated by~\eqref{eq:sim}, using quick-pass reuse
+or a rollout as described in Sec.~\ref{subsec:push}.}
+A successful evaluation yields
 $(\mathbf{s}',\delta_{\texttt{T}},\delta_{\texttt{J}})$, from which a child
 node~$\nu' \triangleq (\mathbf{s}',\pi')$ is created with
 $\pi' \triangleq \pi \cup \{\tau\}$, appending
@@ -71,7 +74,7 @@ The cumulative cost is updated by:
 $\chi(\nu') \triangleq \chi(\nu) + \widehat{\mathsf{C}}(\nu,\tau)$,
 where~$\widehat{\mathsf{C}}(\nu,\tau)\triangleq
 \delta_{\texttt{T}} + \alpha\,\delta_{\texttt{J}}$
-is the realized incremental cost.
+\change{is the evaluated incremental cost.}
 Thereby, one expansion can yield several validated successors.
 
 
@@ -83,11 +86,14 @@ Thereby, one expansion can yield several validated successors.
 \caption{Physics-Informed Hybrid Search}\label{alg:pihs}
 \SetAlgoLined
 \KwIn{$\mathbf{s}_0$,~$\alpha$,~$\mathsf{EvalSim}(\cdot)$,~$W$--criterion by~\eqref{eq:wccg_criterion}}
-\KwOut{$\pi^\star$}
+\KwOut{Clearing schedule $\pi^\star$, or failure}
 $\nu_0\gets(\mathbf{s}_0,\emptyset),\;\chi(\nu_0)=0$\;
 Init~$\mathcal{Q}$ by~\eqref{eq:priority}\;
-\While{not terminated}{
- $\nu\gets\mathcal{Q}.\texttt{pop\_min}()$ by~\eqref{eq:priority}\;
+\While{$\mathcal{Q}\ne\emptyset$ and budget remains}{
+ $\nu=(\mathbf{s},\pi)\gets\mathcal{Q}.\texttt{pop\_min}()$ by~\eqref{eq:priority}\;
+ \If{$\mathbf{s}$ admits~$\mathcal{P}^W_{\texttt{V}}$ by~\eqref{eq:wccg_criterion}}{
+  \Return $\pi$\;
+ }
   \ForEach{$g\in\mathsf{Rank}(\nu)$}{
     Compute~$\Pi^\star(g)$, generate~$\Xi_g$\;
     \ForEach{$(\Omega_m,\mathbf{v},\boldsymbol{\xi})\in\Xi_g$}{
@@ -102,11 +108,8 @@ Init~$\mathcal{Q}$ by~\eqref{eq:priority}\;
       }
     }
   }
-  \If{$\mathbf{s}'$ admits~$\mathcal{P}^W_{\texttt{V}}$ by~\eqref{eq:wccg_criterion}}{
-   $\pi^\star\gets\pi'$, \textbf{break}\;
-  }
 }
-\Return~$\pi^\star$;
+\Return failure;
 \end{algorithm}
 %==============================================
 }
@@ -116,13 +119,15 @@ Init~$\mathcal{Q}$ by~\eqref{eq:priority}\;
 Termination occurs when a node~$\nu$ reaches a state~$\mathbf{s}$ for which a
 $W$--clear path~$\mathcal{P}^W_\texttt{V}$ exists from
 $\mathbf{x}_\texttt{V}^{\texttt{S}}$ to~$\mathbf{x}_\texttt{V}^{\texttt{G}}$
-by~\eqref{eq:wccg_criterion}. \change{Thus, the schedule~$\pi$ stored in~$\nu$ is a physics-validated solution under the nominal planning model: it satisfies the terminal clearance condition and the validated pushing transitions, and encodes both the gaps to clear and the strategies that realize them, without implying that~$\mathcal{J}_{\mathrm{clr}}(\pi)$ is globally minimal. The objective covers the clearing phase only, since the vehicle traverses the corridor after clearing completes.}
+by~\eqref{eq:wccg_criterion}. \change{Thus, $\pi$ encodes both the gaps to clear
+and the strategies that realize them, satisfying nominal clearance and
+evaluated pushing transitions. This does not imply global minimization
+of~$\mathcal{J}_{\mathrm{clr}}$. The objective covers clearing only;
+vehicle traversal follows afterwards.}
 
 \begin{remark}\label{remark:simloop}
-Efficiency comes from three lightweight heuristics:
-gap-lookahead reduces unproductive branches,
-\textsc{mode-cache} warm-starts mode optimization,
-and the quick-pass rollout bypass skips simple motions whose mode was previously validated,
-avoiding redundant simulations.
+\change{Gap-lookahead reduces unproductive branches, \textsc{mode-cache}
+warm-starts optimization, \minorchange{and quick-pass reuses validated transitions
+to avoid redundant rollouts.}}
 \hfill$\blacksquare$
 \end{remark}

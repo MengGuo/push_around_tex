@@ -1,0 +1,19 @@
+Supplementary material for "PushAround: Collaborative Path Clearing via
+Physics-Informed Hybrid Search", RA-L manuscript 26-3602.
+
+1. PushAround.mp4
+   One video illustrates simulated corridor clearing, hardware execution with
+   two robots, execution-side physical-parameter mismatch, and scaling to teams
+   of two, three and four robots. Play it with an MP4-capable media player.
+   It complements the paper by showing obstacle motion, evolving connectivity
+   and robot coordination over time. The final version updates the cover.
+
+2. evaluation_data/
+   CSV/JSON records, configurations and plotting scripts support the WCCG
+   validation and the density, team-size and mismatch studies. The README maps
+   records to the final manuscript and explains the legacy plotting outputs.
+   Inspect the records or run the Python scripts to examine these results
+   without rerunning the simulator.
+   This package does not contain the per-trial records of the separate early
+   Scenario-1 comparison/ablation study (Table II), the hardware study, or the
+   complete planner implementation. It is not a complete experimental archive.

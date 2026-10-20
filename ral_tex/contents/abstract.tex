@@ -1,22 +1,19 @@
 \begin{abstract}
-The passage of large vehicles in cluttered environments is often blocked by
-movable obstacles, motivating the use of mobile robot teams to proactively
-clear traversable corridors. Existing approaches to Navigation Among Movable
-Obstacles (NAMO) mainly plan abstract sequences of obstacle displacements but
-often neglect physical feasibility, overlooking robot dimensions, obstacle mass,
-contact geometry, and required forces, which can lead to strategies that fail
-in execution.
-This work introduces \emph{PushAround}, a physics-informed hybrid search
-framework that incrementally constructs executable clearing plans by coupling
-geometric connectivity reasoning with short-horizon simulation. Repeated
-W--clearance connectivity graph (WCCG) queries expose the frontier gaps where the
-corridor must be widened and rank them by estimated downstream costs, while the
-search generates direct or recursive pushing candidates -- which obstacles to
-displace, in which directions, with which contacts and forces -- admitting only
-physics-validated candidates.
+Large vehicles in cluttered environments are often blocked by movable
+obstacles, motivating mobile robot teams to clear traversable corridors.
+Navigation Among Movable Obstacles (NAMO) approaches often abstract obstacle
+displacements while neglecting robot dimensions, obstacle mass, contact
+geometry and forces, yielding physically infeasible plans.
+\emph{PushAround} is a physics-informed hybrid search that couples geometric
+connectivity reasoning with short-horizon simulation to construct executable
+clearing plans. Repeated W--clearance connectivity graph (WCCG) queries expose
+frontier gaps requiring widening and rank them by estimated downstream costs.
+The search generates direct or recursive pushing candidates, selecting
+obstacles, directions, contacts and forces, and admits physics-validated
+candidates.
 \change{
-Numerical experiments validate WCCG against standard connectivity checks. 
-PushAround further scales to denser clutter and teams of up to four robots, 
-while remaining robust to simulated execution-side physical-parameter mismatch.
+Numerical experiments validate WCCG against standard connectivity checks and
+demonstrate scaling to denser clutter and teams of up to four robots, with
+robustness to simulated execution-side physical-parameter mismatch.
 }
 \end{abstract}

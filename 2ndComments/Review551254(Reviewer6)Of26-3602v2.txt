@@ -1,0 +1,58 @@
+The authors introduce PushAround, a hybrid search framework informed by
+physics, aimed at cooperative path clearing among many movable
+obstacles. Although the setting is rooted in Navigation Among Movable
+Obstacles (NAMO), the focus here is distinctive: several mobile robots
+work together to push obstacles aside and carve out a corridor wide
+enough for a bigger external vehicle to pass. The pipeline brings
+together WCCG-based geometric analysis, gap ranking, generation of
+pushing modes, and physics-based validation in simulation. Experiments
+span simulated scenes with as many as 45 movable obstacles, plus a
+hardware demonstration using two robots.
+
+What I Liked
+- A well-integrated pipeline.
+The pieces fit together convincingly: WCCG, gap ranking, pushing-mode
+generation, and physics checking operate as one system. I particularly
+appreciate that the planner decides both which obstacle to move and how
+to push it, and that each candidate action is tested in simulation
+before it is adopted.
+
+- Recursive pushing.
+When a blocker sits in the swept region, the planner can move it first
+and then resume the original gap-opening objective. This is a nice
+design choice that makes the approach more flexible than single-step
+pushing.
+
+- Evidence of scaling to clutter.
+Handling up to 45 obstacles is a meaningful stress test. The method
+reportedly achieves full success even at that density, though this
+result rests on only five seeds per density level, which I address
+below.
+
+- Convincing results in simulation and on hardware.
+The approach clearly beats the baselines that are reported, and the
+two-robot real-world experiment shows the idea can work outside
+simulation.
+
+Concerns
+- Unclear robustness to model error.
+Because the whole approach leans on simulation to judge whether a push
+is feasible, its reliability depends on how accurate the physical model
+is. Yet there is no systematic study of how errors or uncertainty in
+mass, friction, force limits, or contact behavior affect performance.
+For a method whose central claim is physics-informed planning, this is
+an important omission.
+
+- Thin statistical evidence at high complexity.
+The densest scenarios are tested with relatively few independent runs.
+A perfect success rate over five seeds is encouraging but offers
+limited confidence, and it undercuts the scalability argument somewhat.
+
+
+This is a solid and well-presented paper. Combining geometric
+reasoning, recursive pushing, and physics-informed search is an
+interesting direction, and the hardware validation adds credibility. My
+main reservations are the missing sensitivity analysis for physical
+parameters and the small number of trials in the densest settings.
+Resolving these points, and answering the questions above, would
+considerably strengthen the submission.
